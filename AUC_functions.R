@@ -1,0 +1,50 @@
+library(tidyverse)
+
+# AUC calculation with for loop
+
+own_for_loop <- function(pred, target) {
+  table <- tibble(pred = pred,
+                  target = target) %>%
+    group_by(pred) %>%
+    summarise(target = sum(target),
+              n = n()) %>%
+    arrange(desc(pred)) %>%
+    mutate(TP = 0,
+           FP = 0,
+           TPR = 0,
+           FPR = 0)
+  P <- sum(table$target)
+  N <- sum(table$n - table$target)
+  TP <- 0
+  FP <- 0
+  for(i in 1:nrow(table)) {
+    TP <- TP + table[i, "target"]
+    FP <- FP + table[i, "n"] - table[i, "target"]
+    table[i, "TP"] <- TP
+    table[i, "FP"] <- FP
+    table[i, "TPR"] <- TP / P
+    table[i, "FPR"] <- FP / N
+  }
+  return(sum(diff(table$FPR) * (head(table$TPR, -1) + tail(table$TPR, -1)) * 0.5))
+}
+
+# AUC calculation with vectors in the tidyverse
+
+AUC_in_tidyverse <- function(pred, target) {
+  table <- tibble(pred = pred,
+                  target = target) %>%
+    group_by(pred) %>%
+    summarise(target = sum(target),
+              n = n()) %>%
+    arrange(desc(pred))
+  P <- sum(table$target)
+  N <- sum(table$n - table$target)
+  table <- table %>%
+    mutate(
+      TP = cumsum(target),
+      FP = cumsum(n - target),
+      TPR = TP / P,
+      FPR = FP / N
+    )
+  return(sum(diff(table$FPR) * (head(table$TPR, -1) + tail(table$TPR, -1)) * 0.5))
+}
