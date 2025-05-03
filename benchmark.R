@@ -18,6 +18,7 @@ bigstatsr::AUC(-score_1, default)
 
 library(microbenchmark)
 library(Rcpp)
+sourceCpp("AUC_cpp.cpp")
 
 mybenchmark <- (microbenchmark(
   
