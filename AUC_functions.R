@@ -48,3 +48,16 @@ AUC_in_tidyverse <- function(pred, target) {
     )
   return(sum(diff(table$FPR) * (head(table$TPR, -1) + tail(table$TPR, -1)) * 0.5))
 }
+
+# AUC in C++
+
+AUC_cpp <- function(pred, target) {
+  table <- tibble(pred = pred,
+                  target = target) %>%
+    group_by(pred) %>%
+    summarise(target = sum(target),
+              n = n()) %>%
+    mutate(negatives = n - target) %>%
+    arrange(desc(pred))
+  AUC_calc(table$pred, table$target, table$n, table$negatives)
+}

@@ -17,6 +17,7 @@ bigstatsr::AUC(-score_1, default)
 # Obliczenia
 
 library(microbenchmark)
+library(Rcpp)
 
 mybenchmark <- (microbenchmark(
   
@@ -30,13 +31,14 @@ mybenchmark <- (microbenchmark(
   
   bigstatsr::AUC(-score_1, default),
   
-  AUC_in_tidyverse(-score_1, default)
+  AUC_in_tidyverse(-score_1, default),
+  
+  AUC_cpp(-score_1, default)
   
 ))
 
 
 # AUC   = (Gini+1)/2 
-
 
 head(score_1)
 
@@ -47,14 +49,14 @@ table(round(score_1))
 hist(score_1, breaks=1000)
 
 
-
 # Wykres 
 
 mybenchmark2 <- mybenchmark
 
-levels(mybenchmark2$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr", "tidyverse-table")
+levels(mybenchmark2$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr",
+                               "AUC_in_tidyverse", "AUC_cpp")
 
-library(ggplot2)  
+library(ggplot2)
 
-autoplot(mybenchmark2) +  
-  theme(axis.text.y=element_text(size=rel(1.5)))
+autoplot(mybenchmark2) +
+  theme(axis.text.y = element_text(size = rel(1.5)))
