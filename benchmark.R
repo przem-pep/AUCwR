@@ -18,7 +18,9 @@ bigstatsr::AUC(-score_1, default)
 
 library(microbenchmark)
 library(Rcpp)
+library(reticulate)
 sourceCpp("AUC_cpp.cpp")
+source_python("auc_python.py")
 
 mybenchmark <- (microbenchmark(
   
@@ -40,7 +42,9 @@ mybenchmark <- (microbenchmark(
   
   AUC_wilcox(score_1[1:5000], score_1[5001:10000]),
   
-  scorecard::perf_eva(-score_1, default, binomial_metric = "auc", show_plot = FALSE)$binomial_metric$dat$AUC
+  scorecard::perf_eva(-score_1, default, binomial_metric = "auc", show_plot = FALSE)$binomial_metric$dat$AUC,
+  
+  scikitlearn_auc(-score_1, default)
   
 ))
 
@@ -62,7 +66,7 @@ mybenchmark2 <- mybenchmark
 
 levels(mybenchmark2$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr",
                                "AUC_in_tidyverse", "AUC_cpp",
-                               "own-U", "AUC-wilcox", "scorecard")
+                               "own-U", "AUC-wilcox", "scorecard", "scikit-learn")
 
 library(ggplot2)
 
