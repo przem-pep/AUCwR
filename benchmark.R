@@ -34,7 +34,13 @@ mybenchmark <- (microbenchmark(
   
   AUC_in_tidyverse(-score_1, default),
   
-  AUC_cpp(-score_1, default)
+  AUC_cpp(-score_1, default),
+  
+  auc_u(score_1[1:5000], score_1[5001:10000]),
+  
+  AUC_wilcox(score_1[1:5000], score_1[5001:10000]),
+  
+  scorecard::perf_eva(-score_1, default, binomial_metric = "auc", show_plot = FALSE)$binomial_metric$dat$AUC
   
 ))
 
@@ -55,7 +61,8 @@ hist(score_1, breaks=1000)
 mybenchmark2 <- mybenchmark
 
 levels(mybenchmark2$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr",
-                               "AUC_in_tidyverse", "AUC_cpp")
+                               "AUC_in_tidyverse", "AUC_cpp",
+                               "own-U", "AUC-wilcox", "scorecard")
 
 library(ggplot2)
 

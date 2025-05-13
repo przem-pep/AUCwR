@@ -61,3 +61,28 @@ AUC_cpp <- function(pred, target) {
     arrange(desc(pred))
   AUC_calc(table$pred, table$target, table$n, table$negatives)
 }
+
+# AUC from Wilcox test
+
+AUC_wilcox <- function(group1, group2) {
+  test <- wilcox.test(group1, group2, exact = FALSE)
+  U <- as.numeric(test$statistic)
+  n1 <- length(group1)
+  n2 <- length(group2)
+  auc <- U / (n1 * n2)
+  return(auc)
+}
+
+# AUC calculation from Mann-Whitney U manual calculation
+
+auc_u <- function(group1, group2) {
+  combined <- c(group1, group2)
+  labels <- c(rep(1, length(group1)), rep(2, length(group2)))
+  ranks <- rank(combined)
+  R1 <- sum(ranks[labels == 1])
+  n1 <- length(group1)
+  n2 <- length(group2)
+  U1 <- n1 * n2 + (n1 * (n1 + 1)) / 2 - R1
+  auc <- U1 / (n1 * n2)
+  return(auc)
+}
