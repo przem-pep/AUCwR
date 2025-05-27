@@ -197,7 +197,7 @@ levels(benchmark1$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr",
                                "caTools", "own_data.table_AUC", "precrec", "scikit-learn2",
                                "Rcpp")
 
-benchmark1$expr <- reorder(benchmark1$expr, benchmark1$time, FUN = median)
+benchmark1$expr <- reorder(benchmark1$expr, -benchmark1$time, FUN = median)
 
 
 levels(benchmark2$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr",
