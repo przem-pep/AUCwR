@@ -86,3 +86,69 @@ auc_u <- function(group1, group2) {
   auc <- U1 / (n1 * n2)
   return(auc)
 }
+
+# AUC with data.table package
+
+library(data.table)
+
+AUC_dt <- function(pred, target) {
+  dt <- data.table(pred = pred, label = target)
+  setorder(dt, -pred)  # sort descending by prediction
+  
+  # Calculate cumulative true positives and false positives
+  dt[, `:=`(
+    tp = cumsum(label == 1),
+    fp = cumsum(label == 0)
+  )]
+  
+  P <- sum(dt$label == 1)
+  N <- sum(dt$label == 0)
+  
+  # Calculate TPR and FPR
+  dt[, `:=`(
+    TPR = tp / P,
+    FPR = fp / N
+  )]
+  
+  # Calculate AUC using trapezoidal rule
+  x_diff <- diff(dt$FPR)
+  y_avg <- (head(dt$TPR, -1) + tail(dt$TPR, -1)) / 2
+  
+  auc <- sum(x_diff * y_avg)
+  return(auc)
+}
+
+cppFunction('
+double fast_auc(NumericVector pred, IntegerVector label) {
+  int n = pred.size();
+  std::vector<std::pair<double, int>> data(n);
+
+  // Combine pred and label into one sortable structure
+  for (int i = 0; i < n; ++i) {
+    data[i] = std::make_pair(pred[i], label[i]);
+  }
+
+  // Sort descending by predicted probability
+  std::sort(data.begin(), data.end(), [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+    return a.first > b.first;
+  });
+
+  // Rank-based approach for AUC
+  double cum_pos = 0.0;
+  double cum_neg = 0.0;
+  double auc = 0.0;
+
+  for (int i = 0; i < n; ++i) {
+    if (data[i].second == 1) {
+      cum_pos += 1;
+    } else {
+      auc += cum_pos;
+      cum_neg += 1;
+    }
+  }
+
+  if (cum_pos == 0 || cum_neg == 0) return NA_REAL;
+
+  return auc / (cum_pos * cum_neg);
+}
+')
