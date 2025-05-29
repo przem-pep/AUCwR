@@ -67,6 +67,14 @@ call_benchmark <- function(pred, target, times = 100) {
     
     fast_auc(-pred, target),
     
+    yardstick::roc_auc_vec(as.factor(target), pred),
+    
+    (unname(rcompanion::cliffDelta(pred ~ target, data = as.data.frame(cbind(pred, target)))) + 1) / 2,
+    
+    ModelMetrics::auc(target, -pred),
+    
+    MLmetrics::AUC(-pred, target),
+    
     times = times
   )
   
@@ -74,7 +82,7 @@ call_benchmark <- function(pred, target, times = 100) {
                                "AUC_in_tidyverse", "AUC_cpp",
                                "own-U", "AUC-wilcox", "scorecard", "scikit-learn",
                                "caTools", "own_data.table_AUC", "precrec", "scikit-learn2",
-                               "Rcpp")
+                               "Rcpp", "yardstick", "rcompanion", "ModelMetrics", "MLmetrics")
   
   my_benchmark$expr <- reorder(my_benchmark$expr, -my_benchmark$time, FUN = median)
   
@@ -84,18 +92,16 @@ call_benchmark <- function(pred, target, times = 100) {
 
 # Benchmark 1
 
-call_benchmark(-score_1, default1)
+call_benchmark(score_1, default1)
 
 # Benchmark 2
 
-call_benchmark(-score_2, default1)
+call_benchmark(score_2, default1)
 
 # Benchmark 3
 
-call_benchmark(-score_3, default2)
+call_benchmark(score_3, default2)
 
 # Benchmark 4
 
-call_benchmark(-score_4, default2)
-
-# AUC   = (Gini+1)/2 
+call_benchmark(score_4, default2)
