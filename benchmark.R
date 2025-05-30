@@ -75,6 +75,10 @@ call_benchmark <- function(pred, target, times = 100) {
     
     MLmetrics::AUC(-pred, target),
     
+    cvAUC::AUC(-pred, target),
+    
+    fbroc::perf(fbroc::boot.roc(-pred, as.logical(target)), metric = "auc")$Observed.Performance,
+    
     times = times
   )
   
@@ -82,7 +86,8 @@ call_benchmark <- function(pred, target, times = 100) {
                                "AUC_in_tidyverse", "AUC_cpp",
                                "own-U", "AUC-wilcox", "scorecard", "scikit-learn",
                                "caTools", "own_data.table_AUC", "precrec", "scikit-learn2",
-                               "Rcpp", "yardstick", "rcompanion", "ModelMetrics", "MLmetrics")
+                               "Rcpp", "yardstick", "rcompanion", "ModelMetrics", "MLmetrics",
+                               "cvAUC", "fbroc")
   
   my_benchmark$expr <- reorder(my_benchmark$expr, -my_benchmark$time, FUN = median)
   
