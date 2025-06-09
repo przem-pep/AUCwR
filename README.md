@@ -22,7 +22,7 @@ Niektóre metody obliczania AUC w języku R są znacząco bardziej efektywne pod
 
 Repository for project: AUC Measure – review and efficient computation in R
 
-Projeect description:
+Project description:
 
 The AUC (Area Under the Curve) measure is widely used in statistical classification and machine learning, including credit scoring, where it is employed to assess the quality of predictive models. The goal of this project is to review methods for calculating the AUC measure, followed by an analysis of the efficiency of computing this measure in R.
 
