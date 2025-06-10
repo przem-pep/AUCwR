@@ -29,3 +29,37 @@ double AUC_calc(NumericVector pred, NumericVector target, NumericVector n, Numer
     }
     return sum(area);
 }
+
+// [[Rcpp::export]]
+double own_AUC_cpp(NumericVector pred, IntegerVector label) {
+  int n = pred.size();
+  std::vector<std::pair<double, int>> data(n);
+  
+  // Combine pred and label into one sortable structure
+  for (int i = 0; i < n; ++i) {
+    data[i] = std::make_pair(pred[i], label[i]);
+  }
+  
+  // Sort descending by predicted probability
+  std::sort(data.begin(), data.end(), [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+    return a.first > b.first;
+  });
+  
+  // Rank-based approach for AUC
+  double cum_pos = 0.0;
+  double cum_neg = 0.0;
+  double auc = 0.0;
+  
+  for (int i = 0; i < n; ++i) {
+    if (data[i].second == 1) {
+      cum_pos += 1;
+    } else {
+      auc += cum_pos;
+      cum_neg += 1;
+    }
+  }
+  
+  if (cum_pos == 0 || cum_neg == 0) return NA_REAL;
+  
+  return auc / (cum_pos * cum_neg);
+}

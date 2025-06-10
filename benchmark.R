@@ -41,17 +41,17 @@ call_benchmark <- function(pred, target, times = 100) {
     
     mltools::auc_roc(-pred, target),
     
-    (Hmisc::somers2(-pred, target)['Dxy']+1)/2,
+    Hmisc::somers2(-pred, target)["C"],
     
     bigstatsr::AUC(-pred, target),
     
-    AUC_in_tidyverse(-pred, target),
+    own_AUC_tidyverse(-pred, target),
     
-    # AUC_cpp(-pred, target),
+    # AUC_tidyverse_cpp(-pred, target),
     
-    auc_u(pred),
+    own_AUC_U(-pred, target),
     
-    AUC_wilcox(pred),
+    own_AUC_wilcox(pred, target),
     
     scorecard::perf_eva(-pred, target, binomial_metric = "auc", show_plot = FALSE)$binomial_metric$dat$AUC,
     
@@ -59,13 +59,11 @@ call_benchmark <- function(pred, target, times = 100) {
     
     caTools::colAUC(-pred, target)[1, 1],
     
-    # AUC_dt(-pred, target),
-    
     precrec::auc(precrec::evalmod(precrec::mmdata(scores = -pred, labels = target)))[1, "aucs"],
     
     roc_auc_score(target, -pred),
     
-    # fast_auc(-pred, target),
+    # own_AUC_cpp(-pred, target),
     
     yardstick::roc_auc_vec(as.factor(target), pred),
     
@@ -89,12 +87,11 @@ call_benchmark <- function(pred, target, times = 100) {
   )
   
   levels(my_benchmark$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr",
-                               "own_AUC_tidyverse", # "AUC_cpp",
+                               "own_AUC_tidyverse", # "AUC_tidyverse_cpp",
                                "own_Mann_Whitney_U", "own_AUC_Wilcox", "scorecard", # "scikit-learn",
                                "caTools",
-                               # "own_data.table_AUC",
                                "precrec", "scikit-learn",
-                               # "Rcpp",
+                               # "own_Cpp",
                                "yardstick", "rcompanion::cliffDelta", "ModelMetrics", "MLmetrics",
                                "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda")
   
