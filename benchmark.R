@@ -59,7 +59,7 @@ call_benchmark <- function(pred, target, times = 100) {
     
     caTools::colAUC(-pred, target)[1, 1],
     
-    precrec::auc(precrec::evalmod(precrec::mmdata(scores = -pred, labels = target)))[1, "aucs"],
+    precrec::evalmod(precrec::mmdata(scores = -pred, labels = target), mode = "aucroc")$uaucs$aucs,
     
     roc_auc_score(target, -pred),
     
