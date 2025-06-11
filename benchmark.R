@@ -39,6 +39,10 @@ call_benchmark <- function(pred, target, times = 100) {
     
     pROC::auc(target, pred, lev=c('0', '1'), dir=">"),
     
+    pROC::auc(target, pred, lev = c("0", "1"), dir = ">", algorithm = 2),
+    
+    pROC::auc(target, pred, lev = c("0", "1"), dir = ">", algorithm = 3),
+    
     mltools::auc_roc(-pred, target),
     
     Hmisc::somers2(-pred, target)["C"],
@@ -75,7 +79,7 @@ call_benchmark <- function(pred, target, times = 100) {
     
     cvAUC::AUC(-pred, target),
     
-    fbroc::perf(fbroc::boot.roc(-pred, as.logical(target)), metric = "auc")$Observed.Performance,
+    fbroc::boot.roc(-pred, as.logical(target))$auc,
     
     DescTools::Cstat(-pred, target),
     
@@ -86,14 +90,15 @@ call_benchmark <- function(pred, target, times = 100) {
     times = times
   )
   
-  levels(my_benchmark$expr) <- c("ROCR", "pROC", "mltools", "Hmisc", "bigstatsr",
-                               "own_AUC_tidyverse", # "AUC_tidyverse_cpp",
-                               "own_Mann_Whitney_U", "own_AUC_Wilcox", "scorecard", # "scikit-learn",
-                               "caTools",
-                               "precrec", "scikit-learn",
-                               # "own_Cpp",
-                               "yardstick", "rcompanion::cliffDelta", "ModelMetrics", "MLmetrics",
-                               "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda")
+  levels(my_benchmark$expr) <- c("ROCR", "pROC", "pROC (algorithm = 2)", "pROC (algorithm = 3)",
+                                 "mltools", "Hmisc", "bigstatsr",
+                                 "own_AUC_tidyverse", # "AUC_tidyverse_cpp",
+                                 "own_Mann_Whitney_U", "own_AUC_Wilcox", "scorecard", # "scikit-learn",
+                                 "caTools",
+                                 "precrec", "scikit-learn",
+                                 # "own_Cpp",
+                                 "yardstick", "rcompanion::cliffDelta", "ModelMetrics", "MLmetrics",
+                                 "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda")
   
   my_benchmark$expr <- reorder(my_benchmark$expr, -my_benchmark$time, FUN = median)
   
