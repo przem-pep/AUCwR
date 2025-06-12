@@ -39,10 +39,6 @@ call_benchmark <- function(pred, target, times = 100) {
     
     pROC::auc(target, pred, lev=c('0', '1'), dir=">"),
     
-    pROC::auc(target, pred, lev = c("0", "1"), dir = ">", algorithm = 2),
-    
-    pROC::auc(target, pred, lev = c("0", "1"), dir = ">", algorithm = 3),
-    
     mltools::auc_roc(-pred, target),
     
     Hmisc::somers2(-pred, target)["C"],
@@ -90,7 +86,7 @@ call_benchmark <- function(pred, target, times = 100) {
     times = times
   )
   
-  levels(my_benchmark$expr) <- c("ROCR", "pROC", "pROC (algorithm = 2)", "pROC (algorithm = 3)",
+  levels(my_benchmark$expr) <- c("ROCR", "pROC",
                                  "mltools", "Hmisc", "bigstatsr",
                                  "own_AUC_tidyverse", # "AUC_tidyverse_cpp",
                                  "own_Mann_Whitney_U", "own_AUC_Wilcox", "scorecard", # "scikit-learn",
