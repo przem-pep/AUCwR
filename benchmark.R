@@ -6,7 +6,7 @@ use_python(Sys.which("python"), required = TRUE)
 source_python("auc_python.py")
 roc_auc_score <- import("sklearn.metrics")$roc_auc_score
 
-# Pierwszy zbiór danych
+# First dataset
 
 default1 <- c(rep(1, 5000), rep(0, 5000))
 
@@ -14,22 +14,22 @@ score_1 <- c(rnorm(5000), rnorm(5000, 1))
 
 bigstatsr::AUC(-score_1, default1)
 
-# Drugi zbiór danych
+# Second dataset
 
 score_2 <- round(score_1)
 
-# Trzeci zbiór danych
+# Third dataset
 
 score_3 <- c(rnorm(50000), rnorm(50000, 1))
 
 default2 <- c(rep(1, 50000), rep(0, 50000))
 
-# Czwarty zbiór danych
+# Fourth dataset
 
 score_4 <- round(score_3)
 
 
-# Obliczenia
+# Calculations
 
 call_benchmark <- function(pred, target, times = 100) {
   
@@ -47,8 +47,6 @@ call_benchmark <- function(pred, target, times = 100) {
     
     own_AUC_tidyverse(-pred, target),
     
-    # AUC_tidyverse_cpp(-pred, target),
-    
     own_AUC_U(-pred, target),
     
     own_AUC_wilcox(pred, target),
@@ -62,8 +60,6 @@ call_benchmark <- function(pred, target, times = 100) {
     precrec::evalmod(precrec::mmdata(scores = -pred, labels = target), mode = "aucroc")$uaucs$aucs,
     
     roc_auc_score(target, -pred),
-    
-    # own_AUC_cpp(-pred, target),
     
     yardstick::roc_auc_vec(as.factor(target), pred),
     
@@ -83,18 +79,19 @@ call_benchmark <- function(pred, target, times = 100) {
     
     rcompanion::vda(x = pred[target == 0], y = pred[target == 1], digits=100),
     
+    own_AUC_U_cpp(-pred,  target),
+    
     times = times
   )
   
   levels(my_benchmark$expr) <- c("ROCR", "pROC",
                                  "mltools", "Hmisc", "bigstatsr",
-                                 "own_AUC_tidyverse", # "AUC_tidyverse_cpp",
-                                 "own_Mann_Whitney_U", "own_AUC_Wilcox", "scorecard", # "scikit-learn",
-                                 "caTools",
-                                 "precrec", "scikit-learn",
-                                 # "own_Cpp",
+                                 "own_AUC_tidyverse", "own_Mann_Whitney_U",
+                                 "own_AUC_Wilcox", "scorecard", # "scikit-learn",
+                                 "caTools", "precrec", "scikit-learn",
                                  "yardstick", "rcompanion::cliffDelta", "ModelMetrics", "MLmetrics",
-                                 "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda")
+                                 "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda",
+                                 "own_AUC_U_cpp")
   
   my_benchmark$expr <- reorder(my_benchmark$expr, -my_benchmark$time, FUN = median)
   
