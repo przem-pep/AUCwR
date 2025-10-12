@@ -1,0 +1,26 @@
+# R
+
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rapp.history
+*.RData
+*.Rproj
+
+# Output
+
+*.pdf
+*.html
+*.docx
+
+# renv
+
+renv/library/
+renv/staging/
+
+# Others
+
+.vscode/
+.cache/
+*.log
