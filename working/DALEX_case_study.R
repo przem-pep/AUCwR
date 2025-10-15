@@ -69,3 +69,49 @@ print(c(DALEX = (toc1$toc-toc1$tic),
 
 #przyśpieszenie - krotność (ile razy szybciej)
 (toc1$toc-toc1$tic)/(toc4$toc-toc4$tic)
+
+
+## Sprawdzenia
+
+# CHECK1
+pred <- c(1, 1, 2, 3, 4, 4, 5, 5, 6, 7)
+target <- c(0, 0, 1, 1, 1, 1, 1, 1, 1, 1)
+model_performance_auc(-pred, target)
+bigstatsr::AUC(-pred, target)
+Hmisc::somers2(-pred, target)[1]
+UNN(-pred, target)
+
+# CHECK2
+pred <- c(1, 1, 2, 3, 4, 4, 5, 5, 6, 7)
+target <- c(1, 1, 1, 1, 1, 1, 0, 0, 0, 0)
+model_performance_auc(-pred, target)
+bigstatsr::AUC(-pred, target)
+Hmisc::somers2(-pred, target)[1]
+UNN(-pred, target)
+
+# CHECK3
+pred <- c(1, 1, 2, 3, 4, 4, 5, 5, 6, 7)
+target <- c(1, 1, 1, 1, 0, 1, 0, 0, 1, 0)
+target <- (target==1)
+model_performance_auc(-pred, target)
+bigstatsr::AUC(-pred, target)
+Hmisc::somers2(-pred, target)[1]
+UNN(-pred, target)
+
+# CHECK4
+pred <- c(1, 1, 2, 3, 4, 4, 5, 5, 6, 7)
+target <- c(2, 2, 1, 1, 0, 1, 0, 0, 1, 0)
+model_performance_auc(-pred, target)
+bigstatsr::AUC(-pred, target)
+Hmisc::somers2(-pred, target)[1]
+UNN(-pred, target)
+
+# CHECK5
+pred <- c(1, 1, 2, 3, 4, 4, 5, 5, 6, 7)
+target <- c(1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0)
+model_performance_auc(-pred, target)
+bigstatsr::AUC(-pred, target)
+Hmisc::somers2(-pred, target)[1]
+UNN(-pred, target)
+
+
