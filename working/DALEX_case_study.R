@@ -32,6 +32,19 @@ UNN <- function(x,y){
   n1 = sum(y1) 
   (mean(rank(x)[y1]) - (n1 + 1)/2)/(length(y) - n1)}
 
+UNN2 <- function(x,y){
+    n = length(y)
+    if (length(x) != n) {
+      stop("Error: x and y must have equal length")
+    }
+    if (!all(y %in% c(0, 1, TRUE, FALSE))) {
+      stop("Error: y must contain only 0, 1, TRUE, or FALSE")
+    }
+    y1 = (y == 1)
+    n1 = sum(y1) 
+    (mean(rank(x)[y1]) - (n1 + 1)/2)/(n- n1)
+  }
+
 
 # sprawdzenie czy to samo
 pred <- c(1, 1, 2, 3, 4, 4, 5, 5, 6, 7)
@@ -40,6 +53,7 @@ model_performance_auc(-pred, target)
 bigstatsr::AUC(-pred, target)
 Hmisc::somers2(-pred, target)[1]
 UNN(-pred, target)
+UNN2(-pred, target)
 
 library(bigstatsr)
 library(tictoc)
@@ -61,11 +75,16 @@ toc3<-toc()
 tic()
 y <- replicate(nsim, UNN(rnorm(1000), rbinom(1000,1,.2)))
 toc4<-toc()
+# albo taka (własna oparta na Hmisc) z checkiem
+tic()
+y <- replicate(nsim, UNN2(rnorm(1000), rbinom(1000,1,.2)))
+toc5<-toc()
 
 print(c(DALEX = (toc1$toc-toc1$tic), 
         bigstatsr = (toc2$toc-toc2$tic),
         Hmisc = (toc3$toc-toc3$tic),
-        UNN = (toc4$toc-toc4$tic)))
+        UNN = (toc4$toc-toc4$tic),
+        UNN2 = (toc5$toc-toc5$tic)))
 
 #przyśpieszenie - krotność (ile razy szybciej)
 (toc1$toc-toc1$tic)/(toc4$toc-toc4$tic)
@@ -113,5 +132,17 @@ model_performance_auc(-pred, target)
 bigstatsr::AUC(-pred, target)
 Hmisc::somers2(-pred, target)[1]
 UNN(-pred, target)
+UNN2(-pred, target)
+
+# CHECK6
+pred <- c(1, 1, 2, 3, 4, 4, 5, 5, 6, 7)
+pred <- as.character(pred)
+target <- c(1, 1, 1, 1, 0, 1, 0, 0, 1, 0)
+model_performance_auc(pred, target)
+bigstatsr::AUC(pred, target)
+Hmisc::somers2(pred, target)[1]
+UNN(pred, target)
+UNN2(pred, target)
+
 
 

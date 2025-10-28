@@ -1,28 +1,20 @@
 ---
-title: "AUC Measure"
-date: "2022-11-09"
+title: "Area under ROC curve – review and efficient computation in R"
+date: "2025-10-28"
 abstract: >
-  An abstract of less than 150 words.
+  The AUC (Area Under the Curve) measure is widely used in statistical classification and machine learning, including credit scoring, where it is employed to assess the quality of predictive models. The goal of this paper is to review methods for calculating the AUC measure, followed by an analysis of the efficiency of computing this measure in R.
 draft: true
 author:  
-  - name: Quietest Quokka
-    affiliation: University of Little Mates
+  - name: Błażej Kochański
+  - name: Przemysław Pepliński
+    affiliation: Gdańsk University of Technology
     address:
-    - Department of Letter Q
-    - Somewhere, Australia
-    url: https://www.britannica.com/animal/quokka
-    orcid: 0000-1721-1511-1101
-    email:  qquo@ulm.edu
-  - name: Bounciest Bilby
-    affiliation:
-    - University of Little Mates
-    - University of Aussie Animals
-    address:
-    - Department of Letter Q, Somewhere, Australia
-    - Department of Marsupials, Somewhere, Australia
-    url: https://www.britannica.com/animal/bilby
-    email: bbil@ulm.edu
-    orcid: 0000-0002-0912-0225
+    - Faculty of Management and Economics
+    - Gdańsk
+  - name: Miriam Nieslona
+  - name: Wiktor Galewski
+  - name: Piotr Geremek
+ 
 type: package
 output: 
   rjtools::rjournal_article:
@@ -36,60 +28,135 @@ bibliography: RJreferences.bib
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(plotly)
 library(ggplot2)
-library(palmerpenguins)
 library(kableExtra)
 ```
 
 # Introduction
 
-Interactive data graphics provides plots that allow users to interact them. One of the most basic types of interaction is through tooltips, where users are provided additional information about elements in the plot by moving the cursor over the plot.
-
-This paper will first review some R packages on interactive graphics and their tooltip implementations. A new package \CRANpkg{ToOoOlTiPs} that provides customized tooltips for plot, is introduced. Some example plots will then be given to showcase how these tooltips help users to better read the graphics. 
+ROC curves...
 
 # Background
 
-Some packages on interactive graphics include \CRANpkg{plotly} [@plotly] that interfaces with Javascript for web-based interactive graphics, \CRANpkg{crosstalk} [@crosstalk] that specializes cross-linking elements across individual graphics.  The recent R Journal paper \CRANpkg{tsibbletalk} [@RJ-2021-050] provides a good example of including interactive graphics into an article for the journal. It has both a set of linked plots, and also an animated gif example, illustrating linking between time series plots and feature summaries.
 
-# Customizing tooltip design with \pkg{ToOoOlTiPs}
+```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
+cz = c(.6, .8, .95)
+sw = c(.9, .8, .6)
 
-\pkg{ToOoOlTiPs} is a packages for customizing tooltips in interactive graphics, it features these possibilities.
+df <- data.frame(FPR = c(0, 1-sw, 1), TPR = c(0, cz, 1))
 
-# A gallery of tooltips examples
+library(ggplot2)
+library(patchwork)
 
-The \CRANpkg{palmerpenguins} data [@palmerpenguins]  features three penguin species which has a lovely illustration by Alison Horst in Figure \@ref(fig:penguins-alison). 
+ggplot(df, aes(x = FPR, y = TPR)) +
+  annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1, fill = "white", color = "black") +
+  geom_area(fill="lightblue") +
+  geom_line() +
+  geom_point() +
+  annotate("text", x = 0.5, y = 0.5, label = "AUC", size =10,  color = "darkblue") +
+  coord_fixed(ratio = 1, xlim = c(0,1), ylim = c(0,1)) +
+  labs(x = "FPR (1 - specificity)\ncumulative fraction of goods", 
+       y = "TPR (sensitivity)\ncumulative fraction of bads") +
+  theme_minimal() +
 
-```{r penguins-alison, out.width = "100%", out.height = "30%", fig.cap = "Artwork by \\@allison\\_horst", fig.alt="A picture of three different penguins with their species: Chinstrap, Gentoo, and Adelie. "}
-knitr::include_graphics("figures/penguins.png")
+#library(ggplot2)
+ggplot(df, aes(x = FPR, y = TPR)) +
+  annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1, fill = "white", color = "black") +
+  geom_polygon(fill="orange2") +
+  geom_polygon(aes(x=TPR, y=FPR), fill="orange1") +
+  geom_line() +
+  geom_point() +
+  annotate("text", x = 0.5, y = 0.5, label = "Gini", size =10,  color = "orange4") +
+  coord_fixed(ratio = 1, xlim = c(0,1), ylim = c(0,1)) +
+  labs(x = "FPR (1 - specificity)\ncumulative fraction of goods", y = "") +
+  theme_minimal()
 ```
 
-Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:penguins-tab-interactive)', '\\@ref(tab:penguins-tab-static)'))` prints at the first few rows of the `penguins` data:
 
-```{r penguins-tab-interactive, eval = knitr::is_html_output(), layout = "l-body-outset"}
-knitr::kable(head(penguins), format = "html", caption = "A basic table")
-```
 
-```{r penguins-tab-static, eval = knitr::is_latex_output()}
-knitr::kable(head(penguins), format = "latex", caption = "A basic table") %>% 
-  kableExtra::kable_styling(font_size = 7)
-```   
+# AUC – alternative names and formulas
 
-Figure `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(fig:penguins-plotly)', '\\@ref(fig:penguins-ggplot)'))` shows an `r ifelse(knitr::is_html_output(), 'interactive', '')` plot of the penguins data, made using the `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\CRANpkg{plotly}', '\\CRANpkg{ggplot2}'))` package. 
+--> ** O czym trzeba wspomnieć: ** <--
 
-```{r penguins-plotly, echo = TRUE, fig.height = 5, fig.cap="A basic interactive plot made with the plotly package on palmer penguin data. Three species of penguins are plotted with bill depth on the x-axis and bill length on the y-axis. When hovering on a point, a tooltip will show the exact value of the bill depth and length for that point, along with the species name.", include=knitr::is_html_output(), eval=knitr::is_html_output(), fig.alt = "A scatterplot of bill length against bill depth, both measured in millimetre. The three species are shown in different colours and loosely forms three clusters. Adelie has small bill length and large bill depth, Gentoo has small bill depth but large bill length, and Chinstrap has relatively large bill depth and bill length."}
-p <- penguins %>% 
-  ggplot(aes(x = bill_depth_mm, y = bill_length_mm, 
-             color = species)) + 
-  geom_point()
-ggplotly(p)
-```
+AUC is referred to as:
 
-```{r penguins-ggplot, echo = TRUE, fig.height = 5, fig.cap="A basic non-interactive plot made with the ggplot2 package on palmer penguin data. Three species of penguins are plotted with bill depth on the x-axis and bill length on the y-axis. Visit the online article to access the interactive version made with the plotly package.", include=knitr::is_latex_output(), eval=knitr::is_latex_output()}
-penguins %>% 
-  ggplot(aes(x = bill_depth_mm, y = bill_length_mm, 
-             color = species)) + 
-  geom_point()
-```
+* C-statistic
+* a version of estimator of the common language effect size statistic 
+* probability of superiority
+* “Vargha & Delaney A” (“measure of stochastic superiority”) [@Vargha_Delaney_2000]
+* “relative treatment effect” / “stochastic superiority statistic” in the Brunner-Munzel test 
+
+Gini coefficient is also referred to as:
+
+* pseudo Gini [@Idczak_2019]
+* a version of the rank-biserial correlation coefficient
+* accuracy ratio based on the Cumulative Accuracy Profile
+* a special case of the Somers' D statistic
+* Cliff's delta [@Cliff_1993]
+
+* Relation to the U statistic in the Mann-Whitney. 
+
+* Relation to the Somers' D. 
+
+* Cumulative Accuracy profile. 
+
+
+# The need for computational efficiency in AUC estimation
+
+Opisać: 
+
+- AUC / Gini bootstrapping / permutation tests
+
+  - including DALEX (?)
+
+- AUC optimization algorithms
+
+- credit market simulation
+
+ [@Kochanski_2021] 
+
+- inne ...
+
+# R packages
+
+--> Tutaj należy wstawić tabelkę pana Wiktora <--
+
+
+We identified three main types of algorithms for AUC computation: (1) trapezoidal integration over the ROC Curve, (2) (optimized) pairwise comparison, (3) and rank-based (Mann–Whitney U statistic formulation).
+
+Let $(s_i, y_i)$ for $i = 1, \dots, n$ denote the score assigned to an account and its corresponding true label. In line with standard practice in credit scoring, we assume that $y_i=1$ indicates a "bad" account (e.g., one that defaults, doesn't repay the loan), while $y_i=0$ represents a good account. A properly functioning scoring should assign lower scores to accounts with a higher predicted probability of being bad, and higher scores to those likely to be good.
+
+Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad accounts, and $n_0 = \sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good accounts.
+
+**Trapezoidal Integration over the ROC Curve**
+
+$$\text{AUC} = \sum_{k=1}^{m-1}(\text{FPR}_{k+1} - \text{FPR}_{k})\cdot\frac{\text{TPR}_{k+1}+\text{TPR}_k}{2}$$
+
+where $m$ is the number of distinct score thresholds from lowest to the highest score, TPR --> dokończyć <--
+
+**Optimized Pairwise Comparison**
+
+AUC as the probability that a randomly chosen positive instance receives a higher score than a randomly chosen negative instance:
+
+$$\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=1}\sum_{j:y_j=0}\left[\mathbb{I}(s_i<s_j)+\frac{1}{2}\mathbb{I}(s_i=s_j)\right]$$
+
+Generally, naive pairwise comparison is not efficient (?), but ...
+
+## Rank-Based (Mann–Whitney U Statistic Formulation)
+
+$$\text{AUC} = \frac{\bar{R}_{1}-{n_1(n_1+1)}/2}{n_0}$$
+
+where $\bar{R}_{1}$ is the mean rank for $s_i$ where $y_i=1$:
+
+$$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
+
+# Efficiency study
+
+# Case studies
+
+--> studieS, jeżeli będzie więcej <--
+
+## DALEX package
+
+--> Wykres generuje się długo, a możemy go przyśpieszyć <--
 
 # Summary
-
-We have displayed various tooltips that are available in the package \pkg{ToOoOlTiPs}. 

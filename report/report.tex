@@ -1,0 +1,190 @@
+% !TeX root = RJwrapper.tex
+\title{Area under ROC curve -- review and efficient computation in R}
+
+
+\author{by Błażej Kochański, Przemysław Pepliński, Miriam Nieslona, Wiktor Galewski, and Piotr Geremek}
+
+\maketitle
+
+\abstract{%
+The AUC (Area Under the Curve) measure is widely used in statistical classification and machine learning, including credit scoring, where it is employed to assess the quality of predictive models. The goal of this paper is to review methods for calculating the AUC measure, followed by an analysis of the efficiency of computing this measure in R.
+}
+
+\section{Introduction}\label{introduction}
+
+ROC curves\ldots{}
+
+\section{Background}\label{background}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/auc-gini-1} 
+
+}
+
+\caption{Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.}\label{fig:auc-gini}
+\end{figure}
+
+\section{AUC -- alternative names and formulas}\label{auc-alternative-names-and-formulas}
+
+--\textgreater{} ** O czym trzeba wspomnieć: ** \textless--
+
+AUC is referred to as:
+
+\begin{itemize}
+\tightlist
+\item
+  C-statistic
+\item
+  a version of estimator of the common language effect size statistic
+\item
+  probability of superiority
+\item
+  ``Vargha \& Delaney A'' (``measure of stochastic superiority'') \citep{Vargha_Delaney_2000}
+\item
+  ``relative treatment effect'' / ``stochastic superiority statistic'' in the Brunner-Munzel test
+\end{itemize}
+
+Gini coefficient is also referred to as:
+
+\begin{itemize}
+\item
+  pseudo Gini \citep{Idczak_2019}
+\item
+  a version of the rank-biserial correlation coefficient
+\item
+  accuracy ratio based on the Cumulative Accuracy Profile
+\item
+  a special case of the Somers' D statistic
+\item
+  Cliff's delta \citep{Cliff_1993}
+\item
+  Relation to the U statistic in the Mann-Whitney.
+\item
+  Relation to the Somers' D.
+\item
+  Cumulative Accuracy profile.
+\end{itemize}
+
+\section{The need for computational efficiency in AUC estimation}\label{the-need-for-computational-efficiency-in-auc-estimation}
+
+Opisać:
+
+\begin{itemize}
+\item
+  AUC / Gini bootstrapping / permutation tests
+
+  \begin{itemize}
+  \tightlist
+  \item
+    including DALEX (?)
+  \end{itemize}
+\item
+  AUC optimization algorithms
+\item
+  credit market simulation
+\end{itemize}
+
+\citep{Kochanski_2021}
+
+\begin{itemize}
+\tightlist
+\item
+  inne \ldots{}
+\end{itemize}
+
+\section{R packages}\label{r-packages}
+
+--\textgreater{} Tutaj należy wstawić tabelkę pana Wiktora \textless--
+
+We identified three main types of algorithms for AUC computation: (1) trapezoidal integration over the ROC Curve, (2) (optimized) pairwise comparison, (3) and rank-based (Mann--Whitney U statistic formulation).
+
+Let \((s_i, y_i)\) for \(i = 1, \dots, n\) denote the score assigned to an account and its corresponding true label. In line with standard practice in credit scoring, we assume that \(y_i=1\) indicates a ``bad'' account (e.g., one that defaults, doesn't repay the loan), while \(y_i=0\) represents a good account. A properly functioning scoring should assign lower scores to accounts with a higher predicted probability of being bad, and higher scores to those likely to be good.
+
+Let \(n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)\) denote the number of bad accounts, and \(n_0 = \sum_{i=1}^{n}\mathbb{I}(y_i=0)\) -- number of good accounts.
+
+\textbf{Trapezoidal Integration over the ROC Curve}
+
+\[\text{AUC} = \sum_{k=1}^{m-1}(\text{FPR}_{k+1} - \text{FPR}_{k})\cdot\frac{\text{TPR}_{k+1}+\text{TPR}_k}{2}\]
+
+where \(m\) is the number of distinct score thresholds from lowest to the highest score, TPR --\textgreater{} dokończyć \textless--
+
+\textbf{Optimized Pairwise Comparison}
+
+AUC as the probability that a randomly chosen positive instance receives a higher score than a randomly chosen negative instance:
+
+\[\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=1}\sum_{j:y_j=0}\left[\mathbb{I}(s_i<s_j)+\frac{1}{2}\mathbb{I}(s_i=s_j)\right]\]
+
+Generally, naive pairwise comparison is not efficient (?), but \ldots{}
+
+\subsection{Rank-Based (Mann--Whitney U Statistic Formulation)}\label{rank-based-mannwhitney-u-statistic-formulation}
+
+\[\text{AUC} = \frac{\bar{R}_{1}-{n_1(n_1+1)}/2}{n_0}\]
+
+where \(\bar{R}_{1}\) is the mean rank for \(s_i\) where \(y_i=1\):
+
+\[\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)\]
+
+\section{Efficiency study}\label{efficiency-study}
+
+\section{Case studies}\label{case-studies}
+
+--\textgreater{} studieS, jeżeli będzie więcej \textless--
+
+\subsection{DALEX package}\label{dalex-package}
+
+--\textgreater{} Wykres generuje się długo, a możemy go przyśpieszyć \textless--
+
+\section{Summary}\label{summary}
+
+\bibliography{RJreferences.bib}
+
+\address{%
+Błażej Kochański\\
+\\%
+\\
+%
+%
+%
+%
+}
+
+\address{%
+Przemysław Pepliński\\
+Gdańsk University of Technology\\%
+Faculty of Management and Economics\\ Gdańsk\\
+%
+%
+%
+%
+}
+
+\address{%
+Miriam Nieslona\\
+\\%
+\\
+%
+%
+%
+%
+}
+
+\address{%
+Wiktor Galewski\\
+\\%
+\\
+%
+%
+%
+%
+}
+
+\address{%
+Piotr Geremek\\
+\\%
+\\
+%
+%
+%
+%
+}
