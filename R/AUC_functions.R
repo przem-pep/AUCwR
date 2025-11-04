@@ -90,3 +90,25 @@ own_AUC_U <- function(pred, target) {
   AUC <- U1 / (n1 * n2)
   return(AUC)
 }
+
+# AUC calculation with the pairs method
+# WORK IN PROGRESS
+
+own_AUC_pairs_cpp <- function(pred, target) {
+  indices <- order(pred, target)
+  pred <- pred[indices]
+  pred0 <- pred[target[indices] == 0]
+  pred1 <- pred[target[indices] == 1]
+  return(auc_cpp(pred0, pred1))
+}
+
+# AUC calculation with the trapezoid method
+
+own_AUC_trapezoid <- function(pred, target) {
+  indices <- order(pred, target, decreasing = TRUE)
+  pred <- pred[indices]
+  target <- target[indices]
+  p <- sum(target)
+  num_uniq <- length(unique(pred))
+  return(auc_cpp_trapezoid(pred, target, p, num_uniq))
+}
