@@ -14,14 +14,15 @@ author:
   - name: Miriam Nieslona
   - name: Wiktor Galewski
   - name: Piotr Geremek
- 
 type: package
 output: 
   rjtools::rjournal_article:
     self_contained: yes
     toc: no
 bibliography: RJreferences.bib
-
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -36,7 +37,6 @@ library(kableExtra)
 ROC curves...
 
 # Background
-
 
 ```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
 cz = c(.6, .8, .95)
@@ -71,71 +71,139 @@ ggplot(df, aes(x = FPR, y = TPR)) +
   theme_minimal()
 ```
 
-
-
 # AUC – alternative names and formulas
-
---> ** O czym trzeba wspomnieć: ** <--
 
 AUC is referred to as:
 
-* C-statistic
-* a version of estimator of the common language effect size statistic 
-* probability of superiority
-* “Vargha & Delaney A” (“measure of stochastic superiority”) [@Vargha_Delaney_2000]
-* “relative treatment effect” / “stochastic superiority statistic” in the Brunner-Munzel test 
+-   C-statistic [Harrell et al, 1982]
+
+-   a version of estimator of the common language effect size statistic
+
+-   probability of superiority [Hanley & McNeil, 1982]
+
+-   “Vargha & Delaney A” (“measure of stochastic superiority”)
+    [@Vargha_Delaney_2000]
+
+-   “relative treatment effect” / “stochastic superiority statistic” in
+    the Brunner-Munzel test
 
 Gini coefficient is also referred to as:
 
-* pseudo Gini [@Idczak_2019]
-* a version of the rank-biserial correlation coefficient
-* accuracy ratio based on the Cumulative Accuracy Profile
-* a special case of the Somers' D statistic
-* Cliff's delta [@Cliff_1993]
+-   pseudo Gini [@Idczak_2019]
 
-* Relation to the U statistic in the Mann-Whitney. 
+-   a version of the rank-biserial correlation coefficient
 
-* Relation to the Somers' D. 
+-   accuracy ratio based on the Cumulative Accuracy Profile [Engelmann
+    et al., 2003]
 
-* Cumulative Accuracy profile. 
+-   a special case of the Somers' D statistic [Newson, 2002]
 
+-   Cliff's delta [@Cliff_1993]
+
+**Relation to the U statistic in the Mann-Whitney.**
+
+There is a direct relationship between AUC and the Mann-Whitney U
+statistic.
+
+AUC is equivalent to the probability that a randomly selected positive
+case will have a higher score than a randomly selected negative case
+[Hanley & McNeil, 1982];[Bamber, 1975].
+$$\text{AUC} = \frac{U}{n_1 \times n_0}$$ where $U$ is the number of
+pairs in which the “bad” score is \< the “good” score, $n₁$ is the
+number of ‘bad’ scores, and $n₀$ is the number of “good” scores.
+
+This relationship provides the statistical basis for treating AUC as a
+measure of discrimination and allows confidence intervals to be
+constructed using Mann-Whitney statistics theory [Hanley & McNeil,
+1982].
+
+**Relation to the Somers' D.**
+
+Somers' D coefficient is a measure of association between ordinal
+variables, which also shows a direct relationship with AUC. It can be
+considered a generalization of AUC for ordinal variables [Newson, 2002].
+
+Somers' D is defined based on concordant and discordant pairs. A pair of
+observations (i,j) is concordant if the ranking of the independent
+variable X and the ranking of the dependent variable Y are in the same
+order, i.e., if (X_i - X_j) and (Y_i - Y_j) have the same sign. A pair
+is discordant if the signs are opposite. Somers' D is calculated as the
+difference between the number of concordant and discordant pairs,
+divided by the number of unrelated pairs on the independent variable X
+[Somers, 1962].
+
+In binary classification, Somers' D is equal to 2×AUC−1, which links it
+directly to AUC [Newson, 2002].
+$$\text{Somers' D} = 2 \cdot \text{AUC} - 1$$
+
+**Cumulative Accuracy profile.**
+
+The CAP curve is a graphical tool used to evaluate the performance of
+classification models, primarily in the area of creditworthiness
+assessment. It shows the cumulative percentage of positive cases
+relative to the cumulative percentage of the entire population, sorted
+by predicted probability of default. [Engelmann et al., 2003].
+
+Accuracy Ratio (AR): $$\text{AR} = \frac{A}{B}$$ where $A$ is the area
+between the model CAP and the random CAP, and $B$ is the area between
+the ideal CAP and the random CAP. Areas A and B are calculated using the
+trapezoidal method [Engelmann et al., 2003].
+
+The relationship between AUC and the CAP curve can be described by the
+following formula [Engelmann et al., 2003]:
+$$\text{AUC} = \frac{\text{AR} + 1}{2}$$
 
 # The need for computational efficiency in AUC estimation
 
-Opisać: 
+Opisać:
 
-- AUC / Gini bootstrapping / permutation tests
+-   AUC / Gini bootstrapping / permutation tests
 
-  - including DALEX (?)
+    -   including DALEX (?)
 
-- AUC optimization algorithms
+-   AUC optimization algorithms
 
-- credit market simulation
+-   credit market simulation
 
- [@Kochanski_2021] 
+[@Kochanski_2021]
 
-- inne ...
+-   inne ...
 
 # R packages
 
---> Tutaj należy wstawić tabelkę pana Wiktora <--
+--\> Tutaj należy wstawić tabelkę pana Wiktora \<--
 
+We identified three main types of algorithms for AUC computation: (1)
+trapezoidal integration over the ROC Curve, (2) (optimized) pairwise
+comparison, (3) and rank-based (Mann–Whitney U statistic formulation).
 
-We identified three main types of algorithms for AUC computation: (1) trapezoidal integration over the ROC Curve, (2) (optimized) pairwise comparison, (3) and rank-based (Mann–Whitney U statistic formulation).
+Let $(s_i, y_i)$ for $i = 1, \dots, n$ denote the score assigned to an
+account and its corresponding true label. In line with standard practice
+in credit scoring, we assume that $y_i=1$ indicates a "bad" account
+(e.g., one that defaults, doesn't repay the loan), while $y_i=0$
+represents a good account. A properly functioning scoring should assign
+lower scores to accounts with a higher predicted probability of being
+bad, and higher scores to those likely to be good.
 
-Let $(s_i, y_i)$ for $i = 1, \dots, n$ denote the score assigned to an account and its corresponding true label. In line with standard practice in credit scoring, we assume that $y_i=1$ indicates a "bad" account (e.g., one that defaults, doesn't repay the loan), while $y_i=0$ represents a good account. A properly functioning scoring should assign lower scores to accounts with a higher predicted probability of being bad, and higher scores to those likely to be good.
-
-Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad accounts, and $n_0 = \sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good accounts.
+Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad
+accounts, and $n_0 = \sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good
+accounts.
 
 **Trapezoidal Integration over the ROC Curve**
 
 $$\text{AUC} = \sum_{k=1}^{m-1}(\text{FPR}_{k+1} - \text{FPR}_{k})\cdot\frac{\text{TPR}_{k+1}+\text{TPR}_k}{2}$$
 
-where $m$ is the number of distinct score thresholds from lowest to the highest score, TPR --> dokończyć <--
+where $m$ is the number of distinct score thresholds from lowest to the
+highest score, $TPR_k$ is the True Positive Rate, $FPR_k$ is the False
+Positive Rate. $TPR_k=TP_k/n_1$ and $FPR_k=FP_k/n_0$, where $TP_k$ is
+the number of true positives, $\text{FP}_k$ is the number of false
+positives, $n_1$ is the number of positive cases, $n_0$ is the number of
+negative cases.
 
 **Optimized Pairwise Comparison**
 
-AUC as the probability that a randomly chosen positive instance receives a higher score than a randomly chosen negative instance:
+AUC as the probability that a randomly chosen positive instance receives
+a higher score than a randomly chosen negative instance:
 
 $$\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=1}\sum_{j:y_j=0}\left[\mathbb{I}(s_i<s_j)+\frac{1}{2}\mathbb{I}(s_i=s_j)\right]$$
 
@@ -153,10 +221,10 @@ $$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
 
 # Case studies
 
---> studieS, jeżeli będzie więcej <--
+--\> studieS, jeżeli będzie więcej \<--
 
 ## DALEX package
 
---> Wykres generuje się długo, a możemy go przyśpieszyć <--
+--\> Wykres generuje się długo, a możemy go przyśpieszyć \<--
 
 # Summary
