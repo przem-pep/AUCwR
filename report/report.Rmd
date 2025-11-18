@@ -107,10 +107,10 @@ statistic.
 
 AUC is equivalent to the probability that a randomly selected positive
 case will have a higher score than a randomly selected negative case
-[Hanley & McNeil, 1982];[Bamber, 1975].
+[Hanley & McNeil, 1982];[@Bamber_1975].
 $$\text{AUC} = \frac{U}{n_1 \times n_0}$$ where $U$ is the number of
-pairs in which the “bad” score is \< the “good” score, $n₁$ is the
-number of ‘bad’ scores, and $n₀$ is the number of “good” scores.
+pairs in which the “bad” score is \< the “good” score, $n_1$ is the
+number of ‘bad’ scores, and $n_0$ is the number of “good” scores.
 
 This relationship provides the statistical basis for treating AUC as a
 measure of discrimination and allows confidence intervals to be
@@ -132,7 +132,7 @@ difference between the number of concordant and discordant pairs,
 divided by the number of unrelated pairs on the independent variable X
 [Somers, 1962].
 
-In binary classification, Somers' D is equal to 2×AUC−1, which links it
+In binary classification, Somers' D is equal to 2×AUC-1, which links it
 directly to AUC [Newson, 2002].
 $$\text{Somers' D} = 2 \cdot \text{AUC} - 1$$
 
@@ -165,7 +165,9 @@ Opisać:
 
 -   credit market simulation
 
-[@Kochanski_2021]
+@Kochanski_2021 proposed simulation... <!-- Kochanski (2021) -->
+
+Simulation [@Kochanski_2021]... <!-- Simulation (Kochanski 2021) -->
 
 -   inne ...
 
