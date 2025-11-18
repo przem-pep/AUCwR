@@ -75,11 +75,11 @@ ggplot(df, aes(x = FPR, y = TPR)) +
 
 AUC is referred to as:
 
--   C-statistic [Harrell et al, 1982]
+-   C-statistic [@Harrell_Califf]
 
 -   a version of estimator of the common language effect size statistic
 
--   probability of superiority [Hanley & McNeil, 1982]
+-   probability of superiority [@Hanley_McNeil_1982]
 
 -   “Vargha & Delaney A” (“measure of stochastic superiority”)
     [@Vargha_Delaney_2000]
@@ -93,10 +93,9 @@ Gini coefficient is also referred to as:
 
 -   a version of the rank-biserial correlation coefficient
 
--   accuracy ratio based on the Cumulative Accuracy Profile [Engelmann
-    et al., 2003]
+-   accuracy ratio based on the Cumulative Accuracy Profile [@Engelmann_Hayden_Tasche_2003]
 
--   a special case of the Somers' D statistic [Newson, 2002]
+-   a special case of the Somers' D statistic [@Newson_2002]
 
 -   Cliff's delta [@Cliff_1993]
 
@@ -107,21 +106,20 @@ statistic.
 
 AUC is equivalent to the probability that a randomly selected positive
 case will have a higher score than a randomly selected negative case
-[Hanley & McNeil, 1982];[@Bamber_1975].
+[@Hanley_McNeil_1982],[@Bamber_1975].
 $$\text{AUC} = \frac{U}{n_1 \times n_0}$$ where $U$ is the number of
 pairs in which the “bad” score is \< the “good” score, $n_1$ is the
 number of ‘bad’ scores, and $n_0$ is the number of “good” scores.
 
 This relationship provides the statistical basis for treating AUC as a
 measure of discrimination and allows confidence intervals to be
-constructed using Mann-Whitney statistics theory [Hanley & McNeil,
-1982].
+constructed using Mann-Whitney statistics theory [@Hanley_McNeil_1982].
 
 **Relation to the Somers' D.**
 
 Somers' D coefficient is a measure of association between ordinal
 variables, which also shows a direct relationship with AUC. It can be
-considered a generalization of AUC for ordinal variables [Newson, 2002].
+considered a generalization of AUC for ordinal variables [@Newson_2002].
 
 Somers' D is defined based on concordant and discordant pairs. A pair of
 observations (i,j) is concordant if the ranking of the independent
@@ -130,10 +128,10 @@ order, i.e., if (X_i - X_j) and (Y_i - Y_j) have the same sign. A pair
 is discordant if the signs are opposite. Somers' D is calculated as the
 difference between the number of concordant and discordant pairs,
 divided by the number of unrelated pairs on the independent variable X
-[Somers, 1962].
+[@Somers_1962].
 
 In binary classification, Somers' D is equal to 2×AUC-1, which links it
-directly to AUC [Newson, 2002].
+directly to AUC [@Newson_2002].
 $$\text{Somers' D} = 2 \cdot \text{AUC} - 1$$
 
 **Cumulative Accuracy profile.**
@@ -142,15 +140,15 @@ The CAP curve is a graphical tool used to evaluate the performance of
 classification models, primarily in the area of creditworthiness
 assessment. It shows the cumulative percentage of positive cases
 relative to the cumulative percentage of the entire population, sorted
-by predicted probability of default. [Engelmann et al., 2003].
+by predicted probability of default. [@Engelmann_Hayden_Tasche_2003].
 
 Accuracy Ratio (AR): $$\text{AR} = \frac{A}{B}$$ where $A$ is the area
 between the model CAP and the random CAP, and $B$ is the area between
 the ideal CAP and the random CAP. Areas A and B are calculated using the
-trapezoidal method [Engelmann et al., 2003].
+trapezoidal method [@Engelmann_Hayden_Tasche_2003].
 
 The relationship between AUC and the CAP curve can be described by the
-following formula [Engelmann et al., 2003]:
+following formula [@Engelmann_Hayden_Tasche_2003]:
 $$\text{AUC} = \frac{\text{AR} + 1}{2}$$
 
 # The need for computational efficiency in AUC estimation
