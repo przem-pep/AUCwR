@@ -167,7 +167,7 @@ Opisać:
 
 @Kochanski_2021 proposed simulation... <!-- Kochanski (2021) -->
 
-Simulation [@Kochanski_2021]... <!-- Simulation (Kochanski 2021) -->
+Simulation [@Kochanski_2021]... <!-- Simulation (Kochanski 2021) --> 
 
 -   inne ...
 
