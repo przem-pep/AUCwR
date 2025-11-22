@@ -3,67 +3,26 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-double own_AUC_U_cpp(NumericVector pred, NumericVector target) {
-  int n = pred.size();
-  std::vector<std::pair<double, int>> data(n);
-  for(int i = 0; i < n; i++) {
-    data[i] = std::make_pair(pred[i], target[i]);
-  }
-  std::sort(data.begin(), data.end());
-  NumericVector ranks(n);
-  double i = 0;
-  double j;
-  while(i < n) {
-    if(i + 1 < n && data[i].first == data[i + 1].first) {
-      j = i;
-      while(j + 1 < n && data[j].first == data[j + 1].first) {
-        j++;
-      }
-      for(int k = i; k <= j; k++) {
-        ranks[k] = ((i + 1) + (j + 1)) / 2;
-      }
-      i = j + 1;
-    }
-    else {
-      ranks[i] = i + 1;
-      i++;
-    }
-  }
-  int n1 = 0;
-  int n2 = 0;
-  double R1 = 0.0;
-  for(int i = 0; i < n; i++) {
-    if(data[i].second == 0) {
-      n1 = n1 + 1;
-      R1 = R1 + ranks[i];
-    }
-    else {
-      n2 = n2 + 1;
-    }
-  }
-  double U1 = n1 * n2 + ((n1 * (n1 + 1)) / 2) - R1;
-  double AUC = U1 / (n1 * n2);
-  return AUC;
-}
-
-
-// WORK IN PROGRESS
-// [[Rcpp::export]]
-double auc_cpp(NumericVector pred0, NumericVector pred1) {
+double auc_pairwise_cpp(NumericVector pred0, NumericVector pred1) {
   double p0 = pred0.size();
   double p1 = pred1.size();
   double total = 0.0;
-  double sum = 0;
   int i = 0;
   int j = 0;
   while(i < p0 && j < p1) {
     if(pred0[i] < pred1[j]) {
-      sum = p1 - j;
-      total = total + sum;
+      total = total + p1 - j;
       i++;
     } else if(pred0[i] == pred1[j]) {
-      // WORK IN PROGRESS
-      j++;
+      int i_start = i;
+      int j_start = j;
+      while(i < p0 && pred0[i] == pred0[i_start]) {
+        i++;
+      }
+      while(j < p1 && pred1[j] == pred1[j_start]) {
+        j++;
+      }
+      total = total + 0.5 * (i - i_start) * (j - j_start) + (i - i_start) * (p1 - j);
     } else {
       j++;
     }
@@ -73,7 +32,7 @@ double auc_cpp(NumericVector pred0, NumericVector pred1) {
 }
 
 // [[Rcpp::export]]
-double auc_cpp_trapezoid(NumericVector pred, NumericVector target, double p, int num_uniq) {
+double auc_trapezoid_cpp(NumericVector pred, NumericVector target, double p, int num_uniq) {
   double x = pred.size();
   double n = x - p;
   double tp = 0;
@@ -109,4 +68,3 @@ double auc_cpp_trapezoid(NumericVector pred, NumericVector target, double p, int
   double auc = Rcpp::sum(area);
   return auc;
 }
-
