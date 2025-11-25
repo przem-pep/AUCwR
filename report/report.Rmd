@@ -30,6 +30,8 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(plotly)
 library(ggplot2)
 library(kableExtra)
+library(readr)
+library(gt)
 ```
 
 # Introduction
@@ -171,7 +173,12 @@ Simulation [@Kochanski_2021]... <!-- Simulation (Kochanski 2021) -->
 
 # R packages
 
---\> Tutaj należy wstawić tabelkę pana Wiktora \<--
+```{r}
+tab1 <- gt(read.csv("../functions_table.csv", sep = ";")) |>
+  tab_header(title = "Functions computing AUC")
+
+tab1
+```
 
 We identified three main types of algorithms for AUC computation: (1)
 trapezoidal integration over the ROC Curve, (2) (optimized) pairwise
