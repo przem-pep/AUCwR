@@ -31,7 +31,6 @@ library(plotly)
 library(ggplot2)
 library(kableExtra)
 library(readr)
-library(gt)
 ```
 
 # Introduction
@@ -174,10 +173,10 @@ Simulation [@Kochanski_2021]... <!-- Simulation (Kochanski 2021) -->
 # R packages
 
 ```{r}
-tab1 <- gt(read.csv("../functions_table.csv", sep = ";")) |>
-  tab_header(title = "Functions computing AUC")
+functions_table <- read.csv("../functions_table.csv", sep = ";")
 
-tab1
+kable(functions_table, caption = "Table 1: Functions computing AUC.") %>%
+  kable_styling(font_size = 7)
 ```
 
 We identified three main types of algorithms for AUC computation: (1)
