@@ -72,33 +72,59 @@ ggplot(df, aes(x = FPR, y = TPR)) +
   theme_minimal()
 ```
 
-# AUC – alternative names and formulas
+# AUC – alternative names and related measures
 
-AUC is referred to as:
+The Area Under the Receiver Operating Characteristic (ROC) curve,
+commonly abbreviated as AUC, is a fundamental metric for evaluating
+the performance of classification models. However, due to its independent
+adoption and development across diverse fields, ranging from biomedical
+statistics and psychology to econometrics and credit scoring, this measure
+appears in the literature under numerous aliases and mathematical formulations. 
+Recognizing these equivalences is essential for researchers to leverage 
+efficient computational algorithms developed in different domains.
 
--   C-statistic [@Harrell_Califf]
+**Alternative names and interpretations of AUC**
 
--   a version of estimator of the common language effect size statistic
+In medical statistics and epidemiology, particularly when evaluating logistic
+regression models with binary outcomes, the AUC is frequently referred to 
+as the ***c-statistic*** (or concordance statistic). This term defined by 
+Harrell et al. [Harrell et al, 1982] and further elaborated by, for example 
+Austin and Steyerberg [Austin & Steyerberg, 2012], represents the probability 
+of concordance between predicted probabilities and observed outcomes. 
+It quantifies the predictive accuracy of a model by estimating the probability 
+that a randomly selected subject who experienced the outcome has a higher 
+predicted probability than a randomly selected subject who did not.
 
--   probability of superiority [@Hanley_McNeil_1982]
+This probabilistic interpretation serves as the bridge to non-parametric 
+statistics. Area under the ROC curve is statistically equivalent to the 
+Mann-Whitney U statistic divided by the product of the sample sizes 
+of the two groups, where in this context, the metric is often interpreted as
+the ***probability of superiority***, indicating the likelihood that a randomly 
+chosen positive case ranks higher than a randomly chosen negative case.
 
--   “Vargha & Delaney A” (“measure of stochastic superiority”)
-    [@Vargha_Delaney_2000]
+In the behavioral sciences and psychology, similar concepts have been developed 
+to measure effect sizes. There the AUC corresponds to the 
+***Common Language Effect Size*** (CL/CLES) [McGraw & Wong, 1992], which 
+converts an effect size into a probability, specifically defined as the 
+probability that a score sampled at random from one distribution will be 
+greater than a score sampled from another. This metric was developed to provide 
+an index of effect size that is intuitively interpretable by audiences without 
+statistical training. While the original formulation by McGraw and Wong focused 
+on normal distributions, the later proposed ***measure of stochastic superiority***
+(denoted as $A$) [Vargha & Delaney, 2000] generalized CLES 
+concept so that it could be applicable to any variable that is at least 
+ordinally scaled, regardless of the distribution form, and is identical to the
+CL statistic in the continuous case. Furthermore, in the context of 
+non-parametric analysis for longitudinal data, Brunner et al. [2002] define 
+the ***relative treatment effect***. This metric estimates the probability that 
+an observation from one group is smaller than an observation from another, 
+effectively serving as a probabilistic analog to the AUC 
+[Brunner et al., 2002; Engelmann et al., 2003].
 
--   “relative treatment effect” / “stochastic superiority statistic” in
-    the Brunner-Munzel test
 
-Gini coefficient is also referred to as:
+**The Gini Coefficient and related measures**
 
--   pseudo Gini [@Idczak_2019]
-
--   a version of the rank-biserial correlation coefficient
-
--   accuracy ratio based on the Cumulative Accuracy Profile [@Engelmann_Hayden_Tasche_2003]
-
--   a special case of the Somers' D statistic [@Newson_2002]
-
--   Cliff's delta [@Cliff_1993]
+[work in progress]
 
 **Relation to the U statistic in the Mann-Whitney.**
 
