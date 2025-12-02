@@ -2,7 +2,7 @@
 \title{Area under ROC curve -- review and efficient computation in R}
 
 
-\author{by Błażej Kochański, Przemysław Pepliński, Miriam Nieslona, Wiktor Galewski, and Piotr Geremek}
+\author{by Błażej Kochański, Przemysław Peplinski, Miriam Nieslona, Wiktor Galewski, and Piotr Geremek}
 
 \maketitle
 
@@ -25,40 +25,72 @@ ROC curves\ldots{}
 \caption{Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.}\label{fig:auc-gini}
 \end{figure}
 
-\section{AUC -- alternative names and formulas}\label{auc-alternative-names-and-formulas}
+\section{AUC -- alternative names and related measures}\label{auc-alternative-names-and-related-measures}
 
-AUC is referred to as:
+The Area Under the Receiver Operating Characteristic (ROC) curve,
+commonly abbreviated as AUC, is a fundamental metric for evaluating
+the performance of classification models. However, due to its independent
+adoption and development across diverse fields, ranging from biomedical
+statistics and psychology to econometrics and credit scoring, this measure
+appears in the literature under numerous aliases and mathematical formulations.
+Recognizing these equivalences is essential for researchers to leverage
+efficient computational algorithms developed in different domains.
 
-\begin{itemize}
-\item
-  C-statistic {[}Harrell et al, 1982{]}
-\item
-  a version of estimator of the common language effect size statistic
-\item
-  probability of superiority {[}Hanley \& McNeil, 1982{]}
-\item
-  ``Vargha \& Delaney A'' (``measure of stochastic superiority'')
-  \citep{Vargha_Delaney_2000}
-\item
-  ``relative treatment effect'' / ``stochastic superiority statistic'' in
-  the Brunner-Munzel test
-\end{itemize}
+\textbf{Alternative names and interpretations of AUC}
 
-Gini coefficient is also referred to as:
+In medical statistics and epidemiology, particularly when evaluating logistic
+regression models with binary outcomes, the AUC is frequently referred to
+as the \(c-statistic\) (or concordance statistic). This term defined by
+Harrell et al. \citep{Harrell_et_al_1982} and further elaborated by, for example
+Austin and Steyerberg \citep{Austin_Steyerberg_2012}, represents the probability
+of concordance between predicted probabilities and observed outcomes.
+It quantifies the predictive accuracy of a model by estimating the probability
+that a randomly selected subject who experienced the outcome has a higher
+predicted probability than a randomly selected subject who did not.
 
-\begin{itemize}
-\item
-  pseudo Gini \citep{Idczak_2019}
-\item
-  a version of the rank-biserial correlation coefficient
-\item
-  accuracy ratio based on the Cumulative Accuracy Profile {[}Engelmann
-  et al., 2003{]}
-\item
-  a special case of the Somers' D statistic {[}Newson, 2002{]}
-\item
-  Cliff's delta \citep{Cliff_1993}
-\end{itemize}
+This probabilistic interpretation serves as the bridge to non-parametric
+statistics. Area under the ROC curve is statistically equivalent to the
+Mann-Whitney U statistic divided by the product of the sample sizes
+of the two groups, where in this context, the metric is often interpreted as
+the \(probability of superiority\) indicating the likelihood that
+a randomly chosen positive case ranks higher than a randomly chosen
+negative case \citep{Hanley_McNeil_1982}.
+
+In the behavioral sciences and psychology, similar concepts have been developed
+to measure effect sizes. There the AUC corresponds to the
+\(Common Language Effect Size\) (CL/CLES) \citep{McGraw_Wong_1992}, which
+converts an effect size into a probability, specifically defined as the
+probability that a score sampled at random from one distribution will be
+greater than a score sampled from another. This metric was developed to provide
+an index of effect size that is intuitively interpretable by audiences without
+statistical training. While the original formulation by McGraw and Wong focused
+on normal distributions, the later proposed \(measure of stochastic superiority\)
+(denoted as \(A\)) \citep{Vargha_Delaney_2000} generalized CLES
+concept so that it could be applicable to any variable that is at least
+ordinally scaled, regardless of the distribution form, and is identical to the
+CL statistic in the continuous case. Furthermore, in the context of
+non-parametric analysis for longitudinal data the ***relative treatment effect
+was defined \citep{Brunner_et_al_2002}. This metric estimates the probability that
+an observation from one group is smaller than an observation from another,
+effectively serving as a probabilistic analog to the AUC
+{[}Brunner\_et\_al\_2002{]},{[}Engelmann\_et\_al\_2003{]}.
+
+\textbf{The Gini Coefficient and other AUC related measures}
+
+While the AUC scales from 0.5 (random classification) to 1.0
+(perfect classification), many disciplines prefer a measure scaled between
+0 and 1 (or -1 and 1) to represent the strength of association or
+discriminatory power. This leads to the Gini coefficient (or Gini index).
+The Gini coefficient used in classification contexts is simply a linear
+transformation of the AUC, defined by the relationship \citep{Hand_Till_2001}:
+\[\text{Gini} = 2 \cdot \text{AUC} - 1\]
+Cliff {[}1993{]} discusses an ordinal statistic, \(d\), which compares the number of
+times a score from one group is higher than one from another versus the reverse.
+This statistic of ordinal dominance, later named \(Cliff’s Delta\)
+\citep{Bais_van_der_Neut_2022} was described as a non-parametric effect size based
+on data observations, which quantifies the difference between the probability
+that a value from one group is higher than a value from the other and
+the reverse probability.
 
 \textbf{Relation to the U statistic in the Mann-Whitney.}
 
@@ -67,21 +99,20 @@ statistic.
 
 AUC is equivalent to the probability that a randomly selected positive
 case will have a higher score than a randomly selected negative case
-{[}Hanley \& McNeil, 1982{]};\citep{Bamber_1975}.
+\citep{Hanley_McNeil_1982},\citep{Bamber_1975}.
 \[\text{AUC} = \frac{U}{n_1 \times n_0}\] where \(U\) is the number of
 pairs in which the ``bad'' score is \textless{} the ``good'' score, \(n_1\) is the
 number of `bad' scores, and \(n_0\) is the number of ``good'' scores.
 
 This relationship provides the statistical basis for treating AUC as a
 measure of discrimination and allows confidence intervals to be
-constructed using Mann-Whitney statistics theory {[}Hanley \& McNeil,
-1982{]}.
+constructed using Mann-Whitney statistics theory \citep{Hanley_McNeil_1982}.
 
 \textbf{Relation to the Somers' D.}
 
 Somers' D coefficient is a measure of association between ordinal
 variables, which also shows a direct relationship with AUC. It can be
-considered a generalization of AUC for ordinal variables {[}Newson, 2002{]}.
+considered a generalization of AUC for ordinal variables \citep{Newson_2002}.
 
 Somers' D is defined based on concordant and discordant pairs. A pair of
 observations (i,j) is concordant if the ranking of the independent
@@ -90,10 +121,10 @@ order, i.e., if (X\_i - X\_j) and (Y\_i - Y\_j) have the same sign. A pair
 is discordant if the signs are opposite. Somers' D is calculated as the
 difference between the number of concordant and discordant pairs,
 divided by the number of unrelated pairs on the independent variable X
-{[}Somers, 1962{]}.
+\citep{Somers_1962}.
 
 In binary classification, Somers' D is equal to 2×AUC-1, which links it
-directly to AUC {[}Newson, 2002{]}.
+directly to AUC \citep{Newson_2002}.
 \[\text{Somers' D} = 2 \cdot \text{AUC} - 1\]
 
 \textbf{Cumulative Accuracy profile.}
@@ -102,15 +133,22 @@ The CAP curve is a graphical tool used to evaluate the performance of
 classification models, primarily in the area of creditworthiness
 assessment. It shows the cumulative percentage of positive cases
 relative to the cumulative percentage of the entire population, sorted
-by predicted probability of default. {[}Engelmann et al., 2003{]}.
+by predicted probability of default. \citep{Engelmann_Hayden_Tasche_2003}.
 
 Accuracy Ratio (AR): \[\text{AR} = \frac{A}{B}\] where \(A\) is the area
 between the model CAP and the random CAP, and \(B\) is the area between
 the ideal CAP and the random CAP. Areas A and B are calculated using the
-trapezoidal method {[}Engelmann et al., 2003{]}.
+trapezoidal method \citep{Engelmann_Hayden_Tasche_2003}.
+
+Within the credit scoring literature, the AR metric is sometimes referred to
+as the \(pseudo Gini\) index to differentiate it from the classical Gini index
+used in economics to measure inequality. It was established that the
+pseudo Gini index is based on the concentration curve (CAP) and that its value
+is always equal to the Accuracy Ratio (referred to as Accuracy Rate)
+for any scoring model\citep{Idczak_2019}.
 
 The relationship between AUC and the CAP curve can be described by the
-following formula {[}Engelmann et al., 2003{]}:
+following formula \citep{Engelmann_Hayden_Tasche_2003}:
 \[\text{AUC} = \frac{\text{AR} + 1}{2}\]
 
 \section{The need for computational efficiency in AUC estimation}\label{the-need-for-computational-efficiency-in-auc-estimation}
@@ -144,7 +182,53 @@ Simulation \citep{Kochanski_2021}\ldots{}
 
 \section{R packages}\label{r-packages}
 
---\textgreater{} Tutaj należy wstawić tabelkę pana Wiktora \textless--
+\begin{table}
+\centering
+\caption{\label{tab:unnamed-chunk-1}Table 1: Functions computing AUC.}
+\centering
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{l|l|l|l|l}
+\hline
+Package & Function & Usage & Method & Language\\
+\hline
+bigstatsr & AUC & AUC(-pred, target) & Pairwise comparison (optimized) & C++, R\\
+\hline
+caTools & colAUC & colAUC(-pred, target)[1, 1] & Rank sum & R\\
+\hline
+cvAUC & AUC & AUC(-pred, target) & Trapezoidal rule & R\\
+\hline
+DescTools & Cstat & Cstat(-pred, target) & Pairwise comparison (optimized) & C++, R\\
+\hline
+effsize & VD.A & VD.A(pred \textasciitilde{} factor(target))\$estimate & Rank sum & R\\
+\hline
+fbroc & boot.roc & boot.roc(-pred, as.logical(target))\$auc & Trapezoidal rule & C++, R\\
+\hline
+Hmisc & somers2 & somers2(-pred, target)["C"] & Rank sum & R\\
+\hline
+MLmetrics & AUC & AUC(-pred, target) & Rank sum & R\\
+\hline
+mltools & auc\_roc & auc\_roc(-pred, target) & Trapezoidal rule & R\\
+\hline
+ModelMetrics & auc & auc(target, -pred) & Rank sum & C++, R\\
+\hline
+precrec & evalmod & evalmod(mmdata(scores = -pred, labels = target), mode = "aucroc")\$uaucs\$aucs & Rank sum & C++, R\\
+\hline
+pROC & auc & auc(target, pred, lev=c('0', '1'), dir=">") & Trapezoidal rule & R\\
+\hline
+rcompanion & vda & vda(x = pred[target == 0], y = pred[target == 1], digits=100) & Rank sum & R\\
+\hline
+ROCR & performance & performance(prediction(-pred, target), "auc")@y.values[[1]] & Trapezoidal rule & R\\
+\hline
+scikit-learn & roc\_auc\_score & import("sklearn.metrics")\$roc\_auc\_score(target, -pred) & Trapezoidal rule & Python, C\\
+\hline
+scorecard & perf\_eva & perf\_eva(-pred, target, binomial\_metric = "auc", show\_plot = FALSE)\$binomial\_metric\$dat\$AUC & Trapezoidal rule & R\\
+\hline
+yardstick & roc\_auc\_vec & roc\_auc\_vec(as.factor(target), pred) & Trapezoidal rule & R\\
+\hline
+DescTools & SomersDelta & SomersDelta(-pred, target)/2 + 1/2 & Pairwise comparison (unoptimized) & C++, R\\
+\hline
+\end{tabular}
+\end{table}
 
 We identified three main types of algorithms for AUC computation: (1)
 trapezoidal integration over the ROC Curve, (2) (optimized) pairwise
@@ -192,6 +276,16 @@ where \(\bar{R}_{1}\) is the mean rank for \(s_i\) where \(y_i=1\):
 
 \section{Efficiency study}\label{efficiency-study}
 
+\subsection{Benchmarking packages}\label{benchmarking-packages}
+
+All of the R packages that can be used to calculate the AUC measure have had their performance speed tested. In every benchmark, each function was called 100 times, and there are a total of three benchmarks, each with a different number of observations, all of which have been generated from the normal distribution.
+
+\subsection{First benchmark - 1000 observations}\label{first-benchmark---1000-observations}
+
+\subsection{Second benchmark - 10000 observations}\label{second-benchmark---10000-observations}
+
+\subsection{Third benchmark - 100000 observations}\label{third-benchmark---100000-observations}
+
 \section{Case studies}\label{case-studies}
 
 --\textgreater{} studieS, jeżeli będzie więcej \textless--
@@ -215,7 +309,7 @@ Błażej Kochański\\
 }
 
 \address{%
-Przemysław Pepliński\\
+Przemysław Peplinski\\
 Gdańsk University of Technology\\%
 Faculty of Management and Economics\\ Gdańsk\\
 %

@@ -6,7 +6,7 @@ abstract: >
 draft: true
 author:  
   - name: Błażej Kochański
-  - name: Przemysław Pepliński
+  - name: Przemysław Peplinski
     affiliation: Gdańsk University of Technology
     address:
     - Faculty of Management and Economics
@@ -31,6 +31,14 @@ library(plotly)
 library(ggplot2)
 library(kableExtra)
 library(readr)
+library(Rcpp)
+library(microbenchmark)
+library(reticulate)
+
+sourceCpp("../scripts/AUC_cpp.cpp")
+source("../R/AUC_functions.R")
+#use_python(Sys.which("python"), required = TRUE)
+#roc_auc_score <- import("sklearn.metrics")$roc_auc_score
 ```
 
 # Introduction
@@ -271,6 +279,111 @@ where $\bar{R}_{1}$ is the mean rank for $s_i$ where $y_i=1$:
 $$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
 
 # Efficiency study
+
+## Benchmarking packages
+
+All of the R packages that can be used to calculate the AUC measure have had their performance speed tested. In every benchmark, each function was called 100 times, and there are a total of three benchmarks, each with a different number of observations, all of which have been generated from the normal distribution.
+
+``` {r}
+# First dataset (n = 1000)
+
+pred1 <- c(rnorm(500), rnorm(500, 1))
+
+target1 <- c(rep(1, 500), rep(0, 500))
+
+# Second dataset (n = 10000)
+
+pred2 <- c(rnorm(5000), rnorm(5000, 1))
+
+target2 <- c(rep(1, 5000), rep(0, 5000))
+
+# Third dataset (n = 100000)
+
+pred3 <- c(rnorm(50000), rnorm(50000, 1))
+
+target3 <- c(rep(1, 50000), rep(0, 50000))
+
+
+call_benchmark <- function(pred, target, times = 100) {
+  
+  my_benchmark <- microbenchmark(
+    
+    ROCR::performance(ROCR::prediction(-pred, target), "auc")@y.values[[1]],
+    
+    pROC::auc(target, pred, lev=c('0', '1'), dir=">"),
+    
+    mltools::auc_roc(-pred, target),
+    
+    Hmisc::somers2(-pred, target)["C"],
+    
+    bigstatsr::AUC(-pred, target),
+    
+    scorecard::perf_eva(-pred, target, binomial_metric = "auc", show_plot = FALSE)$binomial_metric$dat$AUC,
+    
+    caTools::colAUC(-pred, target)[1, 1],
+    
+    precrec::evalmod(precrec::mmdata(scores = -pred, labels = target), mode = "aucroc")$uaucs$aucs,
+    
+    roc_auc_score(target, -pred),
+    
+    yardstick::roc_auc_vec(as.factor(target), pred),
+    
+    (rcompanion::cliffDelta(x = pred[target == 0], y = pred[target == 1], digits = 100) + 1) / 2,
+    
+    ModelMetrics::auc(target, -pred),
+    
+    MLmetrics::AUC(-pred, target),
+    
+    cvAUC::AUC(-pred, target),
+    
+    fbroc::boot.roc(-pred, as.logical(target))$auc,
+    
+    DescTools::Cstat(-pred, target),
+    
+    effsize::VD.A(pred ~ factor(target))$estimate,
+    
+    rcompanion::vda(x = pred[target == 0], y = pred[target == 1], digits=100),
+    
+    times = times
+  )
+  
+  levels(my_benchmark$expr) <- c("ROCR", "pROC",
+                                 "mltools", "Hmisc", "bigstatsr", "scorecard",
+                                 "caTools", "precrec", "scikit-learn",
+                                 "yardstick", "rcompanion::cliffDelta", "ModelMetrics", "MLmetrics",
+                                 "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda"
+                                 )
+  
+  my_benchmark$expr <- reorder(my_benchmark$expr, -my_benchmark$time, FUN = median)
+  
+  autoplot(my_benchmark) +
+    theme(axis.text.y = element_text(size = rel(1.5)))
+}
+
+
+```
+
+## First benchmark - 1000 observations
+
+``` {r}
+#call_benchmark(pred1, target1)
+
+```
+
+## Second benchmark - 10000 observations
+
+``` {r}
+#call_benchmark(pred2, target2)
+
+```
+
+## Third benchmark - 100000 observations
+
+``` {r}
+#call_benchmark(pred3, target3)
+
+```
+
 
 # Case studies
 
