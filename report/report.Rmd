@@ -87,9 +87,9 @@ efficient computational algorithms developed in different domains.
 
 In medical statistics and epidemiology, particularly when evaluating logistic
 regression models with binary outcomes, the AUC is frequently referred to 
-as the ***c-statistic*** (or concordance statistic). This term defined by 
-Harrell et al. [Harrell et al, 1982] and further elaborated by, for example 
-Austin and Steyerberg [Austin & Steyerberg, 2012], represents the probability 
+as the $c-statistic$ (or concordance statistic). This term defined by 
+Harrell et al. [@Harrell_et_al_1982] and further elaborated by, for example 
+Austin and Steyerberg [@Austin_Steyerberg_2012], represents the probability 
 of concordance between predicted probabilities and observed outcomes. 
 It quantifies the predictive accuracy of a model by estimating the probability 
 that a randomly selected subject who experienced the outcome has a higher 
@@ -99,32 +99,46 @@ This probabilistic interpretation serves as the bridge to non-parametric
 statistics. Area under the ROC curve is statistically equivalent to the 
 Mann-Whitney U statistic divided by the product of the sample sizes 
 of the two groups, where in this context, the metric is often interpreted as
-the ***probability of superiority***, indicating the likelihood that a randomly 
-chosen positive case ranks higher than a randomly chosen negative case.
+the $probability of superiority$ indicating the likelihood that 
+a randomly chosen positive case ranks higher than a randomly chosen 
+negative case [@Hanley_McNeil_1982].
 
 In the behavioral sciences and psychology, similar concepts have been developed 
 to measure effect sizes. There the AUC corresponds to the 
-***Common Language Effect Size*** (CL/CLES) [McGraw & Wong, 1992], which 
+$Common Language Effect Size$ (CL/CLES) [@McGraw_Wong_1992], which 
 converts an effect size into a probability, specifically defined as the 
 probability that a score sampled at random from one distribution will be 
 greater than a score sampled from another. This metric was developed to provide 
 an index of effect size that is intuitively interpretable by audiences without 
 statistical training. While the original formulation by McGraw and Wong focused 
-on normal distributions, the later proposed ***measure of stochastic superiority***
-(denoted as $A$) [Vargha & Delaney, 2000] generalized CLES 
+on normal distributions, the later proposed $measure of stochastic superiority$
+(denoted as $A$) [@Vargha_Delaney_2000] generalized CLES 
 concept so that it could be applicable to any variable that is at least 
 ordinally scaled, regardless of the distribution form, and is identical to the
 CL statistic in the continuous case. Furthermore, in the context of 
-non-parametric analysis for longitudinal data, Brunner et al. [2002] define 
-the ***relative treatment effect***. This metric estimates the probability that 
+non-parametric analysis for longitudinal data the ***relative treatment effect
+was defined [@Brunner_et_al_2002]. This metric estimates the probability that 
 an observation from one group is smaller than an observation from another, 
 effectively serving as a probabilistic analog to the AUC 
-[Brunner et al., 2002; Engelmann et al., 2003].
+[Brunner_et_al_2002],[Engelmann_et_al_2003].
 
 
-**The Gini Coefficient and related measures**
+**The Gini Coefficient and other AUC related measures**
 
-[work in progress]
+While the AUC scales from 0.5 (random classification) to 1.0 
+(perfect classification), many disciplines prefer a measure scaled between 
+0 and 1 (or -1 and 1) to represent the strength of association or 
+discriminatory power. This leads to the Gini coefficient (or Gini index). 
+The Gini coefficient used in classification contexts is simply a linear 
+transformation of the AUC, defined by the relationship [@Hand_Till_2001]:
+$$\text{Gini} = 2 \cdot \text{AUC} - 1$$
+Cliff [1993] discusses an ordinal statistic, $d$, which compares the number of 
+times a score from one group is higher than one from another versus the reverse.
+This statistic of ordinal dominance, later named $Cliff’s Delta$ 
+[@Bais_van_der_Neut_2022] was described as a non-parametric effect size based 
+on data observations, which quantifies the difference between the probability 
+that a value from one group is higher than a value from the other and 
+the reverse probability. 
 
 **Relation to the U statistic in the Mann-Whitney.**
 
@@ -173,6 +187,13 @@ Accuracy Ratio (AR): $$\text{AR} = \frac{A}{B}$$ where $A$ is the area
 between the model CAP and the random CAP, and $B$ is the area between
 the ideal CAP and the random CAP. Areas A and B are calculated using the
 trapezoidal method [@Engelmann_Hayden_Tasche_2003].
+
+Within the credit scoring literature, the AR metric is sometimes referred to 
+as the $pseudo Gini$ index to differentiate it from the classical Gini index 
+used in economics to measure inequality. It was established that the 
+pseudo Gini index is based on the concentration curve (CAP) and that its value 
+is always equal to the Accuracy Ratio (referred to as Accuracy Rate) 
+for any scoring model[@Idczak_2019].
 
 The relationship between AUC and the CAP curve can be described by the
 following formula [@Engelmann_Hayden_Tasche_2003]:
