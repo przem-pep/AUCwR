@@ -41,7 +41,7 @@ efficient computational algorithms developed in different domains.
 In medical statistics and epidemiology, particularly when evaluating logistic
 regression models with binary outcomes, the AUC is frequently referred to
 as the \(c-statistic\) (or concordance statistic). This term defined by
-Harrell et al. \citep{Harrell_et_al_1982} and further elaborated by, for example
+Harrell et al. \citep{Harrell_Califf_Pryor_Lee_Rosati_1982} and further elaborated by, for example
 Austin and Steyerberg \citep{Austin_Steyerberg_2012}, represents the probability
 of concordance between predicted probabilities and observed outcomes.
 It quantifies the predictive accuracy of a model by estimating the probability
@@ -70,7 +70,7 @@ concept so that it could be applicable to any variable that is at least
 ordinally scaled, regardless of the distribution form, and is identical to the
 CL statistic in the continuous case. Furthermore, in the context of
 non-parametric analysis for longitudinal data the ***relative treatment effect
-was defined \citep{Brunner_et_al_2002}. This metric estimates the probability that
+was defined \citep{Brunner_Munzel_Puri_2002}. This metric estimates the probability that
 an observation from one group is smaller than an observation from another,
 effectively serving as a probabilistic analog to the AUC
 {[}Brunner\_et\_al\_2002{]},{[}Engelmann\_et\_al\_2003{]}.
@@ -82,12 +82,12 @@ While the AUC scales from 0.5 (random classification) to 1.0
 0 and 1 (or -1 and 1) to represent the strength of association or
 discriminatory power. This leads to the Gini coefficient (or Gini index).
 The Gini coefficient used in classification contexts is simply a linear
-transformation of the AUC, defined by the relationship \citep{Hand_Till_2001}:
+transformation of the AUC, defined by the relationship \citep{Hand_Till}:
 \[\text{Gini} = 2 \cdot \text{AUC} - 1\]
 Cliff {[}1993{]} discusses an ordinal statistic, \(d\), which compares the number of
 times a score from one group is higher than one from another versus the reverse.
 This statistic of ordinal dominance, later named \(Cliff’s Delta\)
-\citep{Bais_van_der_Neut_2022} was described as a non-parametric effect size based
+\citep{Bais_Van_Der_Neut_2022} was described as a non-parametric effect size based
 on data observations, which quantifies the difference between the probability
 that a value from one group is higher than a value from the other and
 the reverse probability.
