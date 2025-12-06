@@ -143,7 +143,7 @@ $$\text{Gini} = 2 \cdot \text{AUC} - 1$$
 Cliff [1993] discusses an ordinal statistic, $d$, which compares the number of 
 times a score from one group is higher than one from another versus the reverse.
 This statistic of ordinal dominance, later named $Cliff’s Delta$ 
-[@Bais_van_der_Neut_2022] was described as a non-parametric effect size based 
+[@Bais_Van Der Neut_2022] was described as a non-parametric effect size based 
 on data observations, which quantifies the difference between the probability 
 that a value from one group is higher than a value from the other and 
 the reverse probability. 

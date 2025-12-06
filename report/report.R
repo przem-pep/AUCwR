@@ -11,8 +11,8 @@ library(Rcpp)
 library(microbenchmark)
 library(reticulate)
 
-sourceCpp("../scripts/AUC_cpp.cpp")
-source("../R/AUC_functions.R")
+#sourceCpp("../scripts/AUC_cpp.cpp")
+#source("../R/AUC_functions.R")
 #use_python(Sys.which("python"), required = TRUE)
 #roc_auc_score <- import("sklearn.metrics")$roc_auc_score
 
