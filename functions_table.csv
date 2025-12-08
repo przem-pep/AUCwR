@@ -9,11 +9,11 @@ Hmisc;somers2;"somers2(-pred, target)[""C""]";Rank sum;R
 MLmetrics;AUC;AUC(-pred, target);Rank sum;R
 mltools;auc_roc;auc_roc(-pred, target);Trapezoidal rule;R
 ModelMetrics;auc;auc(target, -pred);Rank sum;C++, R
-precrec;evalmod;"evalmod(mmdata(scores = -pred, labels = target), mode = ""aucroc"")$uaucs$aucs";Rank sum;C++, R
+precrec;evalmod;"evalmod(mmdata(scores = -pred, labels = target), mode=""aucroc"")$uaucs$aucs";Rank sum;C++, R
 pROC;auc;"auc(target, pred, lev=c('0', '1'), dir="">"")";Trapezoidal rule;R
 rcompanion;vda;vda(x = pred[target == 0], y = pred[target == 1], digits=100);Rank sum;R
 ROCR;performance;"performance(prediction(-pred, target), ""auc"")@y.values[[1]]";Trapezoidal rule;R
 scikit-learn;roc_auc_score;"import(""sklearn.metrics"")$roc_auc_score(target, -pred)";Trapezoidal rule;Python, C
-scorecard;perf_eva;"perf_eva(-pred, target, binomial_metric = ""auc"", show_plot = FALSE)$binomial_metric$dat$AUC";Trapezoidal rule;R
+scorecard;perf_eva;"perf_eva(-pred, target, binomial_metric = ""auc"", show_plot=FALSE)$binomial_metric$dat$AUC";Trapezoidal rule;R
 yardstick;roc_auc_vec;roc_auc_vec(as.factor(target), pred);Trapezoidal rule;R
 DescTools;SomersDelta;SomersDelta(-pred, target)/2 + 1/2;Pairwise comparison (unoptimized);C++, R
