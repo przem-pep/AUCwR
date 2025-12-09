@@ -6,15 +6,8 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(plotly)
 library(ggplot2)
 library(kableExtra)
-library(readr)
-library(Rcpp)
 library(microbenchmark)
-library(reticulate)
 
-#sourceCpp("../scripts/AUC_cpp.cpp")
-#source("../R/AUC_functions.R")
-#use_python(Sys.which("python"), required = TRUE)
-#roc_auc_score <- import("sklearn.metrics")$roc_auc_score
 
 
 ## ----auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"----
@@ -51,102 +44,51 @@ ggplot(df, aes(x = FPR, y = TPR)) +
 
 
 ## -----------------------------------------------------------------------------
-functions_table <- read.csv("../functions_table.csv", sep = ";")
+ftl <- read.csv("../data/functions_table.csv", sep = ";")
 
-kable(functions_table, caption = "Table 1: Functions computing AUC.") %>%
-  kable_styling(font_size = 7)
+fth <- as.data.frame(lapply(ftl, function(x) {
+  x %>%
+    gsub("\\$", "\\\\$", .) %>%
+    gsub("@", "\\\\@", .)
+  }))
 
-
-## -----------------------------------------------------------------------------
-# First dataset (n = 1000)
-
-pred1 <- c(rnorm(500), rnorm(500, 1))
-
-target1 <- c(rep(1, 500), rep(0, 500))
-
-# Second dataset (n = 10000)
-
-pred2 <- c(rnorm(5000), rnorm(5000, 1))
-
-target2 <- c(rep(1, 5000), rep(0, 5000))
-
-# Third dataset (n = 100000)
-
-pred3 <- c(rnorm(50000), rnorm(50000, 1))
-
-target3 <- c(rep(1, 50000), rep(0, 50000))
+if (knitr::is_latex_output()) {
+  knitr::kable(ftl, format = "latex", booktabs = TRUE, linesep = "\\addlinespace",
+               caption = "Functions computing AUC.") %>%
+    kable_styling(latex_options = c("HOLD_position", "scale_down")) %>%
+    column_spec(3, monospace = TRUE)
+} else {
+  knitr::kable(fth, format = "html",
+             caption = "Functions computing AUC.") %>%
+    kable_styling(bootstrap_options = "condensed") %>%
+    column_spec(3, width_min = "33em", width_max = "33em", monospace = TRUE) %>%
+    column_spec(4, width_min = "9em", width_max = "9em")
+}
 
 
-call_benchmark <- function(pred, target, times = 100) {
-  
-  my_benchmark <- microbenchmark(
-    
-    ROCR::performance(ROCR::prediction(-pred, target), "auc")@y.values[[1]],
-    
-    pROC::auc(target, pred, lev=c('0', '1'), dir=">"),
-    
-    mltools::auc_roc(-pred, target),
-    
-    Hmisc::somers2(-pred, target)["C"],
-    
-    bigstatsr::AUC(-pred, target),
-    
-    scorecard::perf_eva(-pred, target, binomial_metric = "auc", show_plot = FALSE)$binomial_metric$dat$AUC,
-    
-    caTools::colAUC(-pred, target)[1, 1],
-    
-    precrec::evalmod(precrec::mmdata(scores = -pred, labels = target), mode = "aucroc")$uaucs$aucs,
-    
-    roc_auc_score(target, -pred),
-    
-    yardstick::roc_auc_vec(as.factor(target), pred),
-    
-    (rcompanion::cliffDelta(x = pred[target == 0], y = pred[target == 1], digits = 100) + 1) / 2,
-    
-    ModelMetrics::auc(target, -pred),
-    
-    MLmetrics::AUC(-pred, target),
-    
-    cvAUC::AUC(-pred, target),
-    
-    fbroc::boot.roc(-pred, as.logical(target))$auc,
-    
-    DescTools::Cstat(-pred, target),
-    
-    effsize::VD.A(pred ~ factor(target))$estimate,
-    
-    rcompanion::vda(x = pred[target == 0], y = pred[target == 1], digits=100),
-    
-    times = times
-  )
-  
-  levels(my_benchmark$expr) <- c("ROCR", "pROC",
-                                 "mltools", "Hmisc", "bigstatsr", "scorecard",
-                                 "caTools", "precrec", "scikit-learn",
-                                 "yardstick", "rcompanion::cliffDelta", "ModelMetrics", "MLmetrics",
-                                 "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda"
-                                 )
-  
-  my_benchmark$expr <- reorder(my_benchmark$expr, -my_benchmark$time, FUN = median)
-  
-  autoplot(my_benchmark) +
+## ----include = FALSE----------------------------------------------------------
+benchmark1 <- readRDS("../data/functions_benchmark_1.rds")
+benchmark2 <- readRDS("../data/functions_benchmark_2.rds")
+benchmark3 <- readRDS("../data/functions_benchmark_3.rds")
+
+plot_benchmark <- function(benchmark) {
+  autoplot(benchmark) +
     theme(axis.text.y = element_text(size = rel(1.5)))
 }
 
 
 
-
 ## -----------------------------------------------------------------------------
-#call_benchmark(pred1, target1)
-
-
-
-## -----------------------------------------------------------------------------
-#call_benchmark(pred2, target2)
+plot_benchmark(benchmark1)
 
 
 
 ## -----------------------------------------------------------------------------
-#call_benchmark(pred3, target3)
+plot_benchmark(benchmark2)
+
+
+
+## -----------------------------------------------------------------------------
+plot_benchmark(benchmark3)
 
 

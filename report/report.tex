@@ -182,52 +182,52 @@ Simulation \citep{Kochanski_2021}\ldots{}
 
 \section{R packages}\label{r-packages}
 
-\begin{table}
+\begin{table}[H]
 \centering
-\caption{\label{tab:unnamed-chunk-1}Table 1: Functions computing AUC.}
+\caption{\label{tab:unnamed-chunk-1}Functions computing AUC.}
 \centering
-\fontsize{7}{9}\selectfont
-\begin{tabular}[t]{l|l|l|l|l}
-\hline
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
+\begin{tabular}[t]{ll>{}lll}
+\toprule
 Package & Function & Usage & Method & Language\\
-\hline
-bigstatsr & AUC & AUC(-pred, target) & Pairwise comparison (optimized) & C++, R\\
-\hline
-caTools & colAUC & colAUC(-pred, target)[1, 1] & Rank sum & R\\
-\hline
-cvAUC & AUC & AUC(-pred, target) & Trapezoidal rule & R\\
-\hline
-DescTools & Cstat & Cstat(-pred, target) & Pairwise comparison (optimized) & C++, R\\
-\hline
-effsize & VD.A & VD.A(pred \textasciitilde{} factor(target))\$estimate & Rank sum & R\\
-\hline
-fbroc & boot.roc & boot.roc(-pred, as.logical(target))\$auc & Trapezoidal rule & C++, R\\
-\hline
-Hmisc & somers2 & somers2(-pred, target)["C"] & Rank sum & R\\
-\hline
-MLmetrics & AUC & AUC(-pred, target) & Rank sum & R\\
-\hline
-mltools & auc\_roc & auc\_roc(-pred, target) & Trapezoidal rule & R\\
-\hline
-ModelMetrics & auc & auc(target, -pred) & Rank sum & C++, R\\
-\hline
-precrec & evalmod & evalmod(mmdata(scores = -pred, labels = target), mode = "aucroc")\$uaucs\$aucs & Rank sum & C++, R\\
-\hline
-pROC & auc & auc(target, pred, lev=c('0', '1'), dir=">") & Trapezoidal rule & R\\
-\hline
-rcompanion & vda & vda(x = pred[target == 0], y = pred[target == 1], digits=100) & Rank sum & R\\
-\hline
-ROCR & performance & performance(prediction(-pred, target), "auc")@y.values[[1]] & Trapezoidal rule & R\\
-\hline
-scikit-learn & roc\_auc\_score & import("sklearn.metrics")\$roc\_auc\_score(target, -pred) & Trapezoidal rule & Python, C\\
-\hline
-scorecard & perf\_eva & perf\_eva(-pred, target, binomial\_metric = "auc", show\_plot = FALSE)\$binomial\_metric\$dat\$AUC & Trapezoidal rule & R\\
-\hline
-yardstick & roc\_auc\_vec & roc\_auc\_vec(as.factor(target), pred) & Trapezoidal rule & R\\
-\hline
-DescTools & SomersDelta & SomersDelta(-pred, target)/2 + 1/2 & Pairwise comparison (unoptimized) & C++, R\\
-\hline
-\end{tabular}
+\midrule
+bigstatsr & AUC & \ttfamily{AUC(-pred, target)} & Pairwise comparison (optimized) & C++, R\\
+\addlinespace
+caTools & colAUC & \ttfamily{colAUC(-pred, target)[1, 1]} & Rank sum & R\\
+\addlinespace
+cvAUC & AUC & \ttfamily{AUC(-pred, target)} & Trapezoidal rule & R\\
+\addlinespace
+DescTools & Cstat & \ttfamily{Cstat(-pred, target)} & Pairwise comparison (optimized) & C++, R\\
+\addlinespace
+effsize & VD.A & \ttfamily{VD.A(pred \textasciitilde{} factor(target))\$estimate} & Rank sum & R\\
+\addlinespace
+fbroc & boot.roc & \ttfamily{boot.roc(-pred, as.logical(target))\$auc} & Trapezoidal rule & C++, R\\
+\addlinespace
+Hmisc & somers2 & \ttfamily{somers2(-pred, target)["C"]} & Rank sum & R\\
+\addlinespace
+MLmetrics & AUC & \ttfamily{AUC(-pred, target)} & Rank sum & R\\
+\addlinespace
+mltools & auc\_roc & \ttfamily{auc\_roc(-pred, target)} & Trapezoidal rule & R\\
+\addlinespace
+ModelMetrics & auc & \ttfamily{auc(target, -pred)} & Rank sum & C++, R\\
+\addlinespace
+precrec & evalmod & \ttfamily{evalmod(mmdata(scores = -pred, labels = target), mode="aucroc")\$uaucs\$aucs} & Rank sum & C++, R\\
+\addlinespace
+pROC & auc & \ttfamily{auc(target, pred, lev=c('0', '1'), dir=">")} & Trapezoidal rule & R\\
+\addlinespace
+rcompanion & vda & \ttfamily{vda(x = pred[target == 0], y = pred[target == 1], digits=100)} & Rank sum & R\\
+\addlinespace
+ROCR & performance & \ttfamily{performance(prediction(-pred, target), "auc")@y.values[[1]]} & Trapezoidal rule & R\\
+\addlinespace
+scikit-learn & roc\_auc\_score & \ttfamily{import("sklearn.metrics")\$roc\_auc\_score(target, -pred)} & Trapezoidal rule & Python, C\\
+\addlinespace
+scorecard & perf\_eva & \ttfamily{perf\_eva(-pred, target, binomial\_metric = "auc", show\_plot=FALSE)\$binomial\_metric\$dat\$AUC} & Trapezoidal rule & R\\
+\addlinespace
+yardstick & roc\_auc\_vec & \ttfamily{roc\_auc\_vec(as.factor(target), pred)} & Trapezoidal rule & R\\
+\addlinespace
+DescTools & SomersDelta & \ttfamily{SomersDelta(-pred, target)/2 + 1/2} & Pairwise comparison (unoptimized) & C++, R\\
+\bottomrule
+\end{tabular}}
 \end{table}
 
 We identified three main types of algorithms for AUC computation: (1)
@@ -282,9 +282,15 @@ All of the R packages that can be used to calculate the AUC measure have had the
 
 \subsection{First benchmark - 1000 observations}\label{first-benchmark---1000-observations}
 
+\includegraphics{report_files/figure-latex/unnamed-chunk-3-1.pdf}
+
 \subsection{Second benchmark - 10000 observations}\label{second-benchmark---10000-observations}
 
+\includegraphics{report_files/figure-latex/unnamed-chunk-4-1.pdf}
+
 \subsection{Third benchmark - 100000 observations}\label{third-benchmark---100000-observations}
+
+\includegraphics{report_files/figure-latex/unnamed-chunk-5-1.pdf}
 
 \section{Case studies}\label{case-studies}
 
