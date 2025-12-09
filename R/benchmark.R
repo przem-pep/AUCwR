@@ -1,8 +1,6 @@
 library(tidyverse)
 library(microbenchmark)
-library(Rcpp)
 library(reticulate)
-sourceCpp("scripts/AUC_cpp.cpp")
 use_python(Sys.which("python"), required = TRUE)
 roc_auc_score <- import("sklearn.metrics")$roc_auc_score
 
@@ -29,7 +27,7 @@ target3 <- c(rep(1, 50000), rep(0, 50000))
 
 call_benchmark <- function(pred, target, times = 100) {
   
-  my_benchmark <- microbenchmark(
+  benchmark <- microbenchmark(
     
     ROCR::performance(ROCR::prediction(-pred, target), "auc")@y.values[[1]],
     
@@ -70,28 +68,38 @@ call_benchmark <- function(pred, target, times = 100) {
     times = times
   )
   
-  levels(my_benchmark$expr) <- c("ROCR", "pROC",
+  levels(benchmark$expr) <- c("ROCR", "pROC",
                                  "mltools", "Hmisc", "bigstatsr", "scorecard",
                                  "caTools", "precrec", "scikit-learn",
                                  "yardstick", "rcompanion::cliffDelta", "ModelMetrics", "MLmetrics",
                                  "cvAUC", "fbroc", "DescTools", "effsize", "rcompanion::vda"
                                  )
   
-  my_benchmark$expr <- reorder(my_benchmark$expr, -my_benchmark$time, FUN = median)
+  benchmark$expr <- reorder(benchmark$expr, -benchmark$time, FUN = median)
   
-  autoplot(my_benchmark) +
+  return(benchmark)
+}
+
+plot_benchmark <- function(benchmark) {
+  autoplot(benchmark) +
     theme(axis.text.y = element_text(size = rel(1.5)))
 }
 
 # Benchmark 1
 
-call_benchmark(pred1, target1)
+benchmark1 <- call_benchmark(pred1, target1)
+plot_benchmark(benchmark1)
+saveRDS(benchmark1, file = "data/functions_benchmark_1.rds")
 
 # Benchmark 2
 
-call_benchmark(pred2, target2)
+benchmark2 <- call_benchmark(pred2, target2)
+plot_benchmark(benchmark2)
+saveRDS(benchmark2, file = "data/functions_benchmark_2.rds")
 
 # Benchmark 3
 
-call_benchmark(pred3, target3)
+benchmark3 <- call_benchmark(pred3, target3)
+plot_benchmark(benchmark3)
+saveRDS(benchmark3, file = "data/functions_benchmark_3.rds")
 
