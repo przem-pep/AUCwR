@@ -1,8 +1,13 @@
 library(tidyverse)
 library(microbenchmark)
+library(Rcpp)
 library(reticulate)
 use_python(Sys.which("python"), required = TRUE)
 roc_auc_score <- import("sklearn.metrics")$roc_auc_score
+sourceCpp("scripts/AUC_cpp.cpp")
+source("R/AUC_functions.R")
+
+set.seed(123)
 
 # First dataset (n = 1000)
 
@@ -23,9 +28,9 @@ pred3 <- c(rnorm(50000), rnorm(50000, 1))
 target3 <- c(rep(1, 50000), rep(0, 50000))
 
 
-# Calculations
+# Package benchmarking
 
-call_benchmark <- function(pred, target, times = 100) {
+call_package_benchmark <- function(pred, target, times = 100) {
   
   benchmark <- microbenchmark(
     
@@ -87,19 +92,64 @@ plot_benchmark <- function(benchmark) {
 
 # Benchmark 1
 
-benchmark1 <- call_benchmark(pred1, target1)
-plot_benchmark(benchmark1)
-saveRDS(benchmark1, file = "data/functions_benchmark_1.rds")
+package_benchmark1 <- call_package_benchmark(pred1, target1)
+plot_benchmark(package_benchmark1)
+saveRDS(package_benchmark1, file = "data/packages_benchmark_1.rds")
 
 # Benchmark 2
 
-benchmark2 <- call_benchmark(pred2, target2)
-plot_benchmark(benchmark2)
-saveRDS(benchmark2, file = "data/functions_benchmark_2.rds")
+package_benchmark2 <- call_package_benchmark(pred2, target2)
+plot_benchmark(package_benchmark2)
+saveRDS(package_benchmark2, file = "data/packages_benchmark_2.rds")
 
 # Benchmark 3
 
-benchmark3 <- call_benchmark(pred3, target3)
-plot_benchmark(benchmark3)
-saveRDS(benchmark3, file = "data/functions_benchmark_3.rds")
+package_benchmark3 <- call_package_benchmark(pred3, target3)
+plot_benchmark(package_benchmark3)
+saveRDS(package_benchmark3, file = "data/packages_benchmark_3.rds")
+
+
+# Own function benchmarking
+
+call_own_function_benchmark <- function(pred, target, times = 100) {
+  
+  benchmark <- microbenchmark(
+    
+    own_AUC_pairwise(pred, target),
+    
+    own_AUC_ranks(pred, target),
+    
+    own_AUC_trapezoid(pred, target),
+    
+    times = times
+  )
+  
+  levels(benchmark$expr) <- c(
+    "Pairwise method",
+    "Rank-sum method",
+    "Trapezoid method"
+  )
+  
+  benchmark$expr <- reorder(benchmark$expr, -benchmark$time, FUN = median)
+  
+  return(benchmark)
+}
+
+# Benchmark 1
+
+own_benchmark1 <- call_own_function_benchmark(pred1, target1)
+plot_benchmark(own_benchmark1)
+saveRDS(own_benchmark1, file = "data/own_functions_benchmark_1.rds")
+
+# Benchmark 2
+
+own_benchmark2 <- call_own_function_benchmark(pred2, target2)
+plot_benchmark(own_benchmark2)
+saveRDS(own_benchmark2, file = "data/own_functions_benchmark_2.rds")
+
+# Benchmark 3
+
+own_benchmark3 <- call_own_function_benchmark(pred3, target3)
+plot_benchmark(own_benchmark3)
+saveRDS(own_benchmark3, file = "data/own_functions_benchmark_3.rds")
 
