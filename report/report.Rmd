@@ -212,7 +212,7 @@ demands on the computational efficiency of the underlying algorithms.
 The following sections outline key areas where the performance of AUC 
 estimation is critical.
 
-# Uncertainty estimation and permutation tests
+**Uncertainty estimation and permutation tests**
 
 The estimation of confidence intervals and the verification of statistical 
 hypotheses for the AUC often rely on resampling methods, such as 
@@ -250,7 +250,7 @@ normal, providing a theoretical foundation for consistent confidence intervals
 and tests, which rely on these intensive 
 permutation procedures [@Pauly_Asendorf_Konietschke_2016].
 
-# Variable importance measures
+**Variable importance measures**
 
 Efficient AUC computation is a prerequisite for specific 
 Variable Importance Measures (VIM). Therefore an AUC-based permutation variable 
@@ -274,7 +274,7 @@ dataset. Consequently, for a model with $p$ features, assessing global feature
 importance requires $p \times B$ independent AUC calculations, creating a 
 linear dependency between the number of features and the computational cost.
 
-# AUC Maximization Algorithms
+**AUC Maximization Algorithms**
 
 In the era of Big Data, learning algorithms that directly maximize AUC, rather 
 than accuracy, are gaining importance but algorithms maximizing model accuracy 
@@ -285,7 +285,7 @@ maximization methods for big data and "Deep AUC Maximization" (DAM) for deep
 learning, where optimization must be performed efficiently on large-scale 
 datasets [@Yang_Ying_2023].
 
-# Simulation and curve modeling in credit risk
+**Simulation and curve modeling in credit risk**
 
 In credit risk management, theoretical ROC curve models are employed to simulate
 and assess the impact of scoring models when actual data is unavailable 
