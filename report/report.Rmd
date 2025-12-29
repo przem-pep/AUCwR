@@ -384,37 +384,71 @@ $$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
 
 All of the R packages that can be used to calculate the AUC measure have had their performance speed tested. In every benchmark, each function was called 100 times, and there are a total of three benchmarks, each with a different number of observations, all of which have been generated from the normal distribution.
 
-``` {r, include = FALSE}
-benchmark1 <- readRDS("../data/packages_benchmark_1.rds")
-benchmark2 <- readRDS("../data/packages_benchmark_2.rds")
-benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
-
+``` {r setting up for package benchmarks, include = FALSE}
 plot_benchmark <- function(benchmark) {
   autoplot(benchmark) +
     theme(axis.text.y = element_text(size = rel(1.5)))
 }
 
-```
-
-## First benchmark - 1000 observations
-
-``` {r}
-plot_benchmark(benchmark1)
+package_benchmark1 <- readRDS("../data/packages_benchmark_1.rds")
+package_benchmark2 <- readRDS("../data/packages_benchmark_2.rds")
+package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 ```
 
-## Second benchmark - 10000 observations
+**First benchmark - 1000 observations**
 
 ``` {r}
-plot_benchmark(benchmark2)
+plot_benchmark(package_benchmark1)
 
 ```
 
-## Third benchmark - 100000 observations
+**Second benchmark - 10000 observations**
 
 ``` {r}
-plot_benchmark(benchmark3)
+plot_benchmark(package_benchmark2)
 
+```
+
+**Third benchmark - 100000 observations**
+
+``` {r}
+plot_benchmark(package_benchmark3)
+
+```
+
+In general, *bigstatsr* offers the fastest way of computation overall. While *MLMetrics* and and *Hmisc* are slightly faster on the smallest data set, *bigstatsr* noticeably outperforms them as the number of observations increases.
+
+It is therefore recommended to use the *AUC* function from the *bigstatsr* package whenever calculating the AUC metric in R.
+
+
+## Benchmarking the algorithms
+
+The three identified algorithms have been tested against each other, by creating as optimised functions implementing them as possible. They only contain the calculation, with no checks whether the inputs are correct, to minimise potential interference and isolate the algorithms. They have been performed on the same observations as the package benchmarks.
+
+``` {r setup for own function benchmarks, include = FALSE}
+own_functions_benchmark1 <- readRDS("../data/own_functions_benchmark_1.rds")
+own_functions_benchmark2 <- readRDS("../data/own_functions_benchmark_2.rds")
+own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
+
+```
+
+**First benchmark - 1000 observations**
+
+``` {r}
+plot_benchmark(own_functions_benchmark1)
+```
+
+**Second benchmark - 10000 observations**
+
+``` {r}
+plot_benchmark(own_functions_benchmark2)
+```
+
+**Third benchmark - 100000 observations**
+
+``` {r}
+plot_benchmark(own_functions_benchmark3)
 ```
 
 

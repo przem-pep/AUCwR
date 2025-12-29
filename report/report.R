@@ -66,29 +66,48 @@ if (knitr::is_latex_output()) {
 }
 
 
-## ----include = FALSE----------------------------------------------------------
-benchmark1 <- readRDS("../data/packages_benchmark_1.rds")
-benchmark2 <- readRDS("../data/packages_benchmark_2.rds")
-benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
-
+## ----setting up for package benchmarks, include = FALSE-----------------------
 plot_benchmark <- function(benchmark) {
   autoplot(benchmark) +
     theme(axis.text.y = element_text(size = rel(1.5)))
 }
 
-
-
-## -----------------------------------------------------------------------------
-plot_benchmark(benchmark1)
-
-
-
-## -----------------------------------------------------------------------------
-plot_benchmark(benchmark2)
+package_benchmark1 <- readRDS("../data/packages_benchmark_1.rds")
+package_benchmark2 <- readRDS("../data/packages_benchmark_2.rds")
+package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 
 
 ## -----------------------------------------------------------------------------
-plot_benchmark(benchmark3)
+plot_benchmark(package_benchmark1)
 
+
+
+## -----------------------------------------------------------------------------
+plot_benchmark(package_benchmark2)
+
+
+
+## -----------------------------------------------------------------------------
+plot_benchmark(package_benchmark3)
+
+
+
+## ----setup for own function benchmarks, include = FALSE-----------------------
+own_functions_benchmark1 <- readRDS("../data/own_functions_benchmark_1.rds")
+own_functions_benchmark2 <- readRDS("../data/own_functions_benchmark_2.rds")
+own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
+
+
+
+## -----------------------------------------------------------------------------
+plot_benchmark(own_functions_benchmark1)
+
+
+## -----------------------------------------------------------------------------
+plot_benchmark(own_functions_benchmark2)
+
+
+## -----------------------------------------------------------------------------
+plot_benchmark(own_functions_benchmark3)
 

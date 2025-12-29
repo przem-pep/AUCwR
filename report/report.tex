@@ -161,7 +161,7 @@ demands on the computational efficiency of the underlying algorithms.
 The following sections outline key areas where the performance of AUC
 estimation is critical.
 
-\section{Uncertainty estimation and permutation tests}\label{uncertainty-estimation-and-permutation-tests}
+\textbf{Uncertainty estimation and permutation tests}
 
 The estimation of confidence intervals and the verification of statistical
 hypotheses for the AUC often rely on resampling methods, such as
@@ -199,7 +199,7 @@ normal, providing a theoretical foundation for consistent confidence intervals
 and tests, which rely on these intensive
 permutation procedures \citep{Pauly_Asendorf_Konietschke_2016}.
 
-\section{Variable importance measures}\label{variable-importance-measures}
+\textbf{Variable importance measures}
 
 Efficient AUC computation is a prerequisite for specific
 Variable Importance Measures (VIM). Therefore an AUC-based permutation variable
@@ -223,7 +223,7 @@ dataset. Consequently, for a model with \(p\) features, assessing global feature
 importance requires \(p \times B\) independent AUC calculations, creating a
 linear dependency between the number of features and the computational cost.
 
-\section{AUC Maximization Algorithms}\label{auc-maximization-algorithms}
+\textbf{AUC Maximization Algorithms}
 
 In the era of Big Data, learning algorithms that directly maximize AUC, rather
 than accuracy, are gaining importance but algorithms maximizing model accuracy
@@ -234,7 +234,7 @@ maximization methods for big data and ``Deep AUC Maximization'' (DAM) for deep
 learning, where optimization must be performed efficiently on large-scale
 datasets \citep{Yang_Ying_2023}.
 
-\section{Simulation and curve modeling in credit risk}\label{simulation-and-curve-modeling-in-credit-risk}
+\textbf{Simulation and curve modeling in credit risk}
 
 In credit risk management, theoretical ROC curve models are employed to simulate
 and assess the impact of scoring models when actual data is unavailable
@@ -358,17 +358,37 @@ where \(\bar{R}_{1}\) is the mean rank for \(s_i\) where \(y_i=1\):
 
 All of the R packages that can be used to calculate the AUC measure have had their performance speed tested. In every benchmark, each function was called 100 times, and there are a total of three benchmarks, each with a different number of observations, all of which have been generated from the normal distribution.
 
-\subsection{First benchmark - 1000 observations}\label{first-benchmark---1000-observations}
+\textbf{First benchmark - 1000 observations}
+
+\includegraphics{report_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\textbf{Second benchmark - 10000 observations}
 
 \includegraphics{report_files/figure-latex/unnamed-chunk-3-1.pdf}
 
-\subsection{Second benchmark - 10000 observations}\label{second-benchmark---10000-observations}
+\textbf{Third benchmark - 100000 observations}
 
 \includegraphics{report_files/figure-latex/unnamed-chunk-4-1.pdf}
 
-\subsection{Third benchmark - 100000 observations}\label{third-benchmark---100000-observations}
+In general, \emph{bigstatsr} offers the fastest way of computation overall. While \emph{MLMetrics} and and \emph{Hmisc} are slightly faster on the smallest data set, \emph{bigstatsr} noticeably outperforms them as the number of observations increases.
+
+It is therefore recommended to use the \emph{AUC} function from the \emph{bigstatsr} package whenever calculating the AUC metric in R.
+
+\subsection{Benchmarking the algorithms}\label{benchmarking-the-algorithms}
+
+The three identified algorithms have been tested against each other, by creating as optimised functions implementing them as possible. They only contain the calculation, with no checks whether the inputs are correct, to minimise potential interference and isolate the algorithms. They have been performed on the same observations as the package benchmarks.
+
+\textbf{First benchmark - 1000 observations}
 
 \includegraphics{report_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\textbf{Second benchmark - 10000 observations}
+
+\includegraphics{report_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\textbf{Third benchmark - 100000 observations}
+
+\includegraphics{report_files/figure-latex/unnamed-chunk-7-1.pdf}
 
 \section{Case studies}\label{case-studies}
 
