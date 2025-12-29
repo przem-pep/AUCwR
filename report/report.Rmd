@@ -204,21 +204,110 @@ $$\text{AUC} = \frac{\text{AR} + 1}{2}$$
 
 # The need for computational efficiency in AUC estimation
 
-Opisać:
+In the context of modern statistical modeling and machine learning, a single
+calculation of the AUC metric is often insufficient for a comprehensive 
+assessment of model quality. Complex validation, optimization, and simulation 
+procedures require the AUC statistic to be computed repeatedly, imposing high 
+demands on the computational efficiency of the underlying algorithms. 
+The following sections outline key areas where the performance of AUC 
+estimation is critical.
 
--   AUC / Gini bootstrapping / permutation tests
+# Uncertainty estimation and permutation tests
 
-    -   including DALEX (?)
+The estimation of confidence intervals and the verification of statistical 
+hypotheses for the AUC often rely on resampling methods, such as 
+bootstrapping or permutation tests. While necessary when simple parametric 
+assumptions cannot be met, these methods generate significant 
+computational loads.
 
--   AUC optimization algorithms
+In the case of massive datasets, the process of generating a single performance
+estimate can be computationally expensive[@LeDell_Petersen_Van_Der_Laan_2015]. 
+The authors point out that when using complex prediction methods, even with 
+relatively small datasets, cross-validation can consume a large amount of time,
+making the bootstrap a computationally intractable approach to variance 
+estimation in many practical settings.
 
--   credit market simulation
+Similarly, in the context of meta-analysis of diagnostic accuracy studies, 
+there are instances of bootstrap algorithms usage to determine 
+confidence intervals for the AUC of the Summary ROC (SROC) curve 
+[@Noma_Matsushima_Ishii_2021]. Their approach involves computing AUC estimates 
+from a large number of bootstrap samples (e.g., $B=1000$), 
+which necessitates efficient calculation routines.
 
-@Kochanski_2021 proposed simulation... <!-- Kochanski (2021) -->
+Permutation-based inference also demands repeated calculation. 
+Bandos, Rockette, and Gur (2006) developed a permutation test for comparing ROC 
+curves in multireader studies. An exact permutation test in this setting is 
+formed by determining the frequency of the statistic—estimating the average 
+difference in AUCs—across all possible exchanges of reader ratings. For larger 
+samples, this requires an asymptotic approach due to the computational 
+intensity of calculating differences for every permutation 
+[@Bandos_Rockette_Gur_2006]. Furthermore, Pauly, Asendorf, 
+and Konietschke (2016) proposed rank-based studentized permutation 
+methods for the nonparametric Behrens-Fisher problem, which corresponds to 
+inference for the AUC. They demonstrated that the studentized permutation 
+distribution ofthe Brunner-Munzel rank statistic is asymptotically standard 
+normal, providing a theoretical foundation for consistent confidence intervals 
+and tests, which rely on these intensive 
+permutation procedures [@Pauly_Asendorf_Konietschke_2016].
 
-Simulation [@Kochanski_2021]... <!-- Simulation (Kochanski 2021) --> 
+# Variable importance measures
 
--   inne ...
+Efficient AUC computation is a prerequisite for specific 
+Variable Importance Measures (VIM). Therefore an AUC-based permutation variable 
+importance measure for Random Forests was introduced, designed to be more robust
+to unbalanced classes than standard error-rate-based measures. This procedure 
+requires the AUC to be computed for each tree in the forest, both before and 
+after permuting the values of a given predictor. Given the number of trees in 
+a forest and the number of predictors, this approach results in a vast number of 
+AUC calculations, far exceeding the computational cost of standard 
+single-pass metrics [@Janitza_Strobl_Boulesteix_2013].
+
+Beyond model-specific methods, model-agnostic interpretability frameworks 
+also rely heavily on repeated metric estimation. The DALEX package 
+[@Biecek_2018] implements a permutation-based variable importance method 
+applicable to any predictive model. This approach measures the change in model 
+performance — such as the drop in AUC (represented as the loss 
+function $L(y, \hat{y}) = 1 - AUC$) — after permuting the values of a single 
+predictor. To ensure stability of the importance estimates, this permutation 
+process is typically repeated $B$ times (e.g., $B=10$) for every feature in the 
+dataset. Consequently, for a model with $p$ features, assessing global feature 
+importance requires $p \times B$ independent AUC calculations, creating a 
+linear dependency between the number of features and the computational cost.
+
+# AUC Maximization Algorithms
+
+In the era of Big Data, learning algorithms that directly maximize AUC, rather 
+than accuracy, are gaining importance but algorithms maximizing model accuracy 
+do not necessarily maximize the AUC score. However, direct AUC maximization 
+presents a computational challenge because the function is non-decomposable over 
+individual examples. This has led to the development of stochastic AUC 
+maximization methods for big data and "Deep AUC Maximization" (DAM) for deep 
+learning, where optimization must be performed efficiently on large-scale 
+datasets [@Yang_Ying_2023].
+
+# Simulation and curve modeling in credit risk
+
+In credit risk management, theoretical ROC curve models are employed to simulate
+and assess the impact of scoring models when actual data is unavailable 
+or limited. Kochański (2022) notes that fitting models such as the binormal or 
+bigamma curves is helpful for "generating ROC curves without underlying data". 
+This capability is essential for assessing the impact of a credit scorecard 
+that is "yet to be built" [@Kochański_2022]. Such simulation analyses often 
+involve generating numerous curves and estimating their parameters to forecast 
+portfolio quality, further justifying the need for computationally efficient 
+AUC estimation methods.
+
+Beyond single-curve fitting, Kochański (2021) extends the analysis to a dynamic 
+market environment, proposing a simulation model for risk 
+and pricing competition. This framework explores how the discrimination power 
+of credit scoring models influences key business metrics, illustrating 
+the "trade-off between profitability, market share, and credit loss rates" 
+[@Kochanski_2021]. The study demonstrates that even marginal improvements in 
+discrimination power can yield substantial benefits, a conclusion derived from 
+simulation scenarios that model the interactions between lenders and borrowers. 
+Such comprehensive market analyses require processing numerous scenarios to 
+identify profit-maximizing strategies, further highlighting the role of 
+performance metrics as fundamental parameters in complex economic models.
 
 # R packages
 
