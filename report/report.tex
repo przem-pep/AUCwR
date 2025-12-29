@@ -40,10 +40,10 @@ efficient computational algorithms developed in different domains.
 
 In medical statistics and epidemiology, particularly when evaluating logistic
 regression models with binary outcomes, the AUC is frequently referred to
-as the \(c-statistic\) (or concordance statistic). This term defined by
-Harrell et al. \citep{Harrell_Califf_Pryor_Lee_Rosati_1982} and further elaborated by, for example
-Austin and Steyerberg \citep{Austin_Steyerberg_2012}, represents the probability
-of concordance between predicted probabilities and observed outcomes.
+as the \emph{c-statistic} (or concordance statistic). This term defined by
+Harrell et al. \citep{Harrell_Califf_Pryor_Lee_Rosati_1982} and further elaborated
+by, for example Austin and Steyerberg \citep{Austin_Steyerberg_2012}, represents the
+probability of concordance between predicted probabilities and observed outcomes.
 It quantifies the predictive accuracy of a model by estimating the probability
 that a randomly selected subject who experienced the outcome has a higher
 predicted probability than a randomly selected subject who did not.
@@ -52,54 +52,54 @@ This probabilistic interpretation serves as the bridge to non-parametric
 statistics. Area under the ROC curve is statistically equivalent to the
 Mann-Whitney U statistic divided by the product of the sample sizes
 of the two groups, where in this context, the metric is often interpreted as
-the \(probability of superiority\) indicating the likelihood that
+the \emph{probability of superiority} indicating the likelihood that
 a randomly chosen positive case ranks higher than a randomly chosen
 negative case \citep{Hanley_McNeil_1982}.
 
 In the behavioral sciences and psychology, similar concepts have been developed
 to measure effect sizes. There the AUC corresponds to the
-\(Common Language Effect Size\) (CL/CLES) \citep{McGraw_Wong_1992}, which
+\emph{Common Language Effect Size} (CL/CLES) \citep{McGraw_Wong_1992}, which
 converts an effect size into a probability, specifically defined as the
 probability that a score sampled at random from one distribution will be
 greater than a score sampled from another. This metric was developed to provide
 an index of effect size that is intuitively interpretable by audiences without
 statistical training. While the original formulation by McGraw and Wong focused
-on normal distributions, the later proposed \(measure of stochastic superiority\)
+on normal distributions, the later proposed \emph{measure of stochastic superiority}
 (denoted as \(A\)) \citep{Vargha_Delaney_2000} generalized CLES
 concept so that it could be applicable to any variable that is at least
 ordinally scaled, regardless of the distribution form, and is identical to the
 CL statistic in the continuous case. Furthermore, in the context of
-non-parametric analysis for longitudinal data the ***relative treatment effect
+non-parametric analysis for longitudinal data the \emph{relative treatment effect}
 was defined \citep{Brunner_Munzel_Puri_2002}. This metric estimates the probability that
 an observation from one group is smaller than an observation from another,
 effectively serving as a probabilistic analog to the AUC
-{[}Brunner\_et\_al\_2002{]},{[}Engelmann\_et\_al\_2003{]}.
+{[}Brunner\_Munzel\_Puri\_2002{]}, \citep{Engelmann_Hayden_Tasche_2003}.
 
-\textbf{The Gini Coefficient and other AUC related measures}
+\textbf{The Gini coefficient and other AUC related measures}
 
 While the AUC scales from 0.5 (random classification) to 1.0
 (perfect classification), many disciplines prefer a measure scaled between
 0 and 1 (or -1 and 1) to represent the strength of association or
 discriminatory power. This leads to the Gini coefficient (or Gini index).
 The Gini coefficient used in classification contexts is simply a linear
-transformation of the AUC, defined by the relationship \citep{Hand_Till}:
+transformation of the AUC, defined by the relationship \citep{Hand_Till_2001}:
 \[\text{Gini} = 2 \cdot \text{AUC} - 1\]
 Cliff {[}1993{]} discusses an ordinal statistic, \(d\), which compares the number of
 times a score from one group is higher than one from another versus the reverse.
-This statistic of ordinal dominance, later named \(Cliff’s Delta\)
+This statistic of ordinal dominance, later named \emph{Cliff's Delta}
 \citep{Bais_Van_Der_Neut_2022} was described as a non-parametric effect size based
 on data observations, which quantifies the difference between the probability
 that a value from one group is higher than a value from the other and
 the reverse probability.
 
-\textbf{Relation to the U statistic in the Mann-Whitney.}
+\textbf{Relation to the U statistic in the Mann-Whitney}
 
 There is a direct relationship between AUC and the Mann-Whitney U
 statistic.
 
 AUC is equivalent to the probability that a randomly selected positive
 case will have a higher score than a randomly selected negative case
-\citep{Hanley_McNeil_1982},\citep{Bamber_1975}.
+\citep{Hanley_McNeil_1982}, \citep{Bamber_1975}.
 \[\text{AUC} = \frac{U}{n_1 \times n_0}\] where \(U\) is the number of
 pairs in which the ``bad'' score is \textless{} the ``good'' score, \(n_1\) is the
 number of `bad' scores, and \(n_0\) is the number of ``good'' scores.
@@ -127,13 +127,13 @@ In binary classification, Somers' D is equal to 2×AUC-1, which links it
 directly to AUC \citep{Newson_2002}.
 \[\text{Somers' D} = 2 \cdot \text{AUC} - 1\]
 
-\textbf{Cumulative Accuracy profile.}
+\textbf{Cumulative accuracy profile}
 
 The CAP curve is a graphical tool used to evaluate the performance of
 classification models, primarily in the area of creditworthiness
 assessment. It shows the cumulative percentage of positive cases
 relative to the cumulative percentage of the entire population, sorted
-by predicted probability of default. \citep{Engelmann_Hayden_Tasche_2003}.
+by predicted probability of default \citep{Engelmann_Hayden_Tasche_2003}.
 
 Accuracy Ratio (AR): \[\text{AR} = \frac{A}{B}\] where \(A\) is the area
 between the model CAP and the random CAP, and \(B\) is the area between
@@ -141,11 +141,11 @@ the ideal CAP and the random CAP. Areas A and B are calculated using the
 trapezoidal method \citep{Engelmann_Hayden_Tasche_2003}.
 
 Within the credit scoring literature, the AR metric is sometimes referred to
-as the \(pseudo Gini\) index to differentiate it from the classical Gini index
+as the \emph{pseudo Gini} index to differentiate it from the classical Gini index
 used in economics to measure inequality. It was established that the
 pseudo Gini index is based on the concentration curve (CAP) and that its value
 is always equal to the Accuracy Ratio (referred to as Accuracy Rate)
-for any scoring model\citep{Idczak_2019}.
+for any scoring model \citep{Idczak_2019}.
 
 The relationship between AUC and the CAP curve can be described by the
 following formula \citep{Engelmann_Hayden_Tasche_2003}:
@@ -170,7 +170,7 @@ assumptions cannot be met, these methods generate significant
 computational loads.
 
 In the case of massive datasets, the process of generating a single performance
-estimate can be computationally expensive\citep{LeDell_Petersen_Van_Der_Laan_2015}.
+estimate can be computationally expensive \citep{LeDell_Petersen_Van_Der_Laan_2015}.
 The authors point out that when using complex prediction methods, even with
 relatively small datasets, cross-validation can consume a large amount of time,
 making the bootstrap a computationally intractable approach to variance
@@ -187,7 +187,7 @@ Permutation-based inference also demands repeated calculation.
 Bandos, Rockette, and Gur (2006) developed a permutation test for comparing ROC
 curves in multireader studies. An exact permutation test in this setting is
 formed by determining the frequency of the statistic---estimating the average
-difference in AUCs---across all possible exchanges of reader ratings. For larger
+difference in AUCs across all possible exchanges of reader ratings. For larger
 samples, this requires an asymptotic approach due to the computational
 intensity of calculating differences for every permutation
 \citep{Bandos_Rockette_Gur_2006}. Furthermore, Pauly, Asendorf,
@@ -215,15 +215,19 @@ Beyond model-specific methods, model-agnostic interpretability frameworks
 also rely heavily on repeated metric estimation. The DALEX package
 \citep{Biecek_2018} implements a permutation-based variable importance method
 applicable to any predictive model. This approach measures the change in model
-performance --- such as the drop in AUC (represented as the loss
-function \(L(y, \hat{y}) = 1 - AUC\)) --- after permuting the values of a single
+performance, such as the drop in AUC (represented as the loss
+function \(L(y, \hat{y}) = 1 - AUC\)), after permuting the values of a single
 predictor. To ensure stability of the importance estimates, this permutation
 process is typically repeated \(B\) times (e.g., \(B=10\)) for every feature in the
 dataset. Consequently, for a model with \(p\) features, assessing global feature
 importance requires \(p \times B\) independent AUC calculations, creating a
 linear dependency between the number of features and the computational cost.
 
+<<<<<<< Updated upstream
 \textbf{AUC Maximization Algorithms}
+=======
+\textbf{AUC maximization algorithms}
+>>>>>>> Stashed changes
 
 In the era of Big Data, learning algorithms that directly maximize AUC, rather
 than accuracy, are gaining importance but algorithms maximizing model accuracy
@@ -364,11 +368,11 @@ All of the R packages that can be used to calculate the AUC measure have had the
 
 \textbf{Second benchmark - 10000 observations}
 
-\includegraphics{report_files/figure-latex/unnamed-chunk-3-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{report_files/figure-latex/unnamed-chunk-3-1.pdf}}
 
 \textbf{Third benchmark - 100000 observations}
 
-\includegraphics{report_files/figure-latex/unnamed-chunk-4-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{report_files/figure-latex/unnamed-chunk-4-1.pdf}}
 
 In general, \emph{bigstatsr} offers the fastest way of computation overall. While \emph{MLMetrics} and and \emph{Hmisc} are slightly faster on the smallest data set, \emph{bigstatsr} noticeably outperforms them as the number of observations increases.
 
@@ -380,7 +384,7 @@ The three identified algorithms have been tested against each other, by creating
 
 \textbf{First benchmark - 1000 observations}
 
-\includegraphics{report_files/figure-latex/unnamed-chunk-5-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{report_files/figure-latex/unnamed-chunk-5-1.pdf}}
 
 \textbf{Second benchmark - 10000 observations}
 
