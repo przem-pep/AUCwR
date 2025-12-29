@@ -67,9 +67,9 @@ if (knitr::is_latex_output()) {
 
 
 ## ----include = FALSE----------------------------------------------------------
-benchmark1 <- readRDS("../data/functions_benchmark_1.rds")
-benchmark2 <- readRDS("../data/functions_benchmark_2.rds")
-benchmark3 <- readRDS("../data/functions_benchmark_3.rds")
+benchmark1 <- readRDS("../data/packages_benchmark_1.rds")
+benchmark2 <- readRDS("../data/packages_benchmark_2.rds")
+benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 plot_benchmark <- function(benchmark) {
   autoplot(benchmark) +

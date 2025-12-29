@@ -385,9 +385,9 @@ $$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
 All of the R packages that can be used to calculate the AUC measure have had their performance speed tested. In every benchmark, each function was called 100 times, and there are a total of three benchmarks, each with a different number of observations, all of which have been generated from the normal distribution.
 
 ``` {r, include = FALSE}
-benchmark1 <- readRDS("../data/functions_benchmark_1.rds")
-benchmark2 <- readRDS("../data/functions_benchmark_2.rds")
-benchmark3 <- readRDS("../data/functions_benchmark_3.rds")
+benchmark1 <- readRDS("../data/packages_benchmark_1.rds")
+benchmark2 <- readRDS("../data/packages_benchmark_2.rds")
+benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 plot_benchmark <- function(benchmark) {
   autoplot(benchmark) +
