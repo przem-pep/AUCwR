@@ -65,8 +65,19 @@ trapezoidal integration, optimized pairwise comparisons, and rank-based approach
 Finally, we present the results of performance benchmarks for popular R packages 
 and propose our alternatives, identifying optimal solutions for different sizes of large datasets.
 
+# ROC curve
 
-# Background
+The ROC curve is one of the most important tools for assessing the effectiveness of binary classifiers. It was introduced in the 1940s in the context of radar signal analysis, which is the origin of its name – *Receiver Operating Characteristic* [@Junge_Dettori_2024]. Today, the ROC curve is used in fields such as medicine, biotechnology, computer science, and banking, where it is used to evaluate scoring models.
+
+**Definition**
+
+The ROC curve is a graph created by “plotting the qualitative characteristics of binary classifiers generated from a model using many different cut-off points” [@Gromada_2016], illustrating the model's predictive effectiveness. Each point on the curve corresponds to TPR (sensitivity) and FPR (1 – specificity) values as a function of the classifier's varying cut-off point [@Fawcett_2006].
+
+**Construction of the ROC Curve**
+
+To construct an ROC curve, the threshold that determines whether the classifier assigns an observation to the positive class is modified. For each threshold, TPR and FPR are calculated. The results are presented on a graph where the X-axis represents FPR and the Y-axis represents TPR.
+
+Point (0,1) represents an ideal classifier: no false positives and full detection of positive cases. A curve closer to this point is more desirable [@Hanley_McNeil_1982] – this is equivalent to a larger Area Under the Curve, or AUC. The diagonal line from (0,0) to (1,1) represents a random classifier (AUC = 0.5).
 
 ```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
 cz = c(.6, .8, .95)
@@ -151,7 +162,6 @@ an observation from one group is smaller than an observation from another,
 effectively serving as a probabilistic analog to the AUC 
 [@Brunner_Munzel_Puri_2002], [@Engelmann_Hayden_Tasche_2003].
 
-
 **The Gini coefficient and other AUC related measures**
 
 While the AUC scales from 0.5 (random classification) to 1.0 
@@ -179,7 +189,7 @@ case will have a higher score than a randomly selected negative case
 [@Hanley_McNeil_1982], [@Bamber_1975].
 $$\text{AUC} = \frac{U}{n_1 \times n_0}$$ where $U$ is the number of
 pairs in which the “bad” score is \< the “good” score, $n_1$ is the
-number of ‘bad’ scores, and $n_0$ is the number of “good” scores.
+number of “bad” scores, and $n_0$ is the number of “good” scores.
 
 This relationship provides the statistical basis for treating AUC as a
 measure of discrimination and allows confidence intervals to be
