@@ -38,7 +38,33 @@ library(microbenchmark)
 
 # Introduction
 
-ROC curves...
+Assessing the quality of predictive models is a critical stage in machine 
+learning and statistical inference processes. Among the many available metrics, 
+the Area Under the Receiver Operating Characteristic curve (AUC) has established
+itself as a standard measure of discrimination, particularly in binary 
+classification problems. The popularity of this metric stems from its 
+independence from the chosen cut-off point and its robustness to class imbalance, 
+making it useful in diverse fields such as medical diagnostics, psychology, and 
+credit risk assessment.
+
+Modern statistical applications require not only methodological correctness 
+but also high computational efficiency. In the era of Big Data and increasing 
+complexity of validation procedures, a single calculation of the AUC is often 
+insufficient. Similar challenges are posed by simulation market models in banking, 
+where generating ROC curves without historical data serves to estimate the impact 
+of scoring models on portfolio profitability. In such scenarios, classical 
+algorithm implementations can become a computational bottleneck, rendering 
+procedures like the bootstrap impractical.
+
+The goal of this paper is to review methods for calculating the AUC measure 
+and to analyze the efficiency of available implementations within the R environment. 
+In the first part of the work, we organize definitions and highlight the mathematical 
+links between AUC and other measures, such as the Gini coefficient. 
+Next, we discuss the main classes of algorithms used for AUC estimation: 
+trapezoidal integration, optimized pairwise comparisons, and rank-based approaches. 
+Finally, we present the results of performance benchmarks for popular R packages 
+and propose our alternatives, identifying optimal solutions for different sizes of large datasets.
+
 
 # Background
 
