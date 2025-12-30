@@ -38,46 +38,67 @@ library(microbenchmark)
 
 # Introduction
 
-Assessing the quality of predictive models is a critical stage in machine 
-learning and statistical inference processes. Among the many available metrics, 
-the Area Under the Receiver Operating Characteristic curve (AUC) has established
-itself as a standard measure of discrimination, particularly in binary 
-classification problems. The popularity of this metric stems from its 
-independence from the chosen cut-off point and its robustness to class imbalance, 
-making it useful in diverse fields such as medical diagnostics, psychology, and 
-credit risk assessment.
+Assessing the quality of predictive models is a critical stage in
+machine learning and statistical inference processes. Among the many
+available metrics, the Area Under the Receiver Operating Characteristic
+curve (AUC) has established itself as a standard measure of
+discrimination, particularly in binary classification problems. The
+popularity of this metric stems from its independence from the chosen
+cut-off point and its robustness to class imbalance, making it useful in
+diverse fields such as medical diagnostics, psychology, and credit risk
+assessment.
 
-Modern statistical applications require not only methodological correctness 
-but also high computational efficiency. In the era of Big Data and increasing 
-complexity of validation procedures, a single calculation of the AUC is often 
-insufficient. Similar challenges are posed by simulation market models in banking, 
-where generating ROC curves without historical data serves to estimate the impact 
-of scoring models on portfolio profitability. In such scenarios, classical 
-algorithm implementations can become a computational bottleneck, rendering 
-procedures like the bootstrap impractical.
+Modern statistical applications require not only methodological
+correctness but also high computational efficiency. In the era of Big
+Data and increasing complexity of validation procedures, a single
+calculation of the AUC is often insufficient. Similar challenges are
+posed by simulation market models in banking, where generating ROC
+curves without historical data serves to estimate the impact of scoring
+models on portfolio profitability. In such scenarios, classical
+algorithm implementations can become a computational bottleneck,
+rendering procedures like the bootstrap impractical.
 
-The goal of this paper is to review methods for calculating the AUC measure 
-and to analyze the efficiency of available implementations within the R environment. 
-In the first part of the work, we organize definitions and highlight the mathematical 
-links between AUC and other measures, such as the Gini coefficient. 
-Next, we discuss the main classes of algorithms used for AUC estimation: 
-trapezoidal integration, optimized pairwise comparisons, and rank-based approaches. 
-Finally, we present the results of performance benchmarks for popular R packages 
-and propose our alternatives, identifying optimal solutions for different sizes of large datasets.
+The goal of this paper is to review methods for calculating the AUC
+measure and to analyze the efficiency of available implementations
+within the R environment. In the first part of the work, we organize
+definitions and highlight the mathematical links between AUC and other
+measures, such as the Gini coefficient. Next, we discuss the main
+classes of algorithms used for AUC estimation: trapezoidal integration,
+optimized pairwise comparisons, and rank-based approaches. Finally, we
+present the results of performance benchmarks for popular R packages and
+propose our alternatives, identifying optimal solutions for different
+sizes of large datasets.
 
 # ROC curve
 
-The ROC curve is one of the most important tools for assessing the effectiveness of binary classifiers. It was introduced in the 1940s in the context of radar signal analysis, which is the origin of its name – *Receiver Operating Characteristic* [@Junge_Dettori_2024]. Today, the ROC curve is used in fields such as medicine, biotechnology, computer science, and banking, where it is used to evaluate scoring models.
+The ROC curve is one of the most important tools for assessing the
+effectiveness of binary classifiers. It was introduced in the 1940s in
+the context of radar signal analysis, which is the origin of its name –
+*Receiver Operating Characteristic* [@Junge_Dettori_2024]. Today, the
+ROC curve is used in fields such as medicine, biotechnology, computer
+science, and banking, where it is used to evaluate scoring models.
 
 **Definition**
 
-The ROC curve is a graph created by “plotting the qualitative characteristics of binary classifiers generated from a model using many different cut-off points” [@Gromada_2016], illustrating the model's predictive effectiveness. Each point on the curve corresponds to TPR (sensitivity) and FPR (1 – specificity) values as a function of the classifier's varying cut-off point [@Fawcett_2006].
+The ROC curve is a graph created by “plotting the qualitative
+characteristics of binary classifiers generated from a model using many
+different cut-off points” [@Gromada_2016], illustrating the model's
+predictive effectiveness. Each point on the curve corresponds to TPR
+(sensitivity) and FPR (1 – specificity) values as a function of the
+classifier's varying cut-off point [@Fawcett_2006].
 
 **Construction of the ROC Curve**
 
-To construct an ROC curve, the threshold that determines whether the classifier assigns an observation to the positive class is modified. For each threshold, TPR and FPR are calculated. The results are presented on a graph where the X-axis represents FPR and the Y-axis represents TPR.
+To construct an ROC curve, the threshold that determines whether the
+classifier assigns an observation to the positive class is modified. For
+each threshold, TPR and FPR are calculated. The results are presented on
+a graph where the X-axis represents FPR and the Y-axis represents TPR.
 
-Point (0,1) represents an ideal classifier: no false positives and full detection of positive cases. A curve closer to this point is more desirable [@Hanley_McNeil_1982] – this is equivalent to a larger Area Under the Curve, or AUC. The diagonal line from (0,0) to (1,1) represents a random classifier (AUC = 0.5).
+Point (0,1) represents an ideal classifier: no false positives and full
+detection of positive cases. A curve closer to this point is more
+desirable [@Hanley_McNeil_1982] – this is equivalent to a larger Area
+Under the Curve, or AUC. The diagonal line from (0,0) to (1,1)
+represents a random classifier (AUC = 0.5).
 
 ```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
 cz = c(.6, .8, .95)
@@ -115,69 +136,72 @@ ggplot(df, aes(x = FPR, y = TPR)) +
 # AUC – alternative names and related measures
 
 The Area Under the Receiver Operating Characteristic (ROC) curve,
-commonly abbreviated as AUC, is a fundamental metric for evaluating
-the performance of classification models. However, due to its independent
+commonly abbreviated as AUC, is a fundamental metric for evaluating the
+performance of classification models. However, due to its independent
 adoption and development across diverse fields, ranging from biomedical
-statistics and psychology to econometrics and credit scoring, this measure
-appears in the literature under numerous aliases and mathematical formulations. 
-Recognizing these equivalences is essential for researchers to leverage 
-efficient computational algorithms developed in different domains.
+statistics and psychology to econometrics and credit scoring, this
+measure appears in the literature under numerous aliases and
+mathematical formulations. Recognizing these equivalences is essential
+for researchers to leverage efficient computational algorithms developed
+in different domains.
 
 **Alternative names and interpretations of AUC**
 
-In medical statistics and epidemiology, particularly when evaluating logistic
-regression models with binary outcomes, the AUC is frequently referred to 
-as the *c-statistic* (or concordance statistic). This term defined by 
-Harrell et al. [@Harrell_Califf_Pryor_Lee_Rosati_1982] and further elaborated 
-by, for example Austin and Steyerberg [@Austin_Steyerberg_2012], represents the 
-probability of concordance between predicted probabilities and observed outcomes. 
-It quantifies the predictive accuracy of a model by estimating the probability 
-that a randomly selected subject who experienced the outcome has a higher 
+In medical statistics and epidemiology, particularly when evaluating
+logistic regression models with binary outcomes, the AUC is frequently
+referred to as the *c-statistic* (or concordance statistic). This term
+defined by Harrell et al. [@Harrell_Califf_Pryor_Lee_Rosati_1982] and
+further elaborated by, for example Austin and Steyerberg
+[@Austin_Steyerberg_2012], represents the probability of concordance
+between predicted probabilities and observed outcomes. It quantifies the
+predictive accuracy of a model by estimating the probability that a
+randomly selected subject who experienced the outcome has a higher
 predicted probability than a randomly selected subject who did not.
 
-This probabilistic interpretation serves as the bridge to non-parametric 
-statistics. Area under the ROC curve is statistically equivalent to the 
-Mann-Whitney U statistic divided by the product of the sample sizes 
-of the two groups, where in this context, the metric is often interpreted as
-the *probability of superiority* indicating the likelihood that 
-a randomly chosen positive case ranks higher than a randomly chosen 
+This probabilistic interpretation serves as the bridge to non-parametric
+statistics. Area under the ROC curve is statistically equivalent to the
+Mann-Whitney U statistic divided by the product of the sample sizes of
+the two groups, where in this context, the metric is often interpreted
+as the *probability of superiority* indicating the likelihood that a
+randomly chosen positive case ranks higher than a randomly chosen
 negative case [@Hanley_McNeil_1982].
 
-In the behavioral sciences and psychology, similar concepts have been developed 
-to measure effect sizes. There the AUC corresponds to the 
-*Common Language Effect Size* (CL/CLES) [@McGraw_Wong_1992], which 
-converts an effect size into a probability, specifically defined as the 
-probability that a score sampled at random from one distribution will be 
-greater than a score sampled from another. This metric was developed to provide 
-an index of effect size that is intuitively interpretable by audiences without 
-statistical training. While the original formulation by McGraw and Wong focused 
-on normal distributions, the later proposed *measure of stochastic superiority*
-(denoted as $A$) [@Vargha_Delaney_2000] generalized CLES 
-concept so that it could be applicable to any variable that is at least 
-ordinally scaled, regardless of the distribution form, and is identical to the
-CL statistic in the continuous case. Furthermore, in the context of 
-non-parametric analysis for longitudinal data the *relative treatment effect*
-was defined [@Brunner_Munzel_Puri_2002]. This metric estimates the probability that 
-an observation from one group is smaller than an observation from another, 
-effectively serving as a probabilistic analog to the AUC 
+In the behavioral sciences and psychology, similar concepts have been
+developed to measure effect sizes. There the AUC corresponds to the
+*Common Language Effect Size* (CL/CLES) [@McGraw_Wong_1992], which
+converts an effect size into a probability, specifically defined as the
+probability that a score sampled at random from one distribution will be
+greater than a score sampled from another. This metric was developed to
+provide an index of effect size that is intuitively interpretable by
+audiences without statistical training. While the original formulation
+by McGraw and Wong focused on normal distributions, the later proposed
+*measure of stochastic superiority* (denoted as $A$)
+[@Vargha_Delaney_2000] generalized CLES concept so that it could be
+applicable to any variable that is at least ordinally scaled, regardless
+of the distribution form, and is identical to the CL statistic in the
+continuous case. Furthermore, in the context of non-parametric analysis
+for longitudinal data the *relative treatment effect* was defined
+[@Brunner_Munzel_Puri_2002]. This metric estimates the probability that
+an observation from one group is smaller than an observation from
+another, effectively serving as a probabilistic analog to the AUC
 [@Brunner_Munzel_Puri_2002], [@Engelmann_Hayden_Tasche_2003].
 
 **The Gini coefficient and other AUC related measures**
 
-While the AUC scales from 0.5 (random classification) to 1.0 
-(perfect classification), many disciplines prefer a measure scaled between 
-0 and 1 (or -1 and 1) to represent the strength of association or 
-discriminatory power. This leads to the Gini coefficient (or Gini index). 
-The Gini coefficient used in classification contexts is simply a linear 
-transformation of the AUC, defined by the relationship [@Hand_Till_2001]:
-$$\text{Gini} = 2 \cdot \text{AUC} - 1$$
-Cliff [1993] discusses an ordinal statistic, $d$, which compares the number of 
-times a score from one group is higher than one from another versus the reverse.
-This statistic of ordinal dominance, later named *Cliff’s Delta* 
-[@Bais_Van_Der_Neut_2022] was described as a non-parametric effect size based 
-on data observations, which quantifies the difference between the probability 
-that a value from one group is higher than a value from the other and 
-the reverse probability. 
+While the AUC scales from 0.5 (random classification) to 1.0 (perfect
+classification), many disciplines prefer a measure scaled between 0 and
+1 (or -1 and 1) to represent the strength of association or
+discriminatory power. This leads to the Gini coefficient (or Gini
+index). The Gini coefficient used in classification contexts is simply a
+linear transformation of the AUC, defined by the relationship
+[@Hand_Till_2001]: $$\text{Gini} = 2 \cdot \text{AUC} - 1$$ Cliff [1993]
+discusses an ordinal statistic, $d$, which compares the number of times
+a score from one group is higher than one from another versus the
+reverse. This statistic of ordinal dominance, later named *Cliff’s
+Delta* [@Bais_Van_Der_Neut_2022] was described as a non-parametric
+effect size based on data observations, which quantifies the difference
+between the probability that a value from one group is higher than a
+value from the other and the reverse probability.
 
 **Relation to the U statistic in the Mann-Whitney**
 
@@ -186,7 +210,7 @@ statistic.
 
 AUC is equivalent to the probability that a randomly selected positive
 case will have a higher score than a randomly selected negative case
-[@Hanley_McNeil_1982], [@Bamber_1975].
+[@Hanley_McNeil_1982; @Bamber_1975].
 $$\text{AUC} = \frac{U}{n_1 \times n_0}$$ where $U$ is the number of
 pairs in which the “bad” score is \< the “good” score, $n_1$ is the
 number of “bad” scores, and $n_0$ is the number of “good” scores.
@@ -195,7 +219,7 @@ This relationship provides the statistical basis for treating AUC as a
 measure of discrimination and allows confidence intervals to be
 constructed using Mann-Whitney statistics theory [@Hanley_McNeil_1982].
 
-**Relation to the Somers' D.**
+**Relation to the Somers' D**
 
 Somers' D coefficient is a measure of association between ordinal
 variables, which also shows a direct relationship with AUC. It can be
@@ -204,15 +228,14 @@ considered a generalization of AUC for ordinal variables [@Newson_2002].
 Somers' D is defined based on concordant and discordant pairs. A pair of
 observations (i,j) is concordant if the ranking of the independent
 variable X and the ranking of the dependent variable Y are in the same
-order, i.e., if (X_i - X_j) and (Y_i - Y_j) have the same sign. A pair
-is discordant if the signs are opposite. Somers' D is calculated as the
-difference between the number of concordant and discordant pairs,
+order, i.e., if ($X_i - X_j$) and ($Y_i - Y_j$) have the same sign. A
+pair is discordant if the signs are opposite. Somers' D is calculated as
+the difference between the number of concordant and discordant pairs,
 divided by the number of unrelated pairs on the independent variable X
 [@Somers_1962].
 
-In binary classification, Somers' D is equal to 2×AUC-1, which links it
-directly to AUC [@Newson_2002].
-$$\text{Somers' D} = 2 \cdot \text{AUC} - 1$$
+In binary classification: $$\text{Somers' D} = 2 \cdot \text{AUC} - 1$$
+which links it directly to AUC [@Newson_2002].
 
 **Cumulative accuracy profile**
 
@@ -227,12 +250,12 @@ between the model CAP and the random CAP, and $B$ is the area between
 the ideal CAP and the random CAP. Areas A and B are calculated using the
 trapezoidal method [@Engelmann_Hayden_Tasche_2003].
 
-Within the credit scoring literature, the AR metric is sometimes referred to 
-as the *pseudo Gini* index to differentiate it from the classical Gini index 
-used in economics to measure inequality. It was established that the 
-pseudo Gini index is based on the concentration curve (CAP) and that its value 
-is always equal to the Accuracy Ratio (referred to as Accuracy Rate) 
-for any scoring model [@Idczak_2019].
+Within the credit scoring literature, the AR metric is sometimes
+referred to as the *pseudo Gini* index to differentiate it from the
+classical Gini index used in economics to measure inequality. It was
+established that the pseudo Gini index is based on the concentration
+curve (CAP) and that its value is always equal to the Accuracy Ratio
+(referred to as Accuracy Rate) for any scoring model [@Idczak_2019].
 
 The relationship between AUC and the CAP curve can be described by the
 following formula [@Engelmann_Hayden_Tasche_2003]:
@@ -240,110 +263,116 @@ $$\text{AUC} = \frac{\text{AR} + 1}{2}$$
 
 # The need for computational efficiency in AUC estimation
 
-In the context of modern statistical modeling and machine learning, a single
-calculation of the AUC metric is often insufficient for a comprehensive 
-assessment of model quality. Complex validation, optimization, and simulation 
-procedures require the AUC statistic to be computed repeatedly, imposing high 
-demands on the computational efficiency of the underlying algorithms. 
-The following sections outline key areas where the performance of AUC 
-estimation is critical.
+In the context of modern statistical modeling and machine learning, a
+single calculation of the AUC metric is often insufficient for a
+comprehensive assessment of model quality. Complex validation,
+optimization, and simulation procedures require the AUC statistic to be
+computed repeatedly, imposing high demands on the computational
+efficiency of the underlying algorithms. The following sections outline
+key areas where the performance of AUC estimation is critical.
 
 **Uncertainty estimation and permutation tests**
 
-The estimation of confidence intervals and the verification of statistical 
-hypotheses for the AUC often rely on resampling methods, such as 
-bootstrapping or permutation tests. While necessary when simple parametric 
-assumptions cannot be met, these methods generate significant 
+The estimation of confidence intervals and the verification of
+statistical hypotheses for the AUC often rely on resampling methods,
+such as bootstrapping or permutation tests. While necessary when simple
+parametric assumptions cannot be met, these methods generate significant
 computational loads.
 
-In the case of massive datasets, the process of generating a single performance
-estimate can be computationally expensive [@LeDell_Petersen_Van_Der_Laan_2015]. 
-The authors point out that when using complex prediction methods, even with 
-relatively small datasets, cross-validation can consume a large amount of time,
-making the bootstrap a computationally intractable approach to variance 
-estimation in many practical settings.
+In the case of massive datasets, the process of generating a single
+performance estimate can be computationally expensive
+[@LeDell_Petersen_Van_Der_Laan_2015]. The authors point out that when
+using complex prediction methods, even with relatively small datasets,
+cross-validation can consume a large amount of time, making the
+bootstrap a computationally intractable approach to variance estimation
+in many practical settings.
 
-Similarly, in the context of meta-analysis of diagnostic accuracy studies, 
-there are instances of bootstrap algorithms usage to determine 
-confidence intervals for the AUC of the Summary ROC (SROC) curve 
-[@Noma_Matsushima_Ishii_2021]. Their approach involves computing AUC estimates 
-from a large number of bootstrap samples (e.g., $B=1000$), 
+Similarly, in the context of meta-analysis of diagnostic accuracy
+studies, there are instances of bootstrap algorithms usage to determine
+confidence intervals for the AUC of the Summary ROC (SROC) curve
+[@Noma_Matsushima_Ishii_2021]. Their approach involves computing AUC
+estimates from a large number of bootstrap samples (e.g., $B=1000$),
 which necessitates efficient calculation routines.
 
-Permutation-based inference also demands repeated calculation. 
-Bandos, Rockette, and Gur (2006) developed a permutation test for comparing ROC 
-curves in multireader studies. An exact permutation test in this setting is 
-formed by determining the frequency of the statistic—estimating the average 
-difference in AUCs across all possible exchanges of reader ratings. For larger 
-samples, this requires an asymptotic approach due to the computational 
-intensity of calculating differences for every permutation 
-[@Bandos_Rockette_Gur_2006]. Furthermore, Pauly, Asendorf, 
-and Konietschke (2016) proposed rank-based studentized permutation 
-methods for the nonparametric Behrens-Fisher problem, which corresponds to 
-inference for the AUC. They demonstrated that the studentized permutation 
-distribution ofthe Brunner-Munzel rank statistic is asymptotically standard 
-normal, providing a theoretical foundation for consistent confidence intervals 
-and tests, which rely on these intensive 
+Permutation-based inference also demands repeated calculation. Bandos,
+Rockette, and Gur (2006) developed a permutation test for comparing ROC
+curves in multireader studies. An exact permutation test in this setting
+is formed by determining the frequency of the statistic—estimating the
+average difference in AUCs across all possible exchanges of reader
+ratings. For larger samples, this requires an asymptotic approach due to
+the computational intensity of calculating differences for every
+permutation [@Bandos_Rockette_Gur_2006]. Furthermore, Pauly, Asendorf,
+and Konietschke (2016) proposed rank-based studentized permutation
+methods for the nonparametric Behrens-Fisher problem, which corresponds
+to inference for the AUC. They demonstrated that the studentized
+permutation distribution ofthe Brunner-Munzel rank statistic is
+asymptotically standard normal, providing a theoretical foundation for
+consistent confidence intervals and tests, which rely on these intensive
 permutation procedures [@Pauly_Asendorf_Konietschke_2016].
 
 **Variable importance measures**
 
-Efficient AUC computation is a prerequisite for specific 
-Variable Importance Measures (VIM). Therefore an AUC-based permutation variable 
-importance measure for Random Forests was introduced, designed to be more robust
-to unbalanced classes than standard error-rate-based measures. This procedure 
-requires the AUC to be computed for each tree in the forest, both before and 
-after permuting the values of a given predictor. Given the number of trees in 
-a forest and the number of predictors, this approach results in a vast number of 
-AUC calculations, far exceeding the computational cost of standard 
-single-pass metrics [@Janitza_Strobl_Boulesteix_2013].
+Efficient AUC computation is a prerequisite for specific Variable
+Importance Measures (VIM). Therefore an AUC-based permutation variable
+importance measure for Random Forests was introduced, designed to be
+more robust to unbalanced classes than standard error-rate-based
+measures. This procedure requires the AUC to be computed for each tree
+in the forest, both before and after permuting the values of a given
+predictor. Given the number of trees in a forest and the number of
+predictors, this approach results in a vast number of AUC calculations,
+far exceeding the computational cost of standard single-pass metrics
+[@Janitza_Strobl_Boulesteix_2013].
 
-Beyond model-specific methods, model-agnostic interpretability frameworks 
-also rely heavily on repeated metric estimation. The DALEX package 
-[@Biecek_2018] implements a permutation-based variable importance method 
-applicable to any predictive model. This approach measures the change in model 
-performance, such as the drop in AUC (represented as the loss 
-function $L(y, \hat{y}) = 1 - AUC$), after permuting the values of a single 
-predictor. To ensure stability of the importance estimates, this permutation 
-process is typically repeated $B$ times (e.g., $B=10$) for every feature in the 
-dataset. Consequently, for a model with $p$ features, assessing global feature 
-importance requires $p \times B$ independent AUC calculations, creating a 
-linear dependency between the number of features and the computational cost.
+Beyond model-specific methods, model-agnostic interpretability
+frameworks also rely heavily on repeated metric estimation. The DALEX
+package [@Biecek_2018] implements a permutation-based variable
+importance method applicable to any predictive model. This approach
+measures the change in model performance, such as the drop in AUC
+(represented as the loss function $L(y, \hat{y}) = 1 - AUC$), after
+permuting the values of a single predictor. To ensure stability of the
+importance estimates, this permutation process is typically repeated $B$
+times (e.g., $B=10$) for every feature in the dataset. Consequently, for
+a model with $p$ features, assessing global feature importance requires
+$p \times B$ independent AUC calculations, creating a linear dependency
+between the number of features and the computational cost.
 
 **AUC maximization algorithms**
 
-In the era of Big Data, learning algorithms that directly maximize AUC, rather 
-than accuracy, are gaining importance but algorithms maximizing model accuracy 
-do not necessarily maximize the AUC score. However, direct AUC maximization 
-presents a computational challenge because the function is non-decomposable over 
-individual examples. This has led to the development of stochastic AUC 
-maximization methods for big data and "Deep AUC Maximization" (DAM) for deep 
-learning, where optimization must be performed efficiently on large-scale 
-datasets [@Yang_Ying_2023].
+In the era of Big Data, learning algorithms that directly maximize AUC,
+rather than accuracy, are gaining importance but algorithms maximizing
+model accuracy do not necessarily maximize the AUC score. However,
+direct AUC maximization presents a computational challenge because the
+function is non-decomposable over individual examples. This has led to
+the development of stochastic AUC maximization methods for big data and
+"Deep AUC Maximization" (DAM) for deep learning, where optimization must
+be performed efficiently on large-scale datasets [@Yang_Ying_2023].
 
 **Simulation and curve modeling in credit risk**
 
-In credit risk management, theoretical ROC curve models are employed to simulate
-and assess the impact of scoring models when actual data is unavailable 
-or limited. Kochański (2022) notes that fitting models such as the binormal or 
-bigamma curves is helpful for "generating ROC curves without underlying data". 
-This capability is essential for assessing the impact of a credit scorecard 
-that is "yet to be built" [@Kochański_2022]. Such simulation analyses often 
-involve generating numerous curves and estimating their parameters to forecast 
-portfolio quality, further justifying the need for computationally efficient 
-AUC estimation methods.
+In credit risk management, theoretical ROC curve models are employed to
+simulate and assess the impact of scoring models when actual data is
+unavailable or limited. Kochański (2022) notes that fitting models such
+as the binormal or bigamma curves is helpful for "generating ROC curves
+without underlying data". This capability is essential for assessing the
+impact of a credit scorecard that is "yet to be built"
+[@Kochański_2022]. Such simulation analyses often involve generating
+numerous curves and estimating their parameters to forecast portfolio
+quality, further justifying the need for computationally efficient AUC
+estimation methods.
 
-Beyond single-curve fitting, Kochański (2021) extends the analysis to a dynamic 
-market environment, proposing a simulation model for risk 
-and pricing competition. This framework explores how the discrimination power 
-of credit scoring models influences key business metrics, illustrating 
-the "trade-off between profitability, market share, and credit loss rates" 
-[@Kochanski_2021]. The study demonstrates that even marginal improvements in 
-discrimination power can yield substantial benefits, a conclusion derived from 
-simulation scenarios that model the interactions between lenders and borrowers. 
-Such comprehensive market analyses require processing numerous scenarios to 
-identify profit-maximizing strategies, further highlighting the role of 
-performance metrics as fundamental parameters in complex economic models.
+Beyond single-curve fitting, Kochański (2021) extends the analysis to a
+dynamic market environment, proposing a simulation model for risk and
+pricing competition. This framework explores how the discrimination
+power of credit scoring models influences key business metrics,
+illustrating the "trade-off between profitability, market share, and
+credit loss rates" [@Kochanski_2021]. The study demonstrates that even
+marginal improvements in discrimination power can yield substantial
+benefits, a conclusion derived from simulation scenarios that model the
+interactions between lenders and borrowers. Such comprehensive market
+analyses require processing numerous scenarios to identify
+profit-maximizing strategies, further highlighting the role of
+performance metrics as fundamental parameters in complex economic
+models.
 
 # R packages
 
@@ -386,7 +415,7 @@ Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad
 accounts, and $n_0 = \sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good
 accounts.
 
-**Trapezoidal Integration over the ROC Curve**
+**Trapezoidal integration over the ROC curve**
 
 $$\text{AUC} = \sum_{k=1}^{m-1}(\text{FPR}_{k+1} - \text{FPR}_{k})\cdot\frac{\text{TPR}_{k+1}+\text{TPR}_k}{2}$$
 
@@ -397,16 +426,14 @@ the number of true positives, $\text{FP}_k$ is the number of false
 positives, $n_1$ is the number of positive cases, $n_0$ is the number of
 negative cases.
 
-**Optimized Pairwise Comparison**
+**Optimized pairwise comparison**
 
 AUC as the probability that a randomly chosen positive instance receives
 a higher score than a randomly chosen negative instance:
 
 $$\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=1}\sum_{j:y_j=0}\left[\mathbb{I}(s_i<s_j)+\frac{1}{2}\mathbb{I}(s_i=s_j)\right]$$
 
-Generally, naive pairwise comparison is not efficient (?), but ...
-
-## Rank-Based (Mann–Whitney U Statistic Formulation)
+**Rank-based (Mann–Whitney U statistic formulation)**
 
 $$\text{AUC} = \frac{\bar{R}_{1}-{n_1(n_1+1)}/2}{n_0}$$
 
@@ -418,9 +445,13 @@ $$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
 
 ## Benchmarking packages
 
-All of the R packages that can be used to calculate the AUC measure have had their performance speed tested. In every benchmark, each function was called 100 times, and there are a total of three benchmarks, each with a different number of observations, all of which have been generated from the normal distribution.
+All of the R packages that can be used to calculate the AUC measure have
+had their performance speed tested. In every benchmark, each function
+was called 100 times, and there are a total of three benchmarks, each
+with a different number of observations, all of which have been
+generated from the normal distribution.
 
-``` {r setting up for package benchmarks, include = FALSE}
+```{r setting up for package benchmarks, include = FALSE}
 plot_benchmark <- function(benchmark) {
   autoplot(benchmark) +
     theme(axis.text.y = element_text(size = rel(1.5)))
@@ -434,35 +465,42 @@ package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 **First benchmark - 1000 observations**
 
-``` {r}
+```{r}
 plot_benchmark(package_benchmark1)
 
 ```
 
 **Second benchmark - 10000 observations**
 
-``` {r}
+```{r}
 plot_benchmark(package_benchmark2)
 
 ```
 
 **Third benchmark - 100000 observations**
 
-``` {r}
+```{r}
 plot_benchmark(package_benchmark3)
 
 ```
 
-In general, *bigstatsr* offers the fastest way of computation overall. While *MLMetrics* and and *Hmisc* are slightly faster on the smallest data set, *bigstatsr* noticeably outperforms them as the number of observations increases.
+In general, *bigstatsr* offers the fastest way of computation overall.
+While *MLMetrics* and and *Hmisc* are slightly faster on the smallest
+data set, *bigstatsr* noticeably outperforms them as the number of
+observations increases.
 
-It is therefore recommended to use the *AUC* function from the *bigstatsr* package whenever calculating the AUC metric in R.
-
+It is therefore recommended to use the *AUC* function from the
+*bigstatsr* package whenever calculating the AUC metric in R.
 
 ## Benchmarking the algorithms
 
-The three identified algorithms have been tested against each other, by creating as optimised functions implementing them as possible. They only contain the calculation, with no checks whether the inputs are correct, to minimise potential interference and isolate the algorithms. They have been performed on the same observations as the package benchmarks.
+The three identified algorithms have been tested against each other, by
+creating as optimised functions implementing them as possible. They only
+contain the calculation, with no checks whether the inputs are correct,
+to minimise potential interference and isolate the algorithms. They have
+been performed on the same observations as the package benchmarks.
 
-``` {r setup for own function benchmarks, include = FALSE}
+```{r setup for own function benchmarks, include = FALSE}
 own_functions_benchmark1 <- readRDS("../data/own_functions_benchmark_1.rds")
 own_functions_benchmark2 <- readRDS("../data/own_functions_benchmark_2.rds")
 own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
@@ -471,22 +509,21 @@ own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
 
 **First benchmark - 1000 observations**
 
-``` {r}
+```{r}
 plot_benchmark(own_functions_benchmark1)
 ```
 
 **Second benchmark - 10000 observations**
 
-``` {r}
+```{r}
 plot_benchmark(own_functions_benchmark2)
 ```
 
 **Third benchmark - 100000 observations**
 
-``` {r}
+```{r}
 plot_benchmark(own_functions_benchmark3)
 ```
-
 
 # Case studies
 
