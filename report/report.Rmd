@@ -28,7 +28,11 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE)
+
 library(plotly)
 library(ggplot2)
 library(kableExtra)
@@ -468,21 +472,21 @@ package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 **First benchmark - 1000 observations**
 
-```{r}
+```{r package_benchmark_1, fig.align="center", out.width="100%"}
 plot_benchmark(package_benchmark1)
 
 ```
 
 **Second benchmark - 10000 observations**
 
-```{r}
+```{r package_benchmark_2, fig.align="center", out.width="100%"}
 plot_benchmark(package_benchmark2)
 
 ```
 
 **Third benchmark - 100000 observations**
 
-```{r}
+```{r package_benchmark_3, fig.align="center", out.width="100%"}
 plot_benchmark(package_benchmark3)
 
 ```
@@ -522,19 +526,19 @@ own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
 
 **First benchmark - 1000 observations**
 
-```{r}
+```{r own_function_benchmark_1, fig.align="center", out.width="100%"}
 plot_benchmark(own_functions_benchmark1)
 ```
 
 **Second benchmark - 10000 observations**
 
-```{r}
+```{r own_function_benchmark_2, fig.align="center", out.width="100%"}
 plot_benchmark(own_functions_benchmark2)
 ```
 
 **Third benchmark - 100000 observations**
 
-```{r}
+```{r own_function_benchmark_3, fig.align="center", out.width="100%"}
 plot_benchmark(own_functions_benchmark3)
 ```
 

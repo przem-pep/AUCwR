@@ -2,7 +2,11 @@
 # Please edit report.Rmd to modify this file
 
 ## ----setup, include=FALSE-----------------------------------------------------
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE)
+
 library(plotly)
 library(ggplot2)
 library(kableExtra)
@@ -78,17 +82,17 @@ package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 
 
-## -----------------------------------------------------------------------------
+## ----package_benchmark_1, fig.align="center", out.width="100%"----------------
 plot_benchmark(package_benchmark1)
 
 
 
-## -----------------------------------------------------------------------------
+## ----package_benchmark_2, fig.align="center", out.width="100%"----------------
 plot_benchmark(package_benchmark2)
 
 
 
-## -----------------------------------------------------------------------------
+## ----package_benchmark_3, fig.align="center", out.width="100%"----------------
 plot_benchmark(package_benchmark3)
 
 
@@ -100,14 +104,14 @@ own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
 
 
 
-## -----------------------------------------------------------------------------
+## ----own_function_benchmark_1, fig.align="center", out.width="100%"-----------
 plot_benchmark(own_functions_benchmark1)
 
 
-## -----------------------------------------------------------------------------
+## ----own_function_benchmark_2, fig.align="center", out.width="100%"-----------
 plot_benchmark(own_functions_benchmark2)
 
 
-## -----------------------------------------------------------------------------
+## ----own_function_benchmark_3, fig.align="center", out.width="100%"-----------
 plot_benchmark(own_functions_benchmark3)
 
