@@ -14,9 +14,9 @@ library(microbenchmark)
 
 
 
-## ----auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"----
-cz = c(.6, .8, .95)
-sw = c(.9, .8, .6)
+## ----auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation. The black piecewise linear curve represents the receiver operating characteristic (ROC) curve. The AUC (also referred to as AUROC, ROC score, C-statistic, or Vargha–Delaney A) is defined as the area under the ROC curve. A linear transformation of the AUC—known, among others, as the Gini coefficient, Cliff’s delta, Somers’ D, or the ROC skill score—equals twice the area between the diagonal line y=x and the ROC curve. ", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"----
+cz = c(.2, .42, .6, .7, .8, .88, .95, .99)
+sw = c(.98, .95, .9, .86, .8, .72, .6, .4)
 
 df <- data.frame(FPR = c(0, 1-sw, 1), TPR = c(0, cz, 1))
 
@@ -30,8 +30,8 @@ ggplot(df, aes(x = FPR, y = TPR)) +
   geom_point() +
   annotate("text", x = 0.5, y = 0.5, label = "AUC", size =10,  color = "darkblue") +
   coord_fixed(ratio = 1, xlim = c(0,1), ylim = c(0,1)) +
-  labs(x = "FPR (1 - specificity)\ncumulative fraction of goods", 
-       y = "TPR (sensitivity)\ncumulative fraction of bads") +
+  labs(x = "FPR (1 - specificity)", 
+       y = "TPR (sensitivity)") +
   theme_minimal() +
 
 #library(ggplot2)
@@ -41,9 +41,9 @@ ggplot(df, aes(x = FPR, y = TPR)) +
   geom_polygon(aes(x=TPR, y=FPR), fill="orange1") +
   geom_line() +
   geom_point() +
-  annotate("text", x = 0.5, y = 0.5, label = "Gini", size =10,  color = "orange4") +
+  annotate("text", x = 0.5, y = 0.5, label = "“Gini”", size =10,  color = "orange4") +
   coord_fixed(ratio = 1, xlim = c(0,1), ylim = c(0,1)) +
-  labs(x = "FPR (1 - specificity)\ncumulative fraction of goods", y = "") +
+  labs(x = "FPR (1 - specificity)", y = "") +
   theme_minimal()
 
 

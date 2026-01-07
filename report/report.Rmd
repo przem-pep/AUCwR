@@ -73,40 +73,21 @@ present the results of performance benchmarks for popular R packages and
 propose our alternatives, identifying optimal solutions for different
 sizes of large datasets.
 
-# ROC curve
+# ROC curve and AUC
 
-The ROC curve is one of the most important tools for assessing the
-effectiveness of binary classifiers. It was introduced in the 1940s in
-the context of radar signal analysis, which is the origin of its name –
-*Receiver Operating Characteristic* [@Junge_Dettori_2018]. Today, the
-ROC curve is used in fields such as medicine, biotechnology, computer
-science, and banking, where it is used to evaluate scoring models.
+The ROC curve is one of the most widely used tools for assessing the performance of binary classifiers. Introduced in the 1940s for radar signal analysis, the ROC curve derives its name from “Receiver Operating Characteristic” [@Junge_Dettori_2018]. Today, ROC curves are used across diverse fields—such as medicine, biotechnology, computer science, and banking—to evaluate scoring and classification models.
 
-**Definition**
+The ROC curve is plotted within the unit square, connecting points defined by sensitivity and specificity at various decision thresholds ("cut-offs"). In an ROC curve, the x-axis represents the false positive rate (FPR, or “1 − specificity”), the proportion of false positives among all actual negatives. The y-axis represents sensitivity (or “recall”), the proportion of correctly identified positives among all actual positives (true positive rate, TPR) [@Fawcett_2006].
 
-The ROC curve is a graph created by “plotting the qualitative
-characteristics of binary classifiers generated from a model using many
-different cut-off points” [@Gromada_2016], illustrating the model's
-predictive effectiveness. Each point on the curve corresponds to TPR
-(sensitivity) and FPR (1 – specificity) values as a function of the
-classifier's varying cut-off point [@Fawcett_2006].
+The AUC (Area Under the ROC Curve) provides a single-number summary of the classification performance of binary models across all possible decision thresholds. A ROC curve that passes through the point (0, 1) corresponds to an ideal classifier, achieving zero false positives and perfect detection of positive cases. Curves lying closer to this point are therefore more desirable [@Hanley_McNeil_1982]; they correspond to larger values of the Area Under the Curve (AUC). By contrast, the diagonal line connecting (0, 0) and (1, 1) represents a random classifier, for which the expected value of AUC equals 0.5.
 
-**Construction of the ROC Curve**
+In many application domains—most notably in credit scoring—the AUC is often transformed into a measure that tends to zero for a completely random classifier and equals one for a perfect classifier (it may also take negative values if the classifier’s predictions are systematically reversed). This transformation ($2\times\text{AUC} - 1$) is commonly referred to as the Gini coefficient in the credit scoring literature. As we will see later, the same measure appears under different names in other fields.
 
-To construct an ROC curve, the threshold that determines whether the
-classifier assigns an observation to the positive class is modified. For
-each threshold, TPR and FPR are calculated. The results are presented on
-a graph where the X-axis represents FPR and the Y-axis represents TPR.
+Figure \@ref(fig:auc-gini) illustrates an empirical ROC curve defined by eight discrete cut-off points, along with the areas corresponding to the AUC and the Gini coefficient.
 
-Point (0,1) represents an ideal classifier: no false positives and full
-detection of positive cases. A curve closer to this point is more
-desirable [@Hanley_McNeil_1982] – this is equivalent to a larger Area
-Under the Curve, or AUC. The diagonal line from (0,0) to (1,1)
-represents a random classifier (AUC = 0.5).
-
-```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation: AUC (AUROC) is the area under the ROC curve, Gini is twice the area between the diagonal y=x and the ROC curve.", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
-cz = c(.6, .8, .95)
-sw = c(.9, .8, .6)
+```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation. The black piecewise linear curve represents the receiver operating characteristic (ROC) curve. The AUC (also referred to as AUROC, ROC score, C-statistic, or Vargha–Delaney A) is defined as the area under the ROC curve. A linear transformation of the AUC—known, among others, as the Gini coefficient, Cliff’s delta, Somers’ D, or the ROC skill score—equals twice the area between the diagonal line y=x and the ROC curve. ", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
+cz = c(.2, .42, .6, .7, .8, .88, .95, .99)
+sw = c(.98, .95, .9, .86, .8, .72, .6, .4)
 
 df <- data.frame(FPR = c(0, 1-sw, 1), TPR = c(0, cz, 1))
 
@@ -120,8 +101,8 @@ ggplot(df, aes(x = FPR, y = TPR)) +
   geom_point() +
   annotate("text", x = 0.5, y = 0.5, label = "AUC", size =10,  color = "darkblue") +
   coord_fixed(ratio = 1, xlim = c(0,1), ylim = c(0,1)) +
-  labs(x = "FPR (1 - specificity)\ncumulative fraction of goods", 
-       y = "TPR (sensitivity)\ncumulative fraction of bads") +
+  labs(x = "FPR (1 - specificity)", 
+       y = "TPR (sensitivity)") +
   theme_minimal() +
 
 #library(ggplot2)
@@ -131,9 +112,9 @@ ggplot(df, aes(x = FPR, y = TPR)) +
   geom_polygon(aes(x=TPR, y=FPR), fill="orange1") +
   geom_line() +
   geom_point() +
-  annotate("text", x = 0.5, y = 0.5, label = "Gini", size =10,  color = "orange4") +
+  annotate("text", x = 0.5, y = 0.5, label = "“Gini”", size =10,  color = "orange4") +
   coord_fixed(ratio = 1, xlim = c(0,1), ylim = c(0,1)) +
-  labs(x = "FPR (1 - specificity)\ncumulative fraction of goods", y = "") +
+  labs(x = "FPR (1 - specificity)", y = "") +
   theme_minimal()
 ```
 
