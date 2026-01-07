@@ -2,7 +2,7 @@
 title: "Area under ROC curve – review and efficient computation in R"
 date: "2025-12-31"
 abstract: >
-  The AUC (Area Under the Curve) measure is widely used in statistical classification and machine learning, including credit scoring, where it is employed to assess the quality of predictive models. The goal of this paper is to review methods for calculating the AUC measure, followed by an analysis of the efficiency of computing this measure in R.
+  The Area Under the Receiver Operating Characteristic Curve (AUC) is a widely used measure for evaluating the performance of binary classification models. In the literature and in practice, it appears under various names and is closely related to other performance measures. In this paper, we review these formulations and discuss the motivation for efficient AUC computation in empirical analysis. We survey R packages that provide implementations of AUC and describe the algorithms they employ. We then conduct a benchmarking study to compare the execution time of selected implementations. **A case study illustrates how the choice of AUC computation method can substantially reduce computation time and accelerate analytical workflows.**
 draft: true
 author:  
   - name: Błażej Kochański
