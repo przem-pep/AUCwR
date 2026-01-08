@@ -158,116 +158,15 @@ It is worth mentioning that ROC curves (under the name of _relative_ operating c
 
 # The need for computational efficiency in AUC estimation
 
-In the context of modern statistical modeling and machine learning, a
-single calculation of the AUC metric is often insufficient for a
-comprehensive assessment of model quality. Complex validation,
-optimization, and simulation procedures require the AUC statistic to be
-computed repeatedly, imposing high demands on the computational
-efficiency of the underlying algorithms. The following sections outline
-key areas where the performance of AUC estimation is critical.
+A single calculation of the AUC is often insufficient for a comprehensive assessment of model quality. More advanced inference, validation, optimization, feature evaluation or simulation procedures require repeated computation of the AUC, placing substantial demands on the computational efficiency of the underlying algorithms.
 
-**Uncertainty estimation and permutation tests**
+Resampling methods are commonly used for inference on the area under the ROC curve. Confidence intervals for the AUC can be obtained using bootstrapping or cross-validation [@Noma_Matsushima_Ishii_2021; @Gu_Ghosal_Roy_2008; @LeDell_Petersen_Van_Der_Laan_2015]. Permutation tests enable the assessment of statistical significance, either under the null hypothesis of no discriminatory power or when comparing the performance of two models [@Pauly_Asendorf_Konietschke_2016; @Venkatraman_2000; @Bandos_Rockette_Gur_2006]. Resampling procedures are essential for evaluating uncertainty, model stability, and statistical significance. However, despite their favorable statistical properties, including robustness [@Simonoff_Hochberg_Reiser_1986; @Pauly_Asendorf_Konietschke_2016], these methods rely on repeated recalculation of the AUC and can therefore impose considerable computational burdens, particularly for large datasets or complex models [@LeDell_Petersen_Van_Der_Laan_2015].
 
-The estimation of confidence intervals and the verification of
-statistical hypotheses for the AUC often rely on resampling methods,
-such as bootstrapping or permutation tests. While necessary when simple
-parametric assumptions cannot be met, these methods generate significant
-computational loads.
+AUC maximization is another example of computational challenge that has recently gained importance in the development of ranking and classification algorithms. Directly optimizing AUC, rather than surrogate losses, leads to improved generalization and discrimination capabilities in large-scale settings [@Yuan_Yan_Sonka_Yang_2021; @Zhang_Xu_2022; @LeDell_etal_2016]. Unlike many other objectives, the AUC function is non-decomposable over individual examples, which complicates the use of standard optimization techniques [@Zhou_Ying_Skiena_2020]. A comprehensive overview of the last 20+ years of AUC maximization research, emphasizing its relevance for imbalanced learning, large datasets, and deep learning applications has been provided by @Yang_Ying_2023. Many, if not most, approaches to AUC maximization require repeated multiple computations of the AUC statistic [see, for example @Calders_Jaroszewicz_2007; @Yang_Zhou_Lei_Ying_2020; @Ataman_Street_Zhang_2006; @Gajowniczek_Zabkowski_2021]. 
 
-In the case of massive datasets, the process of generating a single
-performance estimate can be computationally expensive
-[@LeDell_Petersen_Van_Der_Laan_2015]. The authors point out that when
-using complex prediction methods, even with relatively small datasets,
-cross-validation can consume a large amount of time, making the
-bootstrap a computationally intractable approach to variance estimation
-in many practical settings.
+Efficient AUC computation is also a prerequisite for many feature selection and assessment techniques. Permutation-based variable importance measures were, for example, proposed by @Janitza_Strobl_Boulesteix_2013 or @Biecek_2018, while AUC-based feature selection algorithms were, inter alia, presented by S@Sun_Wang_Wei_2017; @Su_Du_Wang_Wei_Liu_2022, @Xu_Suzuki_2014 or @Ribeiro_2021. Other applications of repeated AUC computation arise in simulation studies. For instance, @Kochanski_2021 introduced a simulation model for risk and pricing competition in which each bank optimizes its credit scoring strategy, requiring numerous AUC evaluations to assess performance under varying market conditions.
 
-Similarly, in the context of meta-analysis of diagnostic accuracy
-studies, there are instances of bootstrap algorithms usage to determine
-confidence intervals for the AUC of the Summary ROC (SROC) curve
-[@Noma_Matsushima_Ishii_2021]. Their approach involves computing AUC
-estimates from a large number of bootstrap samples (e.g., $B=1000$),
-which necessitates efficient calculation routines.
-
-Permutation-based inference also demands repeated calculation. Bandos,
-Rockette, and Gur (2006) developed a permutation test for comparing ROC
-curves in multireader studies. An exact permutation test in this setting
-is formed by determining the frequency of the statistic—estimating the
-average difference in AUCs across all possible exchanges of reader
-ratings. For larger samples, this requires an asymptotic approach due to
-the computational intensity of calculating differences for every
-permutation [@Bandos_Rockette_Gur_2006]. Furthermore, Pauly, Asendorf,
-and Konietschke (2016) proposed rank-based studentized permutation
-methods for the nonparametric Behrens-Fisher problem, which corresponds
-to inference for the AUC. They demonstrated that the studentized
-permutation distribution ofthe Brunner-Munzel rank statistic is
-asymptotically standard normal, providing a theoretical foundation for
-consistent confidence intervals and tests, which rely on these intensive
-permutation procedures [@Pauly_Asendorf_Konietschke_2016].
-
-**Variable importance measures**
-
-Efficient AUC computation is a prerequisite for specific Variable
-Importance Measures (VIM). Therefore an AUC-based permutation variable
-importance measure for Random Forests was introduced, designed to be
-more robust to unbalanced classes than standard error-rate-based
-measures. This procedure requires the AUC to be computed for each tree
-in the forest, both before and after permuting the values of a given
-predictor. Given the number of trees in a forest and the number of
-predictors, this approach results in a vast number of AUC calculations,
-far exceeding the computational cost of standard single-pass metrics
-[@Janitza_Strobl_Boulesteix_2013].
-
-Beyond model-specific methods, model-agnostic interpretability
-frameworks also rely heavily on repeated metric estimation. The DALEX
-package [@Biecek_2018] implements a permutation-based variable
-importance method applicable to any predictive model. This approach
-measures the change in model performance, such as the drop in AUC
-(represented as the loss function $L(y, \hat{y}) = 1 - AUC$), after
-permuting the values of a single predictor. To ensure stability of the
-importance estimates, this permutation process is typically repeated $B$
-times (e.g., $B=10$) for every feature in the dataset. Consequently, for
-a model with $p$ features, assessing global feature importance requires
-$p \times B$ independent AUC calculations, creating a linear dependency
-between the number of features and the computational cost.
-
-**AUC maximization algorithms**
-
-In the era of Big Data, learning algorithms that directly maximize AUC,
-rather than accuracy, are gaining importance but algorithms maximizing
-model accuracy do not necessarily maximize the AUC score. However,
-direct AUC maximization presents a computational challenge because the
-function is non-decomposable over individual examples. This has led to
-the development of stochastic AUC maximization methods for big data and
-"Deep AUC Maximization" (DAM) for deep learning, where optimization must
-be performed efficiently on large-scale datasets [@Yang_Ying_2023].
-
-**Simulation and curve modeling in credit risk**
-
-In credit risk management, theoretical ROC curve models are employed to
-simulate and assess the impact of scoring models when actual data is
-unavailable or limited. Kochański (2022) notes that fitting models such
-as the binormal or bigamma curves is helpful for "generating ROC curves
-without underlying data". This capability is essential for assessing the
-impact of a credit scorecard that is "yet to be built"
-[@Kochanski_2022]. Such simulation analyses often involve generating
-numerous curves and estimating their parameters to forecast portfolio
-quality, further justifying the need for computationally efficient AUC
-estimation methods.
-
-Beyond single-curve fitting, Kochański (2021) extends the analysis to a
-dynamic market environment, proposing a simulation model for risk and
-pricing competition. This framework explores how the discrimination
-power of credit scoring models influences key business metrics,
-illustrating the "trade-off between profitability, market share, and
-credit loss rates" [@Kochanski_2021]. The study demonstrates that even
-marginal improvements in discrimination power can yield substantial
-benefits, a conclusion derived from simulation scenarios that model the
-interactions between lenders and borrowers. Such comprehensive market
-analyses require processing numerous scenarios to identify
-profit-maximizing strategies, further highlighting the role of
-performance metrics as fundamental parameters in complex economic
-models.
+In summary, efficient and scalable computation of AUC has become a foundational requirement not only for model evaluation but also for advanced inference, optimization, feature selection, and simulation studies. As AUC-based methods continue to expand into areas such as deep models and large-scale applications, the computational complexity of repeated AUC calculations remains a critical challenge.
 
 # R packages
 
