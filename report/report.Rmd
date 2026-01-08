@@ -156,7 +156,7 @@ Somers’ D is a measure of association between a predictor X and an ordinal dep
 
 It is worth mentioning that ROC curves (under the name of _relative_ operating characteristics curves) are also used in meteorology to assess probabilistic forecasts for binary events. In this context, the AUC may be referred to as the ROC score, while the Gini coefficient is known as the ROC skill score [@Kharin_Zwiers_2003; @Mason_Graham_1999]. 
 
-# The need for computational efficiency in AUC estimation
+# Motivation for computationally efficient AUC calculation
 
 A single calculation of the AUC is often insufficient for a comprehensive assessment of model quality. More advanced inference, validation, optimization, feature evaluation or simulation procedures require repeated computation of the AUC, placing substantial demands on the computational efficiency of the underlying algorithms.
 
@@ -168,7 +168,9 @@ Efficient AUC computation is also a prerequisite for many feature selection and 
 
 In summary, efficient and scalable computation of AUC has become a foundational requirement not only for model evaluation but also for advanced inference, optimization, feature selection, and simulation studies. As AUC-based methods continue to expand into areas such as deep models and large-scale applications, the computational complexity of repeated AUC calculations remains a critical challenge.
 
-# R packages
+# AUC computation implementation in R packages
+
+Table 1 presents a selection of R packages and functions commonly used to calculate the area under the ROC curve (AUC). For each package, the table lists the primary function, typical usage syntax, the computational method employed, and the programming language(s) in which the core implementation is written. The computational methods range from rank-based approaches and pairwise comparisons to trapezoidal integration, reflecting different trade-offs between accuracy and efficiency. Some functions rely entirely on R, while others leverage compiled code in C++ for improved performance. It is important to note that certain functions perform additional checks or compute supplementary metrics beyond the AUC itself, which may reduce computational efficiency when only the AUC is needed. The practical impact of these differences will be examined empirically in the following section.
 
 ```{r}
 ftl <- read.csv("../data/functions_table.csv", sep = ";")
@@ -186,48 +188,40 @@ if (knitr::is_latex_output()) {
     column_spec(3, monospace = TRUE)
 } else {
   knitr::kable(fth, format = "html",
-             caption = "Functions computing AUC.") %>%
+             caption = "Functions computing AUC in R.") %>%
     kable_styling(bootstrap_options = "condensed") %>%
     column_spec(3, width_min = "33em", width_max = "33em", monospace = TRUE) %>%
     column_spec(4, width_min = "9em", width_max = "9em")
 }
 ```
 
-We identified three main types of algorithms for AUC computation: (1)
-trapezoidal integration over the ROC Curve, (2) (optimized) pairwise
+Based on the reviewed functions, we identified three main types of algorithms for AUC computation. These approaches differ in how they process predicted scores and true labels, we identified three main types of algorithms for AUC computation: (1) trapezoidal integration over the ROC curve, (2) (optimized) pairwise
 comparison, (3) and rank-based (Mann–Whitney U statistic formulation).
 
-Let $(s_i, y_i)$ for $i = 1, \dots, n$ denote the score assigned to an
-account and its corresponding true label. In line with standard practice
-in credit scoring, we assume that $y_i=1$ indicates a "bad" account
-(e.g., one that defaults, doesn't repay the loan), while $y_i=0$
-represents a good account. A properly functioning scoring should assign
-lower scores to accounts with a higher predicted probability of being
+Let $(s_i, y_i)$ for $i = 1, \dots, n$ denote the score $s$ assigned to an account and its corresponding true label. In line with standard practice in credit scoring, we assume that $y_i=1$ indicates a "bad" account (e.g., one that defaults or fails to repay the loan), while $y_i=0$ represents a good account. A properly functioning scoring should assign lower scores to accounts with a higher predicted probability of being
 bad, and higher scores to those likely to be good.
 
-Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad
-accounts, and $n_0 = \sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good
-accounts.
+Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad accounts, and $n_0 =\sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good accounts.
 
-**Trapezoidal integration over the ROC curve**
+The three computational approaches described above can be expressed formally as follows:
+
+**1. Trapezoidal integration over the ROC curve**
+
+This approach computes the AUC as the area under the empirical ROC curve by applying the trapezoidal rule:
 
 $$\text{AUC} = \sum_{k=1}^{m-1}(\text{FPR}_{k+1} - \text{FPR}_{k})\cdot\frac{\text{TPR}_{k+1}+\text{TPR}_k}{2}$$
 
-where $m$ is the number of distinct score thresholds from lowest to the
-highest score, $TPR_k$ is the True Positive Rate, $FPR_k$ is the False
-Positive Rate. $TPR_k=TP_k/n_1$ and $FPR_k=FP_k/n_0$, where $TP_k$ is
-the number of true positives, $\text{FP}_k$ is the number of false
-positives, $n_1$ is the number of positive cases, $n_0$ is the number of
-negative cases.
+where $m$ is the number of distinct score thresholds from lowest to the highest, $TPR_k=TP_k/n_1$ is the true positive rate, $FPR_k=FP_k/n_0$ is the false positive Rate at threshold $k$, $TP_k$ is the number of true positives, $\text{FP}_k$ is the number of false positives, $n_1$ is the number of positive cases, $n_0$ is the number of negative cases.
 
-**Optimized pairwise comparison**
+**2. Optimized pairwise comparison**
 
-AUC as the probability that a randomly chosen positive instance receives
-a higher score than a randomly chosen negative instance:
+In this formulation, the AUC is based on the probabilitic (pairwise comparison) definition, that is the probability that a randomly chosen positive instance receives a higher score than a randomly chosen negative instance, with 0.5 applied to ties. 
 
 $$\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=1}\sum_{j:y_j=0}\left[\mathbb{I}(s_i<s_j)+\frac{1}{2}\mathbb{I}(s_i=s_j)\right]$$
 
-**Rank-based (Mann–Whitney U statistic formulation)**
+**3. Rank-based formula**
+
+The rank-based formula for AUC is directly based on the method developed for the Mann–Whitney U statistic computation [see @Sheskin_2020]:
 
 $$\text{AUC} = \frac{\bar{R}_{1}-{n_1(n_1+1)}/2}{n_0}$$
 
@@ -237,16 +231,9 @@ $$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
 
 # Efficiency study
 
-## Benchmarking packages
+## Performance of existing R Packages
 
-All of the R packages that can be used to calculate the AUC measure have
-had their performance speed tested. In every benchmark, each function
-was called 100 times, and there are a total of three benchmarks, each
-with a different number of observations. The predictor *pred* has been
-generated from the normal distribution, with the first half of the
-observations using $N(0, 1)$, and the second half being $N(1, 1)$. The
-*target* variable is a vector, where the first half of values are all
-equal to 1 and the second half of values are all equal to 0.
+The computational efficiency of several R packages for AUC computation was evaluated through a series of benchmarks. In each benchmark, every AUC function was invoked 100 times. Experiments were conducted on three simulated datasets of increasing size, containing 1,000, 10,000, and 100,000 observations. The predictor variable *pred* was synthetically generated such that the first half of the observations followed a $\mathcal{N}(0,1)$ distribution, while the remaining observations followed a $\mathcal{N}(1,1)$ distribution. The corresponding response variable was binary, with the first half of the observations assigned label 1 and the second half assigned label 0.
 
 ```{r setting up for package benchmarks, include = FALSE}
 plot_benchmark <- function(benchmark) {
@@ -281,31 +268,15 @@ plot_benchmark(package_benchmark3)
 
 ```
 
-The time needed to complete the calculations varies greatly and spans
-multiple orders of magnitude. For example, using *bigstatsr* to
-calculate the AUC metrics is almost 100 times faster than by using the
-*scorecard* package. There may be different causes to this, for example
-a function might additionally perform other calculations, like
-generating confidence intervals or also calculating other metrics, or
-otherwise due to the algorithms used being inefficient, or perhaps even
-both of these issues at once.
+The computational time required to evaluate the AUC metric varies substantially across the examined implementations, spanning several orders of magnitude. For instance, the *bigstatsr* implementation computes the AUC nearly two orders of magnitude faster than the corresponding function in the *scorecard* package. This discrepancy may be attributable to several factors, including additional computations performed internally by some functions (e.g., estimation of confidence intervals or simultaneous evaluation of multiple performance metrics), differences in algorithmic design, or a combination of these effects.
 
-In general, *bigstatsr* offers the fastest way of computation overall.
-While *MLMetrics* and *Hmisc* are slightly faster on the smallest data
-set, *bigstatsr* noticeably outperforms them as the number of
-observations increases.
+Overall, *bigstatsr* consistently provides the fastest AUC computation. Although *MLMetrics* and *Hmisc* exhibit slightly lower execution times on the smallest dataset, *bigstatsr* clearly outperforms these alternatives as the number of observations increases.
 
-It is therefore recommended to use the *AUC* function from the
-*bigstatsr* package whenever calculating the AUC metric in R, whenever
-an already existing function is desired.
+Consequently, when an existing R implementation is preferred, we recommend the use of the *AUC* function from the *bigstatsr* package for efficient computation of the AUC metric, particularly in large-scale settings.
 
-## Benchmarking the algorithms
+## Benchmarking custom R implementations
 
-The three identified algorithms have been tested against each other, by
-creating as optimised functions implementing them as possible. They only
-contain the calculation, with no checks whether the inputs are correct,
-to minimise potential interference and isolate the algorithms. They have
-been performed on the same observations as the package benchmarks.
+The three identified algorithms were evaluated through direct comparison using custom R implementations designed to be as computationally efficient as possible. Each implementation was restricted to the core AUC computation and deliberately omitted input validation and auxiliary checks in order to minimize overhead and isolate algorithmic performance. All benchmarks were conducted on the same datasets used in the package-level experiments.
 
 ```{r setup for own function benchmarks, include = FALSE}
 own_functions_benchmark1 <- readRDS("../data/own_functions_benchmark_1.rds")
@@ -332,9 +303,6 @@ plot_benchmark(own_functions_benchmark2)
 plot_benchmark(own_functions_benchmark3)
 ```
 
-In all the benchmarks, the optimised pairwise comparison method is the
-fastest, with the trapezoid method being only slightly slower. The
-rank-sum method becomes noticeably slower as the number of observations
-increases. As a result, whenever developing a new function to calculate
-the AUC metric, it is recommended to implement it using the pairwise
-comparison method.
+Across all benchmark settings, the optimized pairwise comparison method consistently exhibited the shortest execution time, with the trapezoidal method performing only marginally slower. In contrast, the rank-sum method showed a pronounced increase in computational cost as the number of observations grew.
+
+These results suggest that, when developing new R functions for AUC computation, the pairwise comparison approach provides the most efficient algorithmic foundation, particularly in large-scale scenarios.

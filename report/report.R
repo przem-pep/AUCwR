@@ -63,7 +63,7 @@ if (knitr::is_latex_output()) {
     column_spec(3, monospace = TRUE)
 } else {
   knitr::kable(fth, format = "html",
-             caption = "Functions computing AUC.") %>%
+             caption = "Functions computing AUC in R.") %>%
     kable_styling(bootstrap_options = "condensed") %>%
     column_spec(3, width_min = "33em", width_max = "33em", monospace = TRUE) %>%
     column_spec(4, width_min = "9em", width_max = "9em")
