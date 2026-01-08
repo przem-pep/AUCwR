@@ -14,7 +14,7 @@ library(microbenchmark)
 
 
 
-## ----auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation. The black piecewise linear curve represents the receiver operating characteristic (ROC) curve. The AUC (also referred to as AUROC, ROC score, C-statistic, or Vargha–Delaney A) is defined as the area under the ROC curve. A linear transformation of the AUC—known, among others, as the Gini coefficient, Cliff’s delta, Somers’ D, or the ROC skill score—equals twice the area between the diagonal line y=x and the ROC curve. ", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"----
+## ----auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation. The black piecewise linear curve represents the receiver operating characteristic (ROC) curve. The AUC (also referred to as AUROC, ROC score, C-statistic, or Vargha–Delaney A) is defined as the area under the ROC curve. A linear transformation of the AUC—known, among others, as the Gini coefficient, Cliff’s delta, Somers’ D, Accuracy Ratio, or the ROC skill score—equals twice the area between the diagonal line y=x and the ROC curve. ", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"----
 cz = c(.2, .42, .6, .7, .8, .88, .95, .99)
 sw = c(.98, .95, .9, .86, .8, .72, .6, .4)
 

@@ -77,7 +77,7 @@ sizes of large datasets.
 
 The ROC curve is one of the most widely used tools for assessing the performance of binary classifiers. Introduced in the 1940s for radar signal analysis, the ROC curve derives its name from “Receiver Operating Characteristic” [@Junge_Dettori_2018]. Today, ROC curves are used across diverse fields—such as medicine, biotechnology, computer science, and banking—to evaluate scoring and classification models.
 
-The ROC curve is plotted within the unit square, connecting points defined by sensitivity and specificity at various decision thresholds ("cut-offs"). In an ROC curve, the x-axis represents the false positive rate (FPR, or “1 − specificity”), the proportion of false positives among all actual negatives. The y-axis represents sensitivity (or “recall”), the proportion of correctly identified positives among all actual positives (true positive rate, TPR) [@Fawcett_2006].
+The ROC curve is plotted within the unit square, connecting points defined by sensitivity and specificity at various decision thresholds ("cut-offs"). In an ROC curve, the x-axis represents the false positive rate (FPR, or “1 - specificity”), the proportion of false positives among all actual negatives. The y-axis represents sensitivity (or “recall”), the proportion of correctly identified positives among all actual positives (true positive rate, TPR) [@Fawcett_2006].
 
 The AUC (Area Under the ROC Curve) provides a single-number summary of the classification performance of binary models across all possible decision thresholds. A ROC curve that passes through the point (0, 1) corresponds to an ideal classifier, achieving zero false positives and perfect detection of positive cases. Curves lying closer to this point are therefore more desirable [@Hanley_McNeil_1982]; they correspond to larger values of the Area Under the Curve (AUC). By contrast, the diagonal line connecting (0, 0) and (1, 1) represents a random classifier, for which the expected value of AUC equals 0.5.
 
@@ -85,7 +85,7 @@ In many application domains—most notably in credit scoring—the AUC is often 
 
 Figure \@ref(fig:auc-gini) illustrates an empirical ROC curve defined by eight discrete cut-off points, along with the areas corresponding to the AUC and the Gini coefficient.
 
-```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation. The black piecewise linear curve represents the receiver operating characteristic (ROC) curve. The AUC (also referred to as AUROC, ROC score, C-statistic, or Vargha–Delaney A) is defined as the area under the ROC curve. A linear transformation of the AUC—known, among others, as the Gini coefficient, Cliff’s delta, Somers’ D, or the ROC skill score—equals twice the area between the diagonal line y=x and the ROC curve. ", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
+```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation. The black piecewise linear curve represents the receiver operating characteristic (ROC) curve. The AUC (also referred to as AUROC, ROC score, C-statistic, or Vargha–Delaney A) is defined as the area under the ROC curve. A linear transformation of the AUC—known, among others, as the Gini coefficient, Cliff’s delta, Somers’ D, Accuracy Ratio, or the ROC skill score—equals twice the area between the diagonal line y=x and the ROC curve. ", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
 cz = c(.2, .42, .6, .7, .8, .88, .95, .99)
 sw = c(.98, .95, .9, .86, .8, .72, .6, .4)
 
@@ -120,131 +120,41 @@ ggplot(df, aes(x = FPR, y = TPR)) +
 
 # AUC – alternative names and related measures
 
-The Area Under the Receiver Operating Characteristic (ROC) curve,
-commonly abbreviated as AUC, is a fundamental metric for evaluating the
-performance of classification models. However, due to its independent
-adoption and development across diverse fields, ranging from biomedical
-statistics and psychology to econometrics and credit scoring, this
-measure appears in the literature under numerous aliases and
-mathematical formulations. Recognizing these equivalences is essential
-for researchers to leverage efficient computational algorithms developed
-in different domains.
+The Area Under the Receiver Operating Characteristic (ROC) curve appears in the literature under numerous aliases and mathematical formulations. Recognizing the equivalence of these measures is essential for correct interpretation, comparison of results across disciplines, and informed use of software implementations. As shown below, the AUC is also referred to as the *AUROC*, *ROC score*, *concordance statistic* (*C-statistic*), and the *Vargha-Delaney A statistic*. The AUC is closely related to the Mann-Whitney *U* statistic and is used as a measure of effect size in the context of the Mann-Whitney test and related procedures, such as the Brunner-Munzel test. In this context, it is often referred to as the *probability of superiority*, *relative treatment effect* or a *measure of stochastic superiority*. 
 
-**Alternative names and interpretations of AUC**
+The Gini coefficient, which is a simple linear transformation of the AUC, is also known as *Cliff's delta*, the *ROC skill score* (ROCSS), or the *Accuracy Ratio*. It is a special case of *Somers' D statistic* and is occasionally viewed as a variant of the *rank-biserial correlation*. 
 
-In medical statistics and epidemiology, particularly when evaluating
-logistic regression models with binary outcomes, the AUC is frequently
-referred to as the *c-statistic* (or concordance statistic). This term
-defined by Harrell et al. [@Harrell_Califf_Pryor_Lee_Rosati_1982] and
-further elaborated by, for example Austin and Steyerberg
-[@Austin_Steyerberg_2012], represents the probability of concordance
-between predicted probabilities and observed outcomes. It quantifies the
-predictive accuracy of a model by estimating the probability that a
-randomly selected subject who experienced the outcome has a higher
-predicted probability than a randomly selected subject who did not.
+In medical statistics and epidemiology, particularly when evaluating logistic regression models with binary outcomes, the AUC is frequently referred to as the *C-statistic* or *concordance statistic* [@Austin_Steyerberg_2012]. This term was introduced by @Harrell_Califf_Pryor_Lee_Rosati_1982 as representing the probability that a randomly selected positive instance receives a higher predicted score than a randomly selected negative instance.
 
-This probabilistic interpretation serves as the bridge to non-parametric
-statistics. Area under the ROC curve is statistically equivalent to the
-Mann-Whitney U statistic divided by the product of the sample sizes of
-the two groups, where in this context, the metric is often interpreted
-as the *probability of superiority* indicating the likelihood that a
-randomly chosen positive case ranks higher than a randomly chosen
-negative case [@Hanley_McNeil_1982].
+This probabilistic interpretation serves as the bridge to non-parametric statistics. The U statistic in the Mann–Whitney test represents the number of correctly ordered pairs in all pairwise comparisons between the two groups, where one observation comes from each group, with ties typically counted as 0.5. It can be shown that the area under the ROC curve is equivalent to the Mann-Whitney U statistic divided by the product of the sample sizes of the two groups:
 
-In the behavioral sciences and psychology, similar concepts have been
-developed to measure effect sizes. There the AUC corresponds to the
-*Common Language Effect Size* (CL/CLES) [@McGraw_Wong_1992], which
-converts an effect size into a probability, specifically defined as the
-probability that a score sampled at random from one distribution will be
-greater than a score sampled from another. This metric was developed to
-provide an index of effect size that is intuitively interpretable by
-audiences without statistical training. While the original formulation
-by McGraw and Wong focused on normal distributions, the later proposed
-*measure of stochastic superiority* (denoted as $A$)
-[@Vargha_Delaney_2000] generalized CLES concept so that it could be
-applicable to any variable that is at least ordinally scaled, regardless
-of the distribution form, and is identical to the CL statistic in the
-continuous case. Furthermore, in the context of non-parametric analysis
-for longitudinal data the *relative treatment effect* was defined
-[@Brunner_Munzel_Puri_2002]. This metric estimates the probability that
-an observation from one group is smaller than an observation from
-another, effectively serving as a probabilistic analog to the AUC
-[@Brunner_Munzel_Puri_2002], [@Engelmann_Hayden_Tasche_2003].
+$$\text{AUC} = \frac{U}{n_1  n_0}$$ 
 
-**The Gini coefficient and other AUC related measures**
+This equality allows confidence intervals for AUC to be derived from the distributional properties of the Mann–Whitney U statistic.
 
-While the AUC scales from 0.5 (random classification) to 1.0 (perfect
-classification), many disciplines prefer a measure scaled between 0 and
-1 (or -1 and 1) to represent the strength of association or
-discriminatory power. This leads to the Gini coefficient (or Gini
-index). The Gini coefficient used in classification contexts is simply a
-linear transformation of the AUC, defined by the relationship
-[@Hand_Till_2001]: $$\text{Gini} = 2 \cdot \text{AUC} - 1$$ Cliff [1993]
-discusses an ordinal statistic, $d$, which compares the number of times
-a score from one group is higher than one from another versus the
-reverse. This statistic of ordinal dominance, later named *Cliff’s
-Delta* [@Bais_Van_Der_Neut_2022] was described as a non-parametric
-effect size based on data observations, which quantifies the difference
-between the probability that a value from one group is higher than a
-value from the other and the reverse probability.
+In the context of stochastic ordering tests, such as Mann-Whitney or Brunner–Munzel, the AUC can serve as a measure of effect size and be interpreted as the *probability of superiority*, as it represents the the likelihood that a randomly chosen positive case ranks higher than a randomly chosen negative case [@Hanley_McNeil_1982; @Bamber_1975]. It is also be referred to as a *relative treatment effect* or *stochastic superiority statistic* in this context [@Brunner_Munzel_2000; @Karch_2021].
 
-**Relation to the U statistic in the Mann-Whitney**
+In the behavioral sciences and psychology, similar concepts have been developed to quantify effect sizes. The *Common Language Effect Size* (CL/CLES) [@McGraw_Wong_1992] defines an effect size as, again, the probability that a score sampled at random from one distribution exceeds a score sampled from another. The name reflects its purpose: to provide an intuitively interpretable metric for audiences without formal statistical training. While the original formulation by McGraw and Wong assumed normal distributions, the measure was later generalized and, under the name *A measure of stochastic superiority*, or *Vargha–Delaney A* [@Vargha_Delaney_2000], became mathematically equivalent to the AUC.
 
-There is a direct relationship between AUC and the Mann-Whitney U
-statistic.
+While the AUC ranges from 0.5 (random classification) to 1.0 (perfect classification), many disciplines prefer a measure scaled symmetrically around zero to express the strength and direction of association or discriminatory power. This motivates the use of the Gini coefficient (or Gini index). In classification settings, the Gini coefficient is a simple linear transformation of the AUC, defined as [@Hand_Till_2001]: 
 
-AUC is equivalent to the probability that a randomly selected positive
-case will have a higher score than a randomly selected negative case
-[@Hanley_McNeil_1982; @Bamber_1975].
-$$\text{AUC} = \frac{U}{n_1 \times n_0}$$ where $U$ is the number of
-pairs in which the “bad” score is \< the “good” score, $n_1$ is the
-number of “bad” scores, and $n_0$ is the number of “good” scores.
+$$\text{Gini} = 2 \times \text{AUC} - 1$$ 
 
-This relationship provides the statistical basis for treating AUC as a
-measure of discrimination and allows confidence intervals to be
-constructed using Mann-Whitney statistics theory [@Hanley_McNeil_1982].
+The term “Gini coefficient” is used predominantly in the credit scoring literature [@Anderson_2007; @Rezac_Rezac_2011]. To distinguish it from the classical Gini index in economics, which measures income or wealth inequality, the name *pseudo-Gini* is sometimes employed [@Idczak_2019]. In other application domains, mathematically equivalent quantities may appear under different names.
 
-**Relation to the Somers' D**
+By construction, the Gini coefficient takes values in (-1, 1) with zero indicating no discriminatory power and negative values corresponding to systematically reversed predictions. Owing to this symmetry, it admits an interpretation analogous to that of a correlation coefficient. Indeed, some authors, such as @Wendt_1972, have proposed the rank-biserial correlation in a form that is mathematically equivalent to the Gini coefficient, although this term is occasionally used for closely related but non-identical formulations [@Rubia_2022]. 
 
-Somers' D coefficient is a measure of association between ordinal
-variables, which also shows a direct relationship with AUC. It can be
-considered a generalization of AUC for ordinal variables [@Newson_2002].
+An alternative derivation, independent of ROC analysis, arises from the Cumulative Accuracy Profile (CAP) curve [@Sobehart_Keenan_Stein_2000]. The CAP plots the cumulative proportion of positive cases against the cumulative proportion of the population, sorted by predicted scores. From this curve, the *Accuracy Ratio* (*AR*) is defined as the ratio of the area between the model CAP and the random CAP to the area between the ideal CAP and the random CAP. It can be shown that
 
-Somers' D is defined based on concordant and discordant pairs. A pair of
-observations (i,j) is concordant if the ranking of the independent
-variable X and the ranking of the dependent variable Y are in the same
-order, i.e., if ($X_i - X_j$) and ($Y_i - Y_j$) have the same sign. A
-pair is discordant if the signs are opposite. Somers' D is calculated as
-the difference between the number of concordant and discordant pairs,
-divided by the number of unrelated pairs on the independent variable X
-[@Somers_1962].
-
-In binary classification: $$\text{Somers' D} = 2 \cdot \text{AUC} - 1$$
-which links it directly to AUC [@Newson_2002].
-
-**Cumulative accuracy profile**
-
-The CAP curve is a graphical tool used to evaluate the performance of
-classification models, primarily in the area of creditworthiness
-assessment. It shows the cumulative percentage of positive cases
-relative to the cumulative percentage of the entire population, sorted
-by predicted probability of default [@Engelmann_Hayden_Tasche_2003].
-
-Accuracy Ratio (AR): $$\text{AR} = \frac{A}{B}$$ where $A$ is the area
-between the model CAP and the random CAP, and $B$ is the area between
-the ideal CAP and the random CAP. Areas A and B are calculated using the
-trapezoidal method [@Engelmann_Hayden_Tasche_2003].
-
-Within the credit scoring literature, the AR metric is sometimes
-referred to as the *pseudo Gini* index to differentiate it from the
-classical Gini index used in economics to measure inequality. It was
-established that the pseudo Gini index is based on the concentration
-curve (CAP) and that its value is always equal to the Accuracy Ratio
-(referred to as Accuracy Rate) for any scoring model [@Idczak_2019].
-
-The relationship between AUC and the CAP curve can be described by the
-following formula [@Engelmann_Hayden_Tasche_2003]:
 $$\text{AUC} = \frac{\text{AR} + 1}{2}$$
+ 
+[@Engelmann_Hayden_Tasche_2003], demonstrating that although AR originates from the CAP curve rather than the ROC curve, it conveys exactly the same information as the Gini coefficient.
+
+Just like AUC, the Gini coefficient admits a probabilistic interpretation. If we randomly sample one positive and one negative case and compare their scores, the Gini coefficient equals the difference between the probability that the positive case receives a higher score than the negative case and the probability of the reverse. @Agresti_2010 denotes AUC by $\alpha$ and the Gini coefficient by $\Delta$, referring to both as measures of *stochastic superiority*. @Cliff_1993 describes the effect size measure $d$ (or $\delta$ for the population), which adopts a similar probabilistic perspective on rank-based comparisons. This measure—identical to the Gini coefficient—is later sometimes referred to as *Cliff’s delta* [@Bais_Van_Der_Neut_2022].
+
+Somers’ D is a measure of association between a predictor X and an ordinal dependent variable, based on the comparison of concordant and discordant pairs [@Somers_1962]. When Y is binary, Somers’ D reduces to 2AUC-1 [@Newson_2002]. Thus, in binary classification settings, the Gini coefficient can be interpreted as Somers’ D with a binary response variable.
+
+It is worth mentioning that ROC curves (under the name of _relative_ operating characteristics curves) are also used in meteorology to assess probabilistic forecasts for binary events. In this context, the AUC may be referred to as the ROC score, while the Gini coefficient is known as the ROC skill score [@Kharin_Zwiers_2003; @Mason_Graham_1999]. 
 
 # The need for computational efficiency in AUC estimation
 
