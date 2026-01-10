@@ -75,15 +75,43 @@ sizes of large datasets.
 
 # ROC curve and AUC
 
-The ROC curve is one of the most widely used tools for assessing the performance of binary classifiers. Introduced in the 1940s for radar signal analysis, the ROC curve derives its name from “Receiver Operating Characteristic” [@Junge_Dettori_2018]. Today, ROC curves are used across diverse fields—such as medicine, biotechnology, computer science, and banking—to evaluate scoring and classification models.
+The ROC curve is one of the most widely used tools for assessing the
+performance of binary classifiers. Introduced in the 1940s for radar
+signal analysis, the ROC curve derives its name from “Receiver Operating
+Characteristic” [@Junge_Dettori_2018]. Today, ROC curves are used across
+diverse fields—such as medicine, biotechnology, computer science, and
+banking—to evaluate scoring and classification models.
 
-The ROC curve is plotted within the unit square, connecting points defined by sensitivity and specificity at various decision thresholds ("cut-offs"). In an ROC curve, the x-axis represents the false positive rate (FPR, or “1 - specificity”), the proportion of false positives among all actual negatives. The y-axis represents sensitivity (or “recall”), the proportion of correctly identified positives among all actual positives (true positive rate, TPR) [@Fawcett_2006].
+The ROC curve is plotted within the unit square, connecting points
+defined by sensitivity and specificity at various decision thresholds
+("cut-offs"). In an ROC curve, the x-axis represents the false positive
+rate (FPR, or “1 - specificity”), the proportion of false positives
+among all actual negatives. The y-axis represents sensitivity (or
+“recall”), the proportion of correctly identified positives among all
+actual positives (true positive rate, TPR) [@Fawcett_2006].
 
-The AUC (Area Under the ROC Curve) provides a single-number summary of the classification performance of binary models across all possible decision thresholds. A ROC curve that passes through the point (0, 1) corresponds to an ideal classifier, achieving zero false positives and perfect detection of positive cases. Curves lying closer to this point are therefore more desirable [@Hanley_McNeil_1982]; they correspond to larger values of the Area Under the Curve (AUC). By contrast, the diagonal line connecting (0, 0) and (1, 1) represents a random classifier, for which the expected value of AUC equals 0.5.
+The AUC (Area Under the ROC Curve) provides a single-number summary of
+the classification performance of binary models across all possible
+decision thresholds. A ROC curve that passes through the point (0, 1)
+corresponds to an ideal classifier, achieving zero false positives and
+perfect detection of positive cases. Curves lying closer to this point
+are therefore more desirable [@Hanley_McNeil_1982]; they correspond to
+larger values of the Area Under the Curve (AUC). By contrast, the
+diagonal line connecting (0, 0) and (1, 1) represents a random
+classifier, for which the expected value of AUC equals 0.5.
 
-In many application domains—most notably in credit scoring—the AUC is often transformed into a measure that tends to zero for a completely random classifier and equals one for a perfect classifier (it may also take negative values if the classifier’s predictions are systematically reversed). This transformation ($2\times\text{AUC} - 1$) is commonly referred to as the Gini coefficient in the credit scoring literature. As we will see later, the same measure appears under different names in other fields.
+In many application domains—most notably in credit scoring—the AUC is
+often transformed into a measure that tends to zero for a completely
+random classifier and equals one for a perfect classifier (it may also
+take negative values if the classifier’s predictions are systematically
+reversed). This transformation ($2\times\text{AUC} - 1$) is commonly
+referred to as the Gini coefficient in the credit scoring literature. As
+we will see later, the same measure appears under different names in
+other fields.
 
-Figure \@ref(fig:auc-gini) illustrates an empirical ROC curve defined by eight discrete cut-off points, along with the areas corresponding to the AUC and the Gini coefficient.
+Figure \@ref(fig:auc-gini) illustrates an empirical ROC curve defined by
+eight discrete cut-off points, along with the areas corresponding to the
+AUC and the Gini coefficient.
 
 ```{r auc-gini, fig.align = "center", out.width = "100%", fig.cap="Geometric interpretation. The black piecewise linear curve represents the receiver operating characteristic (ROC) curve. The AUC (also referred to as AUROC, ROC score, C-statistic, or Vargha–Delaney A) is defined as the area under the ROC curve. A linear transformation of the AUC—known, among others, as the Gini coefficient, Cliff’s delta, Somers’ D, Accuracy Ratio, or the ROC skill score—equals twice the area between the diagonal line y=x and the ROC curve. ", dev=if(knitr::is_latex_output()) "cairo_pdf" else "png"}
 cz = c(.2, .42, .6, .7, .8, .88, .95, .99)
@@ -120,57 +148,204 @@ ggplot(df, aes(x = FPR, y = TPR)) +
 
 # AUC – alternative names and related measures
 
-The Area Under the Receiver Operating Characteristic (ROC) curve appears in the literature under numerous aliases and mathematical formulations. Recognizing the equivalence of these measures is essential for correct interpretation, comparison of results across disciplines, and informed use of software implementations. As shown below, the AUC is also referred to as the *AUROC*, *ROC score*, *concordance statistic* (*C-statistic*), and the *Vargha-Delaney A statistic*. The AUC is closely related to the Mann-Whitney *U* statistic and is used as a measure of effect size in the context of the Mann-Whitney test and related procedures, such as the Brunner-Munzel test. In this context, it is often referred to as the *probability of superiority*, *relative treatment effect* or a *measure of stochastic superiority*. 
+The Area Under the Receiver Operating Characteristic (ROC) curve appears
+in the literature under numerous aliases and mathematical formulations.
+Recognizing the equivalence of these measures is essential for correct
+interpretation, comparison of results across disciplines, and informed
+use of software implementations. As shown below, the AUC is also
+referred to as the *AUROC*, *ROC score*, *concordance statistic*
+(*C-statistic*), and the *Vargha-Delaney A statistic*. The AUC is
+closely related to the Mann-Whitney *U* statistic and is used as a
+measure of effect size in the context of the Mann-Whitney test and
+related procedures, such as the Brunner-Munzel test. In this context, it
+is often referred to as the *probability of superiority*, *relative
+treatment effect* or a *measure of stochastic superiority*.
 
-The Gini coefficient, which is a simple linear transformation of the AUC, is also known as *Cliff's delta*, the *ROC skill score* (ROCSS), or the *Accuracy Ratio*. It is a special case of *Somers' D statistic* and is occasionally viewed as a variant of the *rank-biserial correlation*. 
+The Gini coefficient, which is a simple linear transformation of the
+AUC, is also known as *Cliff's delta*, the *ROC skill score* (ROCSS), or
+the *Accuracy Ratio*. It is a special case of *Somers' D statistic* and
+is occasionally viewed as a variant of the *rank-biserial correlation*.
 
-In medical statistics and epidemiology, particularly when evaluating logistic regression models with binary outcomes, the AUC is frequently referred to as the *C-statistic* or *concordance statistic* [@Austin_Steyerberg_2012]. This term was introduced by @Harrell_Califf_Pryor_Lee_Rosati_1982 as representing the probability that a randomly selected positive instance receives a higher predicted score than a randomly selected negative instance.
+In medical statistics and epidemiology, particularly when evaluating
+logistic regression models with binary outcomes, the AUC is frequently
+referred to as the *C-statistic* or *concordance statistic*
+[@Austin_Steyerberg_2012]. This term was introduced by
+@Harrell_Califf_Pryor_Lee_Rosati_1982 as representing the probability
+that a randomly selected positive instance receives a higher predicted
+score than a randomly selected negative instance.
 
-This probabilistic interpretation serves as the bridge to non-parametric statistics. The U statistic in the Mann–Whitney test represents the number of correctly ordered pairs in all pairwise comparisons between the two groups, where one observation comes from each group, with ties typically counted as 0.5. It can be shown that the area under the ROC curve is equivalent to the Mann-Whitney U statistic divided by the product of the sample sizes of the two groups:
+This probabilistic interpretation serves as the bridge to non-parametric
+statistics. The U statistic in the Mann–Whitney test represents the
+number of correctly ordered pairs in all pairwise comparisons between
+the two groups, where one observation comes from each group, with ties
+typically counted as 0.5. It can be shown that the area under the ROC
+curve is equivalent to the Mann-Whitney U statistic divided by the
+product of the sample sizes of the two groups:
 
-$$\text{AUC} = \frac{U}{n_1  n_0}$$ 
+$$\text{AUC} = \frac{U}{n_1  n_0}$$
 
-This equality allows confidence intervals for AUC to be derived from the distributional properties of the Mann–Whitney U statistic.
+This equality allows confidence intervals for AUC to be derived from the
+distributional properties of the Mann–Whitney U statistic.
 
-In the context of stochastic ordering tests, such as Mann-Whitney or Brunner–Munzel, the AUC can serve as a measure of effect size and be interpreted as the *probability of superiority*, as it represents the the likelihood that a randomly chosen positive case ranks higher than a randomly chosen negative case [@Hanley_McNeil_1982; @Bamber_1975]. It is also be referred to as a *relative treatment effect* or *stochastic superiority statistic* in this context [@Brunner_Munzel_2000; @Karch_2021].
+In the context of stochastic ordering tests, such as Mann-Whitney or
+Brunner–Munzel, the AUC can serve as a measure of effect size and be
+interpreted as the *probability of superiority*, as it represents the
+the likelihood that a randomly chosen positive case ranks higher than a
+randomly chosen negative case [@Hanley_McNeil_1982; @Bamber_1975]. It is
+also be referred to as a *relative treatment effect* or *stochastic
+superiority statistic* in this context [@Brunner_Munzel_2000;
+@Karch_2021].
 
-In the behavioral sciences and psychology, similar concepts have been developed to quantify effect sizes. The *Common Language Effect Size* (CL/CLES) [@McGraw_Wong_1992] defines an effect size as, again, the probability that a score sampled at random from one distribution exceeds a score sampled from another. The name reflects its purpose: to provide an intuitively interpretable metric for audiences without formal statistical training. While the original formulation by McGraw and Wong assumed normal distributions, the measure was later generalized and, under the name *A measure of stochastic superiority*, or *Vargha–Delaney A* [@Vargha_Delaney_2000], became mathematically equivalent to the AUC.
+In the behavioral sciences and psychology, similar concepts have been
+developed to quantify effect sizes. The *Common Language Effect Size*
+(CL/CLES) [@McGraw_Wong_1992] defines an effect size as, again, the
+probability that a score sampled at random from one distribution exceeds
+a score sampled from another. The name reflects its purpose: to provide
+an intuitively interpretable metric for audiences without formal
+statistical training. While the original formulation by McGraw and Wong
+assumed normal distributions, the measure was later generalized and,
+under the name *A measure of stochastic superiority*, or *Vargha–Delaney
+A* [@Vargha_Delaney_2000], became mathematically equivalent to the AUC.
 
-While the AUC ranges from 0.5 (random classification) to 1.0 (perfect classification), many disciplines prefer a measure scaled symmetrically around zero to express the strength and direction of association or discriminatory power. This motivates the use of the Gini coefficient (or Gini index). In classification settings, the Gini coefficient is a simple linear transformation of the AUC, defined as [@Hand_Till_2001]: 
+While the AUC ranges from 0.5 (random classification) to 1.0 (perfect
+classification), many disciplines prefer a measure scaled symmetrically
+around zero to express the strength and direction of association or
+discriminatory power. This motivates the use of the Gini coefficient (or
+Gini index). In classification settings, the Gini coefficient is a
+simple linear transformation of the AUC, defined as [@Hand_Till_2001]:
 
-$$\text{Gini} = 2 \times \text{AUC} - 1$$ 
+$$\text{Gini} = 2 \times \text{AUC} - 1$$
 
-The term “Gini coefficient” is used predominantly in the credit scoring literature [@Anderson_2007; @Rezac_Rezac_2011]. To distinguish it from the classical Gini index in economics, which measures income or wealth inequality, the name *pseudo-Gini* is sometimes employed [@Idczak_2019]. In other application domains, mathematically equivalent quantities may appear under different names.
+The term “Gini coefficient” is used predominantly in the credit scoring
+literature [@Anderson_2007; @Rezac_Rezac_2011]. To distinguish it from
+the classical Gini index in economics, which measures income or wealth
+inequality, the name *pseudo-Gini* is sometimes employed [@Idczak_2019].
+In other application domains, mathematically equivalent quantities may
+appear under different names.
 
-By construction, the Gini coefficient takes values in (-1, 1) with zero indicating no discriminatory power and negative values corresponding to systematically reversed predictions. Owing to this symmetry, it admits an interpretation analogous to that of a correlation coefficient. Indeed, some authors, such as @Wendt_1972, have proposed the rank-biserial correlation in a form that is mathematically equivalent to the Gini coefficient, although this term is occasionally used for closely related but non-identical formulations [@Rubia_2022]. 
+By construction, the Gini coefficient takes values in (-1, 1) with zero
+indicating no discriminatory power and negative values corresponding to
+systematically reversed predictions. Owing to this symmetry, it admits
+an interpretation analogous to that of a correlation coefficient.
+Indeed, some authors, such as @Wendt_1972, have proposed the
+rank-biserial correlation in a form that is mathematically equivalent to
+the Gini coefficient, although this term is occasionally used for
+closely related but non-identical formulations [@Rubia_2022].
 
-An alternative derivation, independent of ROC analysis, arises from the Cumulative Accuracy Profile (CAP) curve [@Sobehart_Keenan_Stein_2000]. The CAP plots the cumulative proportion of positive cases against the cumulative proportion of the population, sorted by predicted scores. From this curve, the *Accuracy Ratio* (*AR*) is defined as the ratio of the area between the model CAP and the random CAP to the area between the ideal CAP and the random CAP. It can be shown that
+An alternative derivation, independent of ROC analysis, arises from the
+Cumulative Accuracy Profile (CAP) curve [@Sobehart_Keenan_Stein_2000].
+The CAP plots the cumulative proportion of positive cases against the
+cumulative proportion of the population, sorted by predicted scores.
+From this curve, the *Accuracy Ratio* (*AR*) is defined as the ratio of
+the area between the model CAP and the random CAP to the area between
+the ideal CAP and the random CAP. It can be shown that
 
 $$\text{AUC} = \frac{\text{AR} + 1}{2}$$
- 
-[@Engelmann_Hayden_Tasche_2003], demonstrating that although AR originates from the CAP curve rather than the ROC curve, it conveys exactly the same information as the Gini coefficient.
 
-Just like AUC, the Gini coefficient admits a probabilistic interpretation. If we randomly sample one positive and one negative case and compare their scores, the Gini coefficient equals the difference between the probability that the positive case receives a higher score than the negative case and the probability of the reverse. @Agresti_2010 denotes AUC by $\alpha$ and the Gini coefficient by $\Delta$, referring to both as measures of *stochastic superiority*. @Cliff_1993 describes the effect size measure $d$ (or $\delta$ for the population), which adopts a similar probabilistic perspective on rank-based comparisons. This measure—identical to the Gini coefficient—is later sometimes referred to as *Cliff’s delta* [@Bais_Van_Der_Neut_2022].
+[@Engelmann_Hayden_Tasche_2003], demonstrating that although AR
+originates from the CAP curve rather than the ROC curve, it conveys
+exactly the same information as the Gini coefficient.
 
-Somers’ D is a measure of association between a predictor X and an ordinal dependent variable, based on the comparison of concordant and discordant pairs [@Somers_1962]. When Y is binary, Somers’ D reduces to 2AUC-1 [@Newson_2002]. Thus, in binary classification settings, the Gini coefficient can be interpreted as Somers’ D with a binary response variable.
+Just like AUC, the Gini coefficient admits a probabilistic
+interpretation. If we randomly sample one positive and one negative case
+and compare their scores, the Gini coefficient equals the difference
+between the probability that the positive case receives a higher score
+than the negative case and the probability of the reverse. @Agresti_2010
+denotes AUC by $\alpha$ and the Gini coefficient by $\Delta$, referring
+to both as measures of *stochastic superiority*. @Cliff_1993 describes
+the effect size measure $d$ (or $\delta$ for the population), which
+adopts a similar probabilistic perspective on rank-based comparisons.
+This measure—identical to the Gini coefficient—is later sometimes
+referred to as *Cliff’s delta* [@Bais_Van_Der_Neut_2022].
 
-It is worth mentioning that ROC curves (under the name of _relative_ operating characteristics curves) are also used in meteorology to assess probabilistic forecasts for binary events. In this context, the AUC may be referred to as the ROC score, while the Gini coefficient is known as the ROC skill score [@Kharin_Zwiers_2003; @Mason_Graham_1999]. 
+Somers’ D is a measure of association between a predictor X and an
+ordinal dependent variable, based on the comparison of concordant and
+discordant pairs [@Somers_1962]. When Y is binary, Somers’ D reduces to
+2AUC-1 [@Newson_2002]. Thus, in binary classification settings, the Gini
+coefficient can be interpreted as Somers’ D with a binary response
+variable.
+
+It is worth mentioning that ROC curves (under the name of *relative*
+operating characteristics curves) are also used in meteorology to assess
+probabilistic forecasts for binary events. In this context, the AUC may
+be referred to as the ROC score, while the Gini coefficient is known as
+the ROC skill score [@Kharin_Zwiers_2003; @Mason_Graham_1999].
 
 # Motivation for computationally efficient AUC calculation
 
-A single calculation of the AUC is often insufficient for a comprehensive assessment of model quality. More advanced inference, validation, optimization, feature evaluation or simulation procedures require repeated computation of the AUC, placing substantial demands on the computational efficiency of the underlying algorithms.
+A single calculation of the AUC is often insufficient for a
+comprehensive assessment of model quality. More advanced inference,
+validation, optimization, feature evaluation or simulation procedures
+require repeated computation of the AUC, placing substantial demands on
+the computational efficiency of the underlying algorithms.
 
-Resampling methods are commonly used for inference on the area under the ROC curve. Confidence intervals for the AUC can be obtained using bootstrapping or cross-validation [@Noma_Matsushima_Ishii_2021; @Gu_Ghosal_Roy_2008; @LeDell_Petersen_Van_Der_Laan_2015]. Permutation tests enable the assessment of statistical significance, either under the null hypothesis of no discriminatory power or when comparing the performance of two models [@Pauly_Asendorf_Konietschke_2016; @Venkatraman_2000; @Bandos_Rockette_Gur_2006]. Resampling procedures are essential for evaluating uncertainty, model stability, and statistical significance. However, despite their favorable statistical properties, including robustness [@Simonoff_Hochberg_Reiser_1986; @Pauly_Asendorf_Konietschke_2016], these methods rely on repeated recalculation of the AUC and can therefore impose considerable computational burdens, particularly for large datasets or complex models [@LeDell_Petersen_Van_Der_Laan_2015].
+Resampling methods are commonly used for inference on the area under the
+ROC curve. Confidence intervals for the AUC can be obtained using
+bootstrapping or cross-validation [@Noma_Matsushima_Ishii_2021;
+@Gu_Ghosal_Roy_2008; @LeDell_Petersen_Van_Der_Laan_2015]. Permutation
+tests enable the assessment of statistical significance, either under
+the null hypothesis of no discriminatory power or when comparing the
+performance of two models [@Pauly_Asendorf_Konietschke_2016;
+@Venkatraman_2000; @Bandos_Rockette_Gur_2006]. Resampling procedures are
+essential for evaluating uncertainty, model stability, and statistical
+significance. However, despite their favorable statistical properties,
+including robustness [@Simonoff_Hochberg_Reiser_1986;
+@Pauly_Asendorf_Konietschke_2016], these methods rely on repeated
+recalculation of the AUC and can therefore impose considerable
+computational burdens, particularly for large datasets or complex models
+[@LeDell_Petersen_Van_Der_Laan_2015].
 
-AUC maximization is another example of computational challenge that has recently gained importance in the development of ranking and classification algorithms. Directly optimizing AUC, rather than surrogate losses, leads to improved generalization and discrimination capabilities in large-scale settings [@Yuan_Yan_Sonka_Yang_2021; @Zhang_Xu_2022; @LeDell_etal_2016]. Unlike many other objectives, the AUC function is non-decomposable over individual examples, which complicates the use of standard optimization techniques [@Zhou_Ying_Skiena_2020]. A comprehensive overview of the last 20+ years of AUC maximization research, emphasizing its relevance for imbalanced learning, large datasets, and deep learning applications has been provided by @Yang_Ying_2023. Many, if not most, approaches to AUC maximization require repeated multiple computations of the AUC statistic [see, for example @Calders_Jaroszewicz_2007; @Yang_Zhou_Lei_Ying_2020; @Ataman_Street_Zhang_2006; @Gajowniczek_Zabkowski_2021]. 
+AUC maximization is another example of computational challenge that has
+recently gained importance in the development of ranking and
+classification algorithms. Directly optimizing AUC, rather than
+surrogate losses, leads to improved generalization and discrimination
+capabilities in large-scale settings [@Yuan_Yan_Sonka_Yang_2021;
+@Zhang_Xu_2022; @LeDell_etal_2016]. Unlike many other objectives, the
+AUC function is non-decomposable over individual examples, which
+complicates the use of standard optimization techniques
+[@Zhou_Ying_Skiena_2020]. A comprehensive overview of the last 20+ years
+of AUC maximization research, emphasizing its relevance for imbalanced
+learning, large datasets, and deep learning applications has been
+provided by @Yang_Ying_2023. Many, if not most, approaches to AUC
+maximization require repeated multiple computations of the AUC statistic
+[see, for example @Calders_Jaroszewicz_2007; @Yang_Zhou_Lei_Ying_2020;
+@Ataman_Street_Zhang_2006; @Gajowniczek_Zabkowski_2021].
 
-Efficient AUC computation is also a prerequisite for many feature selection and assessment techniques. Permutation-based variable importance measures were, for example, proposed by @Janitza_Strobl_Boulesteix_2013 or @Biecek_2018, while AUC-based feature selection algorithms were, inter alia, presented by @Sun_Wang_Wei_2017; @Su_Du_Wang_Wei_Liu_2022, @Xu_Suzuki_2014 or @Ribeiro_2021. Other applications of repeated AUC computation arise in simulation studies. For instance, @Kochanski_2021 introduced a simulation model for risk and pricing competition in which each bank optimizes its credit scoring strategy, requiring numerous AUC evaluations to assess performance under varying market conditions.
+Efficient AUC computation is also a prerequisite for many feature
+selection and assessment techniques. Permutation-based variable
+importance measures were, for example, proposed by
+@Janitza_Strobl_Boulesteix_2013 or @Biecek_2018, while AUC-based feature
+selection algorithms were, inter alia, presented by @Sun_Wang_Wei_2017;
+@Su_Du_Wang_Wei_Liu_2022, @Xu_Suzuki_2014 or @Ribeiro_2021. Other
+applications of repeated AUC computation arise in simulation studies.
+For instance, @Kochanski_2021 introduced a simulation model for risk and
+pricing competition in which each bank optimizes its credit scoring
+strategy, requiring numerous AUC evaluations to assess performance under
+varying market conditions.
 
-In summary, efficient and scalable computation of AUC has become a foundational requirement not only for model evaluation but also for advanced inference, optimization, feature selection, and simulation studies. As AUC-based methods continue to expand into areas such as deep models and large-scale applications, the computational complexity of repeated AUC calculations remains a critical challenge.
+In summary, efficient and scalable computation of AUC has become a
+foundational requirement not only for model evaluation but also for
+advanced inference, optimization, feature selection, and simulation
+studies. As AUC-based methods continue to expand into areas such as deep
+models and large-scale applications, the computational complexity of
+repeated AUC calculations remains a critical challenge.
 
 # AUC computation implementation in R packages
 
-Table 1 presents a selection of R packages and functions commonly used to calculate the area under the ROC curve (AUC). For each package, the table lists the primary function, typical usage syntax, the computational method employed, and the programming language(s) in which the core implementation is written. The computational methods range from rank-based approaches and pairwise comparisons to trapezoidal integration, reflecting different trade-offs between accuracy and efficiency. Some functions rely entirely on R, while others leverage compiled code in C++ for improved performance. It is important to note that certain functions perform additional checks or compute supplementary metrics beyond the AUC itself, which may reduce computational efficiency when only the AUC is needed. The practical impact of these differences will be examined empirically in the following section.
+Table 1 presents a selection of R packages and functions commonly used
+to calculate the area under the ROC curve (AUC). For each package, the
+table lists the primary function, typical usage syntax, the
+computational method employed, and the programming language(s) in which
+the core implementation is written. The computational methods range from
+rank-based approaches and pairwise comparisons to trapezoidal
+integration, reflecting different trade-offs between accuracy and
+efficiency. Some functions rely entirely on R, while others leverage
+compiled code in C++ for improved performance. It is important to note
+that certain functions perform additional checks or compute
+supplementary metrics beyond the AUC itself, which may reduce
+computational efficiency when only the AUC is needed. The practical
+impact of these differences will be examined empirically in the
+following section.
 
 ```{r}
 ftl <- read.csv("../data/functions_table.csv", sep = ";")
@@ -195,33 +370,54 @@ if (knitr::is_latex_output()) {
 }
 ```
 
-Based on the reviewed functions, we identified three main types of algorithms for AUC computation. These approaches differ in how they process predicted scores and true labels, we identified three main types of algorithms for AUC computation: (1) trapezoidal integration over the ROC curve, (2) (optimized) pairwise
-comparison, (3) and rank-based (Mann–Whitney U statistic formulation).
+Based on the reviewed functions, we identified three main types of
+algorithms for AUC computation. These approaches differ in how they
+process predicted scores and true labels, we identified three main types
+of algorithms for AUC computation: (1) trapezoidal integration over the
+ROC curve, (2) (optimized) pairwise comparison, (3) and rank-based
+(Mann–Whitney U statistic formulation).
 
-Let $(s_i, y_i)$ for $i = 1, \dots, n$ denote the score $s$ assigned to an account and its corresponding true label. In line with standard practice in credit scoring, we assume that $y_i=1$ indicates a "bad" account (e.g., one that defaults or fails to repay the loan), while $y_i=0$ represents a good account. A properly functioning scoring should assign lower scores to accounts with a higher predicted probability of being
-bad, and higher scores to those likely to be good.
+Let $(s_i, y_i)$ for $i = 1, \dots, n$ denote the score $s$ assigned to
+an account and its corresponding true label. In line with standard
+practice in credit scoring, we assume that $y_i=1$ indicates a "bad"
+account (e.g., one that defaults or fails to repay the loan), while
+$y_i=0$ represents a good account. A properly functioning scoring should
+assign lower scores to accounts with a higher predicted probability of
+being bad, and higher scores to those likely to be good.
 
-Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad accounts, and $n_0 =\sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good accounts.
+Let $n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)$ denote the number of bad
+accounts, and $n_0 =\sum_{i=1}^{n}\mathbb{I}(y_i=0)$ – number of good
+accounts.
 
-The three computational approaches described above can be expressed formally as follows:
+The three computational approaches described above can be expressed
+formally as follows:
 
 **1. Trapezoidal integration over the ROC curve**
 
-This approach computes the AUC as the area under the empirical ROC curve by applying the trapezoidal rule:
+This approach computes the AUC as the area under the empirical ROC curve
+by applying the trapezoidal rule:
 
 $$\text{AUC} = \sum_{k=1}^{m-1}(\text{FPR}_{k+1} - \text{FPR}_{k})\cdot\frac{\text{TPR}_{k+1}+\text{TPR}_k}{2}$$
 
-where $m$ is the number of distinct score thresholds from lowest to the highest, $TPR_k=TP_k/n_1$ is the true positive rate, $FPR_k=FP_k/n_0$ is the false positive Rate at threshold $k$, $TP_k$ is the number of true positives, $\text{FP}_k$ is the number of false positives, $n_1$ is the number of positive cases, $n_0$ is the number of negative cases.
+where $m$ is the number of distinct score thresholds from lowest to the
+highest, $TPR_k=TP_k/n_1$ is the true positive rate, $FPR_k=FP_k/n_0$ is
+the false positive Rate at threshold $k$, $TP_k$ is the number of true
+positives, $\text{FP}_k$ is the number of false positives, $n_1$ is the
+number of positive cases, $n_0$ is the number of negative cases.
 
 **2. Optimized pairwise comparison**
 
-In this formulation, the AUC is based on the probabilitic (pairwise comparison) definition, that is the probability that a randomly chosen positive instance receives a higher score than a randomly chosen negative instance, with 0.5 applied to ties. 
+In this formulation, the AUC is based on the probabilitic (pairwise
+comparison) definition, that is the probability that a randomly chosen
+positive instance receives a higher score than a randomly chosen
+negative instance, with 0.5 applied to ties.
 
-$$\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=1}\sum_{j:y_j=0}\left[\mathbb{I}(s_i<s_j)+\frac{1}{2}\mathbb{I}(s_i=s_j)\right]$$
+$$\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=0}\sum_{j:y_j=1}\left[\mathbb{I}(s_i<s_j)+\frac{1}{2}\mathbb{I}(s_i=s_j)\right]$$
 
 **3. Rank-based formula**
 
-The rank-based formula for AUC is directly based on the method developed for the Mann–Whitney U statistic computation [see @Sheskin_2020]:
+The rank-based formula for AUC is directly based on the method developed
+for the Mann–Whitney U statistic computation [see @Sheskin_2020]:
 
 $$\text{AUC} = \frac{\bar{R}_{1}-{n_1(n_1+1)}/2}{n_0}$$
 
@@ -233,7 +429,16 @@ $$\bar{R}_{1} = \frac{1}{n_1}\sum_{i:y_i=1}\text{Rank}(s_i)$$
 
 ## Performance of existing R Packages
 
-The computational efficiency of several R packages for AUC computation was evaluated through a series of benchmarks. In each benchmark, every AUC function was invoked 100 times. Experiments were conducted on three simulated datasets of increasing size, containing 1,000, 10,000, and 100,000 observations. The predictor variable *pred* was synthetically generated such that the first half of the observations followed a $\mathcal{N}(0,1)$ distribution, while the remaining observations followed a $\mathcal{N}(1,1)$ distribution. The corresponding response variable was binary, with the first half of the observations assigned label 1 and the second half assigned label 0.
+The computational efficiency of several R packages for AUC computation
+was evaluated through a series of benchmarks. In each benchmark, every
+AUC function was invoked 100 times. Experiments were conducted on three
+simulated datasets of increasing size, containing 1,000, 10,000, and
+100,000 observations. The predictor variable *pred* was synthetically
+generated such that the first half of the observations followed a
+$\mathcal{N}(0,1)$ distribution, while the remaining observations
+followed a $\mathcal{N}(1,1)$ distribution. The corresponding response
+variable was binary, with the first half of the observations assigned
+label 1 and the second half assigned label 0.
 
 ```{r setting up for package benchmarks, include = FALSE}
 plot_benchmark <- function(benchmark) {
@@ -268,15 +473,35 @@ plot_benchmark(package_benchmark3)
 
 ```
 
-The computational time required to evaluate the AUC metric varies substantially across the examined implementations, spanning several orders of magnitude. For instance, the *bigstatsr* implementation computes the AUC nearly two orders of magnitude faster than the corresponding function in the *scorecard* package. This discrepancy may be attributable to several factors, including additional computations performed internally by some functions (e.g., estimation of confidence intervals or simultaneous evaluation of multiple performance metrics), differences in algorithmic design, or a combination of these effects.
+The computational time required to evaluate the AUC metric varies
+substantially across the examined implementations, spanning several
+orders of magnitude. For instance, the *bigstatsr* implementation
+computes the AUC nearly two orders of magnitude faster than the
+corresponding function in the *scorecard* package. This discrepancy may
+be attributable to several factors, including additional computations
+performed internally by some functions (e.g., estimation of confidence
+intervals or simultaneous evaluation of multiple performance metrics),
+differences in algorithmic design, or a combination of these effects.
 
-Overall, *bigstatsr* consistently provides the fastest AUC computation. Although *MLMetrics* and *Hmisc* exhibit slightly lower execution times on the smallest dataset, *bigstatsr* clearly outperforms these alternatives as the number of observations increases.
+Overall, *bigstatsr* consistently provides the fastest AUC computation.
+Although *MLMetrics* and *Hmisc* exhibit slightly lower execution times
+on the smallest dataset, *bigstatsr* clearly outperforms these
+alternatives as the number of observations increases.
 
-Consequently, when an existing R implementation is preferred, we recommend the use of the *AUC* function from the *bigstatsr* package for efficient computation of the AUC metric, particularly in large-scale settings.
+Consequently, when an existing R implementation is preferred, we
+recommend the use of the *AUC* function from the *bigstatsr* package for
+efficient computation of the AUC metric, particularly in large-scale
+settings.
 
 ## Benchmarking custom R implementations
 
-The three identified algorithms were evaluated through direct comparison using custom R implementations designed to be as computationally efficient as possible. Each implementation was restricted to the core AUC computation and deliberately omitted input validation and auxiliary checks in order to minimize overhead and isolate algorithmic performance. All benchmarks were conducted on the same datasets used in the package-level experiments.
+The three identified algorithms were evaluated through direct comparison
+using custom R implementations designed to be as computationally
+efficient as possible. Each implementation was restricted to the core
+AUC computation and deliberately omitted input validation and auxiliary
+checks in order to minimize overhead and isolate algorithmic
+performance. All benchmarks were conducted on the same datasets used in
+the package-level experiments.
 
 ```{r setup for own function benchmarks, include = FALSE}
 own_functions_benchmark1 <- readRDS("../data/own_functions_benchmark_1.rds")
@@ -303,6 +528,12 @@ plot_benchmark(own_functions_benchmark2)
 plot_benchmark(own_functions_benchmark3)
 ```
 
-Across all benchmark settings, the optimized pairwise comparison method consistently exhibited the shortest execution time, with the trapezoidal method performing only marginally slower. In contrast, the rank-sum method showed a pronounced increase in computational cost as the number of observations grew.
+Across all benchmark settings, the optimized pairwise comparison method
+consistently exhibited the shortest execution time, with the trapezoidal
+method performing only marginally slower. In contrast, the rank-sum
+method showed a pronounced increase in computational cost as the number
+of observations grew.
 
-These results suggest that, when developing new R functions for AUC computation, the pairwise comparison approach provides the most efficient algorithmic foundation, particularly in large-scale scenarios.
+These results suggest that, when developing new R functions for AUC
+computation, the pairwise comparison approach provides the most
+efficient algorithmic foundation, particularly in large-scale scenarios.
