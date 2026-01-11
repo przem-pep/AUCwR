@@ -2918,13 +2918,14 @@ among all actual negatives. The y-axis represents sensitivity (or
 actual positives (true positive rate, TPR) <span class="citation" data-cites="Fawcett_2006">(<a href="#ref-Fawcett_2006" role="doc-biblioref">Fawcett 2006</a>)</span>.</p>
 <p>The AUC (Area Under the ROC Curve) provides a single-number summary of
 the classification performance of binary models across all possible
-decision thresholds. A ROC curve that passes through the point (0, 1)
-corresponds to an ideal classifier, achieving zero false positives and
-perfect detection of positive cases. Curves lying closer to this point
-are therefore more desirable <span class="citation" data-cites="Hanley_McNeil_1982">(<a href="#ref-Hanley_McNeil_1982" role="doc-biblioref">Hanley and McNeil 1982</a>)</span>; they correspond to
-larger values of the Area Under the Curve (AUC). By contrast, the
-diagonal line connecting (0, 0) and (1, 1) represents a random
-classifier, for which the expected value of AUC equals 0.5.</p>
+decision thresholds, while also being invariant to a priori
+class probabilities <span class="citation" data-cites="Bradley_1997">(<a href="#ref-Bradley_1997" role="doc-biblioref">Bradley 1997</a>)</span>. A ROC curve that passes
+through the point (0, 1) corresponds to an ideal classifier,
+achieving zero false positives and perfect detection of positive cases.
+Curves lying closer to this point are therefore more desirable
+<span class="citation" data-cites="Hanley_McNeil_1982">(<a href="#ref-Hanley_McNeil_1982" role="doc-biblioref">Hanley and McNeil 1982</a>)</span>; they correspond to larger values of the Area Under
+the Curve (AUC). By contrast, the diagonal line connecting (0, 0) and (1, 1)
+represents a random classifier, for which the expected value of AUC equals 0.5.</p>
 <p>In many application domains—most notably in credit scoring—the AUC is
 often transformed into a measure that tends to zero for a completely
 random classifier and equals one for a perfect classifier (it may also
@@ -3579,6 +3580,9 @@ A. I. Bandos, H. E. Rockette and D. Gur. A permutation test for comparing ROC cu
 </div>
 <div id="ref-Biecek_2018" class="csl-entry" role="listitem">
 P. Biecek. DALEX: Explainers for complex predictive models in r. <em>Journal of Machine Learning Research</em>, 19(84): 1–5, 2018. URL <a href="https://jmlr.org/papers/v19/18-416.html">https://jmlr.org/papers/v19/18-416.html</a>.
+</div>
+<div id="ref-Bradley_1997" class="csl-entry" role="listitem">
+A. P. Bradley. The use of the area under the ROC curve in the evaluation of machine learning algorithms. <em>Pattern Recognition</em>, 30(7): 1145–1159, 1997. DOI <a href="https://doi.org/10.1016/S0031-3203(96)00142-2">10.1016/S0031-3203(96)00142-2</a>.
 </div>
 <div id="ref-Brunner_Munzel_2000" class="csl-entry" role="listitem">
 E. Brunner and U. Munzel. The nonparametric <span>B</span>ehrens-<span>F</span>isher problem: Asymptotic theory and a small-sample approximation. <em>Biometrical Journal</em>, 42(1): 17–25, 2000. DOI <a href="https://doi.org/10.1002/(SICI)1521-4036(200001)42:1\%3C17::AID-BIMJ17\%3E3.0.CO;2-U">10.1002/(SICI)1521-4036(200001)42:1\%3C17::AID-BIMJ17\%3E3.0.CO;2-U</a>.

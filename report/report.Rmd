@@ -92,13 +92,14 @@ actual positives (true positive rate, TPR) [@Fawcett_2006].
 
 The AUC (Area Under the ROC Curve) provides a single-number summary of
 the classification performance of binary models across all possible
-decision thresholds. A ROC curve that passes through the point (0, 1)
-corresponds to an ideal classifier, achieving zero false positives and
-perfect detection of positive cases. Curves lying closer to this point
-are therefore more desirable [@Hanley_McNeil_1982]; they correspond to
-larger values of the Area Under the Curve (AUC). By contrast, the
-diagonal line connecting (0, 0) and (1, 1) represents a random
-classifier, for which the expected value of AUC equals 0.5.
+decision thresholds, while also being invariant to a priori 
+class probabilities [@Bradley_1997]. A ROC curve that passes 
+through the point (0, 1) corresponds to an ideal classifier, 
+achieving zero false positives and perfect detection of positive cases. 
+Curves lying closer to this point are therefore more desirable 
+[@Hanley_McNeil_1982]; they correspond to larger values of the Area Under 
+the Curve (AUC). By contrast, the diagonal line connecting (0, 0) and (1, 1) 
+represents a random classifier, for which the expected value of AUC equals 0.5.
 
 In many application domains—most notably in credit scoring—the AUC is
 often transformed into a measure that tends to zero for a completely
