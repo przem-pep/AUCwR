@@ -62,14 +62,14 @@ actual positives (true positive rate, TPR) \citep{Fawcett_2006}.
 
 The AUC (Area Under the ROC Curve) provides a single-number summary of
 the classification performance of binary models across all possible
-decision thresholds, while also being invariant to a priori
-class probabilities \citep{Bradley_1997}. A ROC curve that passes
-through the point (0, 1) corresponds to an ideal classifier,
-achieving zero false positives and perfect detection of positive cases.
-Curves lying closer to this point are therefore more desirable
-\citep{Hanley_McNeil_1982}; they correspond to larger values of the Area Under
-the Curve (AUC). By contrast, the diagonal line connecting (0, 0) and (1, 1)
-represents a random classifier, for which the expected value of AUC equals 0.5.
+decision thresholds, while also being invariant to a priori class
+probabilities \citep{Bradley_1997}. A ROC curve that passes through the point
+(0, 1) corresponds to an ideal classifier, achieving zero false
+positives and perfect detection of positive cases. Curves lying closer
+to this point are therefore more desirable \citep{Hanley_McNeil_1982}; they
+correspond to larger values of the Area Under the Curve (AUC). By
+contrast, the diagonal line connecting (0, 0) and (1, 1) represents a
+random classifier, for which the expected value of AUC equals 0.5.
 
 In many application domains---most notably in credit scoring---the AUC is
 often transformed into a measure that tends to zero for a completely
@@ -297,41 +297,47 @@ following section.
 \toprule
 Package & Function & Usage & Method & Language\\
 \midrule
-bigstatsr & AUC & \ttfamily{AUC(-pred, target)} & Pairwise comparison (optimized) & C++, R\\
+bigstatsr & AUC & \ttfamily{AUC(pred, target)} & Pairwise comparison (optimized) & C++, R\\
 \addlinespace
-caTools & colAUC & \ttfamily{colAUC(-pred, target)[1, 1]} & Rank sum & R\\
+caTools & colAUC & \ttfamily{colAUC(pred, target)[1, 1]} & Rank sum & R\\
 \addlinespace
-cvAUC & AUC & \ttfamily{AUC(-pred, target)} & Trapezoidal rule & R\\
+cvAUC & AUC & \ttfamily{AUC(pred, target)} & Trapezoidal rule & R\\
 \addlinespace
-DescTools & Cstat & \ttfamily{Cstat(-pred, target)} & Pairwise comparison (optimized) & C++, R\\
+DescTools & Cstat & \ttfamily{Cstat(pred, target)} & Pairwise comparison (optimized) & C++, R\\
 \addlinespace
-effsize & VD.A & \ttfamily{VD.A(pred \textasciitilde{} factor(target))\$estimate} & Rank sum & R\\
+effsize & VD.A & \ttfamily{VD.A(-pred \textasciitilde{} factor(target))\$estimate} & Rank sum & R\\
 \addlinespace
-fbroc & boot.roc & \ttfamily{boot.roc(-pred, as.logical(target))\$auc} & Trapezoidal rule & C++, R\\
+fbroc & boot.roc & \ttfamily{boot.roc(pred, as.logical(target))\$auc} & Trapezoidal rule & C++, R\\
 \addlinespace
-Hmisc & somers2 & \ttfamily{somers2(-pred, target)["C"]} & Rank sum & R\\
+Hmisc & somers2 & \ttfamily{somers2(pred, target)["C"]} & Rank sum & R\\
 \addlinespace
-MLmetrics & AUC & \ttfamily{AUC(-pred, target)} & Rank sum & R\\
+Metrics & auc & \ttfamily{auc(target, pred)} & Rank sum & R\\
 \addlinespace
-mltools & auc\_roc & \ttfamily{auc\_roc(-pred, target)} & Trapezoidal rule & R\\
+MLmetrics & AUC & \ttfamily{AUC(pred, target)} & Rank sum & R\\
 \addlinespace
-ModelMetrics & auc & \ttfamily{auc(target, -pred)} & Rank sum & C++, R\\
+mltools & auc\_roc & \ttfamily{auc\_roc(pred, target)} & Trapezoidal rule & R\\
 \addlinespace
-precrec & evalmod & \ttfamily{evalmod(mmdata(scores = -pred, labels = target), mode="aucroc")\$uaucs\$aucs} & Rank sum & C++, R\\
+ModelMetrics & auc & \ttfamily{auc(target, pred)} & Rank sum & C++, R\\
 \addlinespace
-pROC & auc & \ttfamily{auc(target, pred, lev=c('0', '1'), dir=">")} & Trapezoidal rule & R\\
+precrec & evalmod & \ttfamily{evalmod(mmdata(scores = pred, labels = target), mode="aucroc")\$uaucs\$aucs} & Rank sum & C++, R\\
 \addlinespace
-rcompanion & vda & \ttfamily{vda(x = pred[target == 0], y = pred[target == 1], digits=100)} & Rank sum & R\\
+pROC & auc & \ttfamily{auc(target, pred, lev=c('0', '1'), dir="<")} & Trapezoidal rule & R\\
 \addlinespace
-ROCR & performance & \ttfamily{performance(prediction(-pred, target), "auc")@y.values[[1]]} & Trapezoidal rule & R\\
+PRROC & roc.curve & \ttfamily{roc.curve(pred[target == 1], pred[target == 0])\$auc} & Trapezoidal rule & R\\
 \addlinespace
-scikit-learn & roc\_auc\_score & \ttfamily{import("sklearn.metrics")\$roc\_auc\_score(target, -pred)} & Trapezoidal rule & Python, C\\
+rcompanion & vda & \ttfamily{vda(x = pred[target == 1], y = pred[target == 0], digits=100)} & Rank sum & R\\
 \addlinespace
-scorecard & perf\_eva & \ttfamily{perf\_eva(-pred, target, binomial\_metric = "auc", show\_plot=FALSE)\$binomial\_metric\$dat\$AUC} & Trapezoidal rule & R\\
+ROCit & rocit & \ttfamily{rocit(pred, target)\$AUC} & Trapezoidal rule & R\\
 \addlinespace
-yardstick & roc\_auc\_vec & \ttfamily{roc\_auc\_vec(as.factor(target), pred)} & Trapezoidal rule & R\\
+ROCR & performance & \ttfamily{performance(prediction(pred, target), "auc")@y.values[[1]]} & Trapezoidal rule & R\\
 \addlinespace
-DescTools & SomersDelta & \ttfamily{SomersDelta(-pred, target)/2 + 1/2} & Pairwise comparison (unoptimized) & C++, R\\
+scikit-learn & roc\_auc\_score & \ttfamily{import("sklearn.metrics")\$roc\_auc\_score(target, pred)} & Trapezoidal rule & Python, C\\
+\addlinespace
+scorecard & perf\_eva & \ttfamily{perf\_eva(pred, target, binomial\_metric = "auc", show\_plot=FALSE)\$binomial\_metric\$dat\$AUC} & Trapezoidal rule & R\\
+\addlinespace
+yardstick & roc\_auc\_vec & \ttfamily{roc\_auc\_vec(as.factor(target), -pred)} & Trapezoidal rule & R\\
+\addlinespace
+DescTools & SomersDelta & \ttfamily{SomersDelta(pred, target)/2 + 1/2} & Pairwise comparison (unoptimized) & C++, R\\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -404,39 +410,62 @@ generated such that the first half of the observations followed a
 \(\mathcal{N}(0,1)\) distribution, while the remaining observations
 followed a \(\mathcal{N}(1,1)\) distribution. The corresponding response
 variable was binary, with the first half of the observations assigned
-label 1 and the second half assigned label 0.
+label 0 and the second half assigned label 1.
 
 \textbf{First benchmark - 1000 observations}
 
-\begin{center}\includegraphics[width=1\linewidth]{report_files/figure-latex/package_benchmark_1-1} \end{center}
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/package-benchmark-1-1} 
+
+}
+
+\caption{Benchmark of the computational efficiency of R packages for AUC computation using 1,000 observations.}\label{fig:package-benchmark-1}
+\end{figure}
 
 \textbf{Second benchmark - 10000 observations}
 
-\begin{center}\includegraphics[width=1\linewidth]{report_files/figure-latex/package_benchmark_2-1} \end{center}
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/package-benchmark-2-1} 
+
+}
+
+\caption{Benchmark of the computational efficiency of R packages for AUC computation using 10,000 observations.}\label{fig:package-benchmark-2}
+\end{figure}
 
 \textbf{Third benchmark - 100000 observations}
 
-\begin{center}\includegraphics[width=1\linewidth]{report_files/figure-latex/package_benchmark_3-1} \end{center}
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/package-benchmark-3-1} 
+
+}
+
+\caption{Benchmark of the computational efficiency of R packages for AUC computation using 100,000 observations.}\label{fig:package-benchmark-3}
+\end{figure}
 
 The computational time required to evaluate the AUC metric varies
 substantially across the examined implementations, spanning several
-orders of magnitude. For instance, the \emph{bigstatsr} implementation
-computes the AUC nearly two orders of magnitude faster than the
-corresponding function in the \emph{scorecard} package. This discrepancy may
-be attributable to several factors, including additional computations
+orders of magnitude. For instance, the \CRANpkg{bigstatsr}
+implementation \citep{Prive_Blum_Aschard_2024} computes the AUC nearly two
+orders of magnitude faster than the corresponding function in the
+\CRANpkg{scorecard} \citep{Xie_2024} package. This discrepancy may be
+attributable to several factors, including additional computations
 performed internally by some functions (e.g., estimation of confidence
 intervals or simultaneous evaluation of multiple performance metrics),
 differences in algorithmic design, or a combination of these effects.
 
-Overall, \emph{bigstatsr} consistently provides the fastest AUC computation.
-Although \emph{MLMetrics} and \emph{Hmisc} exhibit slightly lower execution times
-on the smallest dataset, \emph{bigstatsr} clearly outperforms these
-alternatives as the number of observations increases.
+Overall, \CRANpkg{bigstatsr} consistently provides the fastest AUC
+computation. Although \CRANpkg{MLMetrics} \citep{Yan_2024} and
+\CRANpkg{Hmisc} \citep{Harrell_Jr_Dupont_2025} exhibit slightly lower
+execution times on the smallest dataset, \CRANpkg{bigstatsr} clearly
+outperforms these alternatives as the number of observations increases.
 
 Consequently, when an existing R implementation is preferred, we
-recommend the use of the \emph{AUC} function from the \emph{bigstatsr} package for
-efficient computation of the AUC metric, particularly in large-scale
-settings.
+recommend the use of the \emph{AUC} function from the \CRANpkg{bigstatsr}
+package for efficient computation of the AUC metric, particularly in
+large-scale settings.
 
 \subsection{Benchmarking custom R implementations}\label{benchmarking-custom-r-implementations}
 
@@ -450,15 +479,36 @@ the package-level experiments.
 
 \textbf{First benchmark - 1000 observations}
 
-\begin{center}\includegraphics[width=1\linewidth]{report_files/figure-latex/own_function_benchmark_1-1} \end{center}
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/own-function-benchmark-1-1} 
+
+}
+
+\caption{Benchmark of the computational efficiency of custom implementations for AUC computation using 1,000 observations.}\label{fig:own-function-benchmark-1}
+\end{figure}
 
 \textbf{Second benchmark - 10000 observations}
 
-\begin{center}\includegraphics[width=1\linewidth]{report_files/figure-latex/own_function_benchmark_2-1} \end{center}
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/own-function-benchmark-2-1} 
+
+}
+
+\caption{Benchmark of the computational efficiency of custom implementations for AUC computation using 10,000 observations.}\label{fig:own-function-benchmark-2}
+\end{figure}
 
 \textbf{Third benchmark - 100000 observations}
 
-\begin{center}\includegraphics[width=1\linewidth]{report_files/figure-latex/own_function_benchmark_3-1} \end{center}
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/own-function-benchmark-3-1} 
+
+}
+
+\caption{Benchmark of the computational efficiency of custom implementations for AUC computation using 100,000 observations.}\label{fig:own-function-benchmark-3}
+\end{figure}
 
 Across all benchmark settings, the optimized pairwise comparison method
 consistently exhibited the shortest execution time, with the trapezoidal
@@ -469,6 +519,42 @@ of observations grew.
 These results suggest that, when developing new R functions for AUC
 computation, the pairwise comparison approach provides the most
 efficient algorithmic foundation, particularly in large-scale scenarios.
+
+\section{Case study}\label{case-study}
+
+We have conducted a case study to illustrate the importance of quick AUC
+calculation, especially whenever it is computed many times. We use the
+\CRANpkg{DALEX} package \citep{Biecek_2018}, which implements a general
+framework for exploring black-box models. It allows for creating
+explainers for any predictive model, using many approaches to
+interpretability.
+
+First, we build an example classification model using logistic
+regression on the Titanic data set, using 7 explanatory variables, and
+create a \CRANpkg{DALEX} explainer for the model, to construct a
+Permutational Variable Importance Importance Plot. By default, the loss
+function which the \CRANpkg{DALEX} package uses for classification is
+\(1 - \text{AUC}\). We specify the number of permutation rounds to perform
+on each variable to be 50, resulting in 350 permutation rounds, and the
+same number of AUC calculations.
+
+The \CRANpkg{DALEX} package has a function for calculating the
+\(1 - \text{AUC}\) loss function, called loss\_one\_minus\_auc. Its
+performance has been benchmarked against a wrapper function using the
+\CRANpkg{bigstatsr} AUC function to calculate \(1 - \text{AUC}\), which
+has been shown in figure \ref{fig:dalex-bigstatsr-benchmark}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{report_files/figure-latex/dalex-bigstatsr-benchmark-1} 
+
+}
+
+\caption{Benchmark showcasing the 1 - AUC loss function in DALEX and a wrapper function implementing bigstatsr.}\label{fig:dalex-bigstatsr-benchmark}
+\end{figure}
+
+Using \CRANpkg{bigstatsr} for the loss function shortens the calculation
+time of the loss function by around X\%.
 
 \bibliography{RJreferences.bib}
 

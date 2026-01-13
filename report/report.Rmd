@@ -92,14 +92,14 @@ actual positives (true positive rate, TPR) [@Fawcett_2006].
 
 The AUC (Area Under the ROC Curve) provides a single-number summary of
 the classification performance of binary models across all possible
-decision thresholds, while also being invariant to a priori 
-class probabilities [@Bradley_1997]. A ROC curve that passes 
-through the point (0, 1) corresponds to an ideal classifier, 
-achieving zero false positives and perfect detection of positive cases. 
-Curves lying closer to this point are therefore more desirable 
-[@Hanley_McNeil_1982]; they correspond to larger values of the Area Under 
-the Curve (AUC). By contrast, the diagonal line connecting (0, 0) and (1, 1) 
-represents a random classifier, for which the expected value of AUC equals 0.5.
+decision thresholds, while also being invariant to a priori class
+probabilities [@Bradley_1997]. A ROC curve that passes through the point
+(0, 1) corresponds to an ideal classifier, achieving zero false
+positives and perfect detection of positive cases. Curves lying closer
+to this point are therefore more desirable [@Hanley_McNeil_1982]; they
+correspond to larger values of the Area Under the Curve (AUC). By
+contrast, the diagonal line connecting (0, 0) and (1, 1) represents a
+random classifier, for which the expected value of AUC equals 0.5.
 
 In many application domains—most notably in credit scoring—the AUC is
 often transformed into a measure that tends to zero for a completely
@@ -439,9 +439,9 @@ generated such that the first half of the observations followed a
 $\mathcal{N}(0,1)$ distribution, while the remaining observations
 followed a $\mathcal{N}(1,1)$ distribution. The corresponding response
 variable was binary, with the first half of the observations assigned
-label 1 and the second half assigned label 0.
+label 0 and the second half assigned label 1.
 
-```{r setting up for package benchmarks, include = FALSE}
+```{r package-benchmark-setup, include = FALSE}
 plot_benchmark <- function(benchmark) {
   autoplot(benchmark) +
     theme(axis.text.y = element_text(size = rel(1.5)))
@@ -455,44 +455,49 @@ package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 **First benchmark - 1000 observations**
 
-```{r package_benchmark_1, fig.align="center", out.width="100%"}
+```{r package-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 1,000 observations."}
+
 plot_benchmark(package_benchmark1)
 
 ```
 
 **Second benchmark - 10000 observations**
 
-```{r package_benchmark_2, fig.align="center", out.width="100%"}
+```{r package-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 10,000 observations."}
+
 plot_benchmark(package_benchmark2)
 
 ```
 
 **Third benchmark - 100000 observations**
 
-```{r package_benchmark_3, fig.align="center", out.width="100%"}
+```{r package-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 100,000 observations."}
+
 plot_benchmark(package_benchmark3)
 
 ```
 
 The computational time required to evaluate the AUC metric varies
 substantially across the examined implementations, spanning several
-orders of magnitude. For instance, the *bigstatsr* implementation
-computes the AUC nearly two orders of magnitude faster than the
-corresponding function in the *scorecard* package. This discrepancy may
-be attributable to several factors, including additional computations
+orders of magnitude. For instance, the \CRANpkg{bigstatsr}
+implementation [@Prive_Blum_Aschard_2024] computes the AUC nearly two
+orders of magnitude faster than the corresponding function in the
+\CRANpkg{scorecard} [@Xie_2024] package. This discrepancy may be
+attributable to several factors, including additional computations
 performed internally by some functions (e.g., estimation of confidence
 intervals or simultaneous evaluation of multiple performance metrics),
 differences in algorithmic design, or a combination of these effects.
 
-Overall, *bigstatsr* consistently provides the fastest AUC computation.
-Although *MLMetrics* and *Hmisc* exhibit slightly lower execution times
-on the smallest dataset, *bigstatsr* clearly outperforms these
-alternatives as the number of observations increases.
+Overall, \CRANpkg{bigstatsr} consistently provides the fastest AUC
+computation. Although \CRANpkg{MLMetrics} [@Yan_2024] and
+\CRANpkg{Hmisc} [@Harrell_Jr_Dupont_2025] exhibit slightly lower
+execution times on the smallest dataset, \CRANpkg{bigstatsr} clearly
+outperforms these alternatives as the number of observations increases.
 
 Consequently, when an existing R implementation is preferred, we
-recommend the use of the *AUC* function from the *bigstatsr* package for
-efficient computation of the AUC metric, particularly in large-scale
-settings.
+recommend the use of the *AUC* function from the \CRANpkg{bigstatsr}
+package for efficient computation of the AUC metric, particularly in
+large-scale settings.
 
 ## Benchmarking custom R implementations
 
@@ -504,7 +509,7 @@ checks in order to minimize overhead and isolate algorithmic
 performance. All benchmarks were conducted on the same datasets used in
 the package-level experiments.
 
-```{r setup for own function benchmarks, include = FALSE}
+```{r own-function-benchmark-setup, include = FALSE}
 own_functions_benchmark1 <- readRDS("../data/own_functions_benchmark_1.rds")
 own_functions_benchmark2 <- readRDS("../data/own_functions_benchmark_2.rds")
 own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
@@ -513,20 +518,26 @@ own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
 
 **First benchmark - 1000 observations**
 
-```{r own_function_benchmark_1, fig.align="center", out.width="100%"}
+```{r own-function-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 1,000 observations."}
+
 plot_benchmark(own_functions_benchmark1)
+
 ```
 
 **Second benchmark - 10000 observations**
 
-```{r own_function_benchmark_2, fig.align="center", out.width="100%"}
+```{r own-function-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 10,000 observations."}
+
 plot_benchmark(own_functions_benchmark2)
+
 ```
 
 **Third benchmark - 100000 observations**
 
-```{r own_function_benchmark_3, fig.align="center", out.width="100%"}
+```{r own-function-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 100,000 observations."}
+
 plot_benchmark(own_functions_benchmark3)
+
 ```
 
 Across all benchmark settings, the optimized pairwise comparison method
@@ -538,3 +549,42 @@ of observations grew.
 These results suggest that, when developing new R functions for AUC
 computation, the pairwise comparison approach provides the most
 efficient algorithmic foundation, particularly in large-scale scenarios.
+
+# Case study
+
+```{r case-study-setup, include = FALSE}
+
+dalex_bigstatsr_benchmark <- readRDS("../data/dalex_bigstatsr_benchmark.rds")
+
+```
+
+We have conducted a case study to illustrate the importance of quick AUC
+calculation, especially whenever it is computed many times. We use the
+\CRANpkg{DALEX} package [@Biecek_2018], which implements a general
+framework for exploring black-box models. It allows for creating
+explainers for any predictive model, using many approaches to
+interpretability.
+
+First, we build an example classification model using logistic
+regression on the Titanic data set, using 7 explanatory variables, and
+create a \CRANpkg{DALEX} explainer for the model, to construct a
+Permutational Variable Importance Importance Plot. By default, the loss
+function which the \CRANpkg{DALEX} package uses for classification is
+$1 - \text{AUC}$. We specify the number of permutation rounds to perform
+on each variable to be 50, resulting in 350 permutation rounds, and the
+same number of AUC calculations.
+
+The \CRANpkg{DALEX} package has a function for calculating the
+$1 - \text{AUC}$ loss function, called loss_one_minus_auc. Its
+performance has been benchmarked against a wrapper function using the
+\CRANpkg{bigstatsr} AUC function to calculate $1 - \text{AUC}$, which
+has been shown in figure \@ref(fig:dalex-bigstatsr-benchmark).
+
+```{r dalex-bigstatsr-benchmark, fig.align='center', out.width="100%", fig.cap="Benchmark showcasing the 1 - AUC loss function in DALEX and a wrapper function implementing bigstatsr."}
+
+plot_benchmark(dalex_bigstatsr_benchmark)
+
+```
+
+Using \CRANpkg{bigstatsr} for the loss function shortens the calculation
+time of the loss function by around X%.

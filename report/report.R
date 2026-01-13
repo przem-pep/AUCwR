@@ -70,7 +70,7 @@ if (knitr::is_latex_output()) {
 }
 
 
-## ----setting up for package benchmarks, include = FALSE-----------------------
+## ----package-benchmark-setup, include = FALSE---------------------------------
 plot_benchmark <- function(benchmark) {
   autoplot(benchmark) +
     theme(axis.text.y = element_text(size = rel(1.5)))
@@ -82,36 +82,57 @@ package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 
 
-## ----package_benchmark_1, fig.align="center", out.width="100%"----------------
+## ----package-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 1,000 observations."----
+
 plot_benchmark(package_benchmark1)
 
 
 
-## ----package_benchmark_2, fig.align="center", out.width="100%"----------------
+## ----package-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 10,000 observations."----
+
 plot_benchmark(package_benchmark2)
 
 
 
-## ----package_benchmark_3, fig.align="center", out.width="100%"----------------
+## ----package-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 100,000 observations."----
+
 plot_benchmark(package_benchmark3)
 
 
 
-## ----setup for own function benchmarks, include = FALSE-----------------------
+## ----own-function-benchmark-setup, include = FALSE----------------------------
 own_functions_benchmark1 <- readRDS("../data/own_functions_benchmark_1.rds")
 own_functions_benchmark2 <- readRDS("../data/own_functions_benchmark_2.rds")
 own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
 
 
 
-## ----own_function_benchmark_1, fig.align="center", out.width="100%"-----------
+## ----own-function-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 1,000 observations."----
+
 plot_benchmark(own_functions_benchmark1)
 
 
-## ----own_function_benchmark_2, fig.align="center", out.width="100%"-----------
+
+## ----own-function-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 10,000 observations."----
+
 plot_benchmark(own_functions_benchmark2)
 
 
-## ----own_function_benchmark_3, fig.align="center", out.width="100%"-----------
+
+## ----own-function-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 100,000 observations."----
+
 plot_benchmark(own_functions_benchmark3)
+
+
+
+## ----case-study-setup, include = FALSE----------------------------------------
+
+dalex_bigstatsr_benchmark <- readRDS("../data/dalex_bigstatsr_benchmark.rds")
+
+
+
+## ----dalex-bigstatsr-benchmark, fig.align='center', out.width="100%", fig.cap="Benchmark showcasing the 1 - AUC loss function in DALEX and a wrapper function implementing bigstatsr."----
+
+plot_benchmark(dalex_bigstatsr_benchmark)
+
 

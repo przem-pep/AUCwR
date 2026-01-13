@@ -12,9 +12,12 @@ titanic_lmr_exp <- explain(model = titanic_lmr,
                            y = titanic$survived == "1",
                            label = "Logistic Regression")
 
-repeats <- 10
+# Number of repeats performed for every benchmarked operation
 
-# Case
+repeats <- 20
+
+# Measuring the time to create and plot a model explainer in the DALEX package
+# Each explainer uses 50 permutations (B = 50)
 
 tic()
 replicate(repeats, plot(model_parts(explainer = titanic_lmr_exp, B = 50, N = NULL)))
@@ -23,12 +26,12 @@ time1 <- toc()
 time1
 
 
-# Benchmarking the single function
+# Creating a data set analogical to the one used in the modelling example
 
 pred9 <- c(rnorm(1103), rnorm(1103, 1))
 target9 <- c(rep(0, 1103), rep(1, 1103))
 
-# Creating an analogical, competetive function
+# Creating an analogical, competitive function
 
 bigstatsr_one_minus_AUC <- function(observed, predicted) {
   return(1 - bigstatsr::AUC(predicted, observed))
@@ -62,11 +65,12 @@ call_case_study_benchmark <- function(pred, target, times = 100) {
   
 }
 
-ben1 <- call_case_study_benchmark(pred9, target9, times = 10)
-ggplot2::autoplot(ben1)
+dalex_bigstatsr_benchmark <- call_case_study_benchmark(pred9, target9, times = repeats)
+ggplot2::autoplot(dalex_bigstatsr_benchmark)
+saveRDS(dalex_bigstatsr_benchmark, file = "data/dalex_bigstatsr_benchmark.rds")
 
 
-# Replacing the function definition inside the package
+# Replacing the function definition inside the DALEX package
 
 assignInNamespace("loss_one_minus_auc", bigstatsr_one_minus_AUC, ns = "DALEX")
 
