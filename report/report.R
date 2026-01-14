@@ -82,19 +82,19 @@ package_benchmark3 <- readRDS("../data/packages_benchmark_3.rds")
 
 
 
-## ----package-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 1,000 observations."----
+## ----package-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 1,000 observations.", fig.pos="H"----
 
 plot_benchmark(package_benchmark1)
 
 
 
-## ----package-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 10,000 observations."----
+## ----package-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 10,000 observations.", fig.pos="H"----
 
 plot_benchmark(package_benchmark2)
 
 
 
-## ----package-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 100,000 observations."----
+## ----package-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of R packages for AUC computation using 100,000 observations.", fig.pos="H"----
 
 plot_benchmark(package_benchmark3)
 
@@ -107,19 +107,19 @@ own_functions_benchmark3 <- readRDS("../data/own_functions_benchmark_3.rds")
 
 
 
-## ----own-function-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 1,000 observations."----
+## ----own-function-benchmark-1, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 1,000 observations.", fig.pos="H"----
 
 plot_benchmark(own_functions_benchmark1)
 
 
 
-## ----own-function-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 10,000 observations."----
+## ----own-function-benchmark-2, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 10,000 observations.", fig.pos="H"----
 
 plot_benchmark(own_functions_benchmark2)
 
 
 
-## ----own-function-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 100,000 observations."----
+## ----own-function-benchmark-3, fig.align="center", out.width="100%", fig.cap="Benchmark of the computational efficiency of custom implementations for AUC computation using 100,000 observations.", fig.pos="H"----
 
 plot_benchmark(own_functions_benchmark3)
 
@@ -131,7 +131,7 @@ dalex_bigstatsr_benchmark <- readRDS("../data/dalex_bigstatsr_benchmark.rds")
 
 
 
-## ----dalex-bigstatsr-benchmark, fig.align='center', out.width="100%", fig.cap="Benchmark showcasing the 1 - AUC loss function in DALEX and a wrapper function implementing bigstatsr."----
+## ----dalex-bigstatsr-benchmark, fig.align='center', out.width="100%", fig.cap="Benchmark showcasing the 1 - AUC loss function in DALEX and a wrapper function implementing bigstatsr.", fig.pos="H"----
 
 plot_benchmark(dalex_bigstatsr_benchmark)
 
