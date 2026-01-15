@@ -555,6 +555,7 @@ efficient algorithmic foundation, particularly in large-scale scenarios.
 ```{r case-study-setup, include = FALSE}
 
 dalex_bigstatsr_benchmark <- readRDS("../data/dalex_bigstatsr_benchmark.rds")
+optimization_results_data <- readRDS("../data/optimization_results_data.rds")
 
 ```
 
@@ -568,8 +569,8 @@ interpretability.
 First, we build an example classification model using logistic
 regression on the Titanic data set, using 7 explanatory variables, and
 create a \CRANpkg{DALEX} explainer for the model, to construct a
-Permutational Variable Importance Importance Plot. By default, the loss
-function which the \CRANpkg{DALEX} package uses for classification is
+Permutational Variable Importance Plot. By default, the loss function
+which the \CRANpkg{DALEX} package uses for classification is
 $1 - \text{AUC}$. We specify the number of permutation rounds to perform
 on each variable to be 50, resulting in 350 permutation rounds, and the
 same number of AUC calculations.
@@ -587,4 +588,16 @@ plot_benchmark(dalex_bigstatsr_benchmark)
 ```
 
 Using \CRANpkg{bigstatsr} for the loss function shortens the calculation
-time of the loss function by around X%.
+time of the loss function by around X seconds. As a result, creating a
+single Permutational Variable Importance Plot with 350 permutation
+rounds would in theory take Y seconds less.
+
+Finally, we replaced the loss function inside the \CRANpkg{DALEX}
+namespace with the \CRANpkg{bigstatsr} wrapper function, while measuring
+the time needed to create the plot before and after the optimization.
+The result has been presented in figure \@ref(fig:dalex-optimization).
+
+```{r dalex-optimization, fig.align="center", out.width="100%", fig.cap="Time measurement of the creation of the Permutational Variable Importance Plot before and after the optimization of AUC calculation.", fig.pos="H"}
+
+
+```

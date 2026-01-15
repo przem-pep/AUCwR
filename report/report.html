@@ -3519,8 +3519,8 @@ formally as follows:</p>
 <p>This approach computes the AUC as the area under the empirical ROC curve
 by applying the trapezoidal rule:</p>
 <p><span class="math display">\[\text{AUC} = \sum_{k=1}^{m-1}(\text{FPR}_{k+1} - \text{FPR}_{k})\cdot\frac{\text{TPR}_{k+1}+\text{TPR}_k}{2}\]</span></p>
-<p>where <span class="math inline">\(m\)</span> is the number of distinct score thresholds from lowest to the
-highest, <span class="math inline">\(TPR_k=TP_k/n_1\)</span> is the true positive rate, <span class="math inline">\(FPR_k=FP_k/n_0\)</span> is
+<p>where <span class="math inline">\(m\)</span> is the number of distinct score thresholds from highest to
+lowest, <span class="math inline">\(TPR_k=TP_k/n_1\)</span> is the true positive rate, <span class="math inline">\(FPR_k=FP_k/n_0\)</span> is
 the false positive Rate at threshold <span class="math inline">\(k\)</span>, <span class="math inline">\(TP_k\)</span> is the number of true
 positives, <span class="math inline">\(\text{FP}_k\)</span> is the number of false positives, <span class="math inline">\(n_1\)</span> is the
 number of positive cases, <span class="math inline">\(n_0\)</span> is the number of negative cases.</p>
@@ -3647,8 +3647,8 @@ interpretability.</p>
 <p>First, we build an example classification model using logistic
 regression on the Titanic data set, using 7 explanatory variables, and
 create a <a href="https://cran.r-project.org/package=DALEX">DALEX</a> explainer for the model, to construct a
-Permutational Variable Importance Importance Plot. By default, the loss
-function which the <a href="https://cran.r-project.org/package=DALEX">DALEX</a> package uses for classification is
+Permutational Variable Importance Plot. By default, the loss function
+which the <a href="https://cran.r-project.org/package=DALEX">DALEX</a> package uses for classification is
 <span class="math inline">\(1 - \text{AUC}\)</span>. We specify the number of permutation rounds to perform
 on each variable to be 50, resulting in 350 permutation rounds, and the
 same number of AUC calculations.</p>
@@ -3666,7 +3666,16 @@ Figure 8: Benchmark showcasing the 1 - AUC loss function in DALEX and a wrapper 
 </div>
 </div>
 <p>Using <a href="https://cran.r-project.org/package=bigstatsr">bigstatsr</a> for the loss function shortens the calculation
-time of the loss function by around X%.</p>
+time of the loss function by around X seconds. As a result, creating a
+single Permutational Variable Importance Plot with 350 permutation
+rounds would in theory take Y seconds less.</p>
+<p>Finally, we replaced the loss function inside the <a href="https://cran.r-project.org/package=DALEX">DALEX</a>
+namespace with the <a href="https://cran.r-project.org/package=bigstatsr">bigstatsr</a> wrapper function, while measuring
+the time needed to create the plot before and after the optimization.
+The result has been presented in figure <a href="#fig:dalex-optimization"><strong>??</strong></a>.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <h3 class="appendix" data-number="7.1" id="cran-packages-used"><span class="header-section-number">7.1</span> CRAN packages used</h3>
 <p><a href="https://cran.r-project.org/package=bigstatsr">bigstatsr</a>, <a href="https://cran.r-project.org/package=scorecard">scorecard</a>, <a href="https://cran.r-project.org/package=MLMetrics">MLMetrics</a>, <a href="https://cran.r-project.org/package=Hmisc">Hmisc</a>, <a href="https://cran.r-project.org/package=DALEX">DALEX</a></p>
