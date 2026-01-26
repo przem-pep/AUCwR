@@ -1,5 +1,5 @@
 % !TeX root = RJwrapper.tex
-\title{Area under ROC curve -- review and efficient computation in R}
+\title{Area under ROC Curve -- Review and Efficient Computation in R}
 
 
 \author{by Błażej Kochański, Przemysław Peplinski, Miriam Nieslona, Wiktor Galewski, and Piotr Geremek}
@@ -554,14 +554,15 @@ has been shown in figure \ref{fig:dalex-bigstatsr-benchmark}.
 \end{figure}
 
 Using \CRANpkg{bigstatsr} for the loss function shortens the calculation
-time of the loss function by around X seconds. As a result, creating a
-single Permutational Variable Importance Plot with 350 permutation
-rounds would in theory take Y seconds less.
+time of the loss function by around 0.026 seconds. As a result, creating
+a single Permutational Variable Importance Plot with 350 permutation
+rounds would in theory take around 9.1 seconds less.
 
 Finally, we replaced the loss function inside the \CRANpkg{DALEX}
 namespace with the \CRANpkg{bigstatsr} wrapper function, while measuring
 the time needed to create the plot before and after the optimization.
-The result has been presented in figure \ref{fig:dalex-optimization}.
+This resulted in a reduction of median calculation time by 11 seconds,
+or 75\%.
 
 \bibliography{RJreferences.bib}
 

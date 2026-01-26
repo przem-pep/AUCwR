@@ -128,17 +128,11 @@ plot_benchmark(own_functions_benchmark3)
 ## ----case-study-setup, include = FALSE----------------------------------------
 
 dalex_bigstatsr_benchmark <- readRDS("../data/dalex_bigstatsr_benchmark.rds")
-optimization_results_data <- readRDS("../data/optimization_results_data.rds")
 
 
 
 ## ----dalex-bigstatsr-benchmark, fig.align='center', out.width="100%", fig.cap="Benchmark showcasing the 1 - AUC loss function in DALEX and a wrapper function implementing bigstatsr.", fig.pos="H"----
 
 plot_benchmark(dalex_bigstatsr_benchmark)
-
-
-
-## ----dalex-optimization, fig.align="center", out.width="100%", fig.cap="Time measurement of the creation of the Permutational Variable Importance Plot before and after the optimization of AUC calculation.", fig.pos="H"----
-
 
 
