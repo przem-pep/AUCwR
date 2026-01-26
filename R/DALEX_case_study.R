@@ -2,14 +2,13 @@ library(DALEX)
 library(tictoc)
 library(microbenchmark)
 library(ggplot2)
-library(dplyr)
 
 # Setup
 
 titanic <- archivist::aread("pbiecek/models/27e5c")
 titanic$survived <- ifelse(titanic$survived == "yes", 1, 0)
 titanic_lmr <- rms::lrm(survived == "1" ~ gender + rms::rcs(age) + class + sibsp + parch + fare + embarked, titanic)
-titanic_lmr_exp <- explain(model = titanic_lmr,
+titanic_lmr_exp <- DALEX::explain(model = titanic_lmr,
                            data = titanic[, -9],
                            y = titanic$survived == "1",
                            label = "Logistic Regression")
@@ -25,7 +24,7 @@ calculation_times_before <- numeric(repeats)
 
 for(i in 1:repeats) {
   tic()
-  vip_lm <- model_parts(explainer = titanic_lmr_exp, B = 50, N = NULL)
+  vip_lm <- feature_importance(explainer = titanic_lmr_exp, B = 50, N = NULL)
   plot(vip_lm)
   time1 <- toc()
   calculation_time <- unname(time1$toc - time1$tic)
@@ -36,6 +35,8 @@ median_before <- median(calculation_times_before)
 
 
 # Creating a data set with a similar number of observations to the one used in the modelling example
+
+set.seed(123)
 
 pred9 <- c(rnorm(1103), rnorm(1103, 1))
 target9 <- c(rep(0, 1103), rep(1, 1103))
@@ -78,6 +79,29 @@ dalex_bigstatsr_benchmark <- call_case_study_benchmark(pred9, target9, times = r
 ggplot2::autoplot(dalex_bigstatsr_benchmark)
 saveRDS(dalex_bigstatsr_benchmark, file = "data/dalex_bigstatsr_benchmark.rds")
 
+# Comparing AUC calculation time between bigstatsr and DALEX
+
+benchmark_summary <- summary(dalex_bigstatsr_benchmark)
+
+# In seconds
+
+s <- (benchmark_summary[benchmark_summary$expr == "DALEX", "median"] - benchmark_summary[benchmark_summary$expr == "bigstatsr", "median"]) / 1e6
+s
+
+# Reduction time as a fraction
+
+1 - benchmark_summary[benchmark_summary$expr == "bigstatsr", "median"] / benchmark_summary[benchmark_summary$expr == "DALEX", "median"]
+
+# Reduction time as a percentage
+
+cat(
+  (1 - benchmark_summary[benchmark_summary$expr == "bigstatsr", "median"] / benchmark_summary[benchmark_summary$expr == "DALEX", "median"]) * 100,
+  "%\n", sep = ""
+)
+
+# Optimization of AUC calculation should speed up the plot creation by
+
+s * 350
 
 # Replacing the function definition inside the DALEX package
 
@@ -90,7 +114,7 @@ calculation_times_after <- numeric(repeats)
 
 for(i in 1:repeats) {
   tic()
-  vip_lm <- model_parts(explainer = titanic_lmr_exp, B = 50, N = NULL)
+  vip_lm <- feature_importance(explainer = titanic_lmr_exp, B = 50, N = NULL)
   plot(vip_lm)
   time2 <- toc()
   calculation_time <- unname(time2$toc - time2$tic)
@@ -101,6 +125,14 @@ median_after <- median(calculation_times_after)
 
 # Setting up data for plotting
 
+optimization_results <- tidyr::pivot_longer(
+  data.frame(
+    before = calculation_times_before,
+    after = calculation_times_after
+  ),
+  cols = dplyr::everything()
+)
+
 optimization_results_data <- data.frame(
   labels = factor(
     x = c("Before optimization", "After optimization"),
@@ -109,7 +141,7 @@ optimization_results_data <- data.frame(
   median_time = c(median_before, median_after)
 )
 
-saveRDS(optimization_results_data, "data/optimization_results_data.rds")
+optimization_results_data
 
 # Optimization result plot
 
@@ -125,27 +157,21 @@ ggplot(optimization_results_data, aes(x = labels, y = median_time)) +
     axis.text = element_text(size = 14, color = "black")
   )
 
-test_data <- data.frame(
-  before = calculation_times_before,
-  after = calculation_times_after
+
+# Time saved
+
+# In seconds
+
+optimization_results_data[1, "median_time"] - optimization_results_data[2, "median_time"]
+
+# As a fraction
+
+1 - optimization_results_data[2, "median_time"] / optimization_results_data[1, "median_time"]
+
+# As a percentage
+
+cat(
+  (1 - optimization_results_data[2, "median_time"] / optimization_results_data[1, "median_time"]) * 100,
+  "%\n", sep = ""
 )
 
-test_data <- tidyr::pivot_longer(test_data, cols = everything())
-
-ggplot(test_data, aes(name, value)) +
-  geom_boxplot(fill = "firebrick") +
-  scale_y_continuous(limits = c(0, max(calculation_times_before))) +
-  labs(x = NULL,
-       y = "Time [s]",
-       title = "Box plot of time of creating a Permutational Variable Importance Plot") +
-  theme_bw() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 16),
-    axis.title.y = element_text(size = 14, color = "black"),
-    axis.text = element_text(size = 14, color = "black")
-  )
-
-# Time saved as a percentage
-time_saved <- ((time2$toc - time2$tic) / (time1$toc - time1$tic) - 1) * 100
-print(paste("Optimising AUC calculation decreased the total calculation time by ",
-            round(-time_saved, 3), "%.", sep = ""))
