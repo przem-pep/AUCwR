@@ -596,3 +596,44 @@ namespace with the \CRANpkg{bigstatsr} wrapper function, while measuring
 the time needed to create the plot before and after the optimization.
 This resulted in a reduction of median calculation time by 11 seconds,
 or 75%.
+
+#Conclusion
+
+In this paper, we have provided a comprehensive review of the Area Under the 
+Receiver Operating Characteristic Curve (AUC) and its computational efficiency 
+within the R ecosystem. As demonstrated, the AUC serves as a fundamental metric 
+for evaluating binary classification models, characterized by its invariance 
+to class distribution and its direct relationship with several other statistical
+measures.
+
+The main findings of this research are as follows:
+
+1. Conceptual Unification: We have highlighted the mathematical equivalence 
+between AUC and the C-statistic, the Vargha-Delaney A statistic, 
+the Mann-Whitney U statistic, as well as many other labels. Furthermore, we 
+noted that the Gini coefficient, widely used in credit scoring, is a linear 
+transformation defined as $2 \times \text{AUC} - 1$.
+
+2. Algorithmic Efficiency: Our benchmarking results indicate that the choice of 
+implementation significantly impacts performance, especially as dataset sizes 
+increase. Among existing CRAN packages, the AUC function from the bigstatsr 
+package consistently outperformed other implementations, often by several 
+orders of magnitude.
+
+3. Computational Foundations: Through custom implementations, we identified 
+that optimized pairwise comparison and trapezoidal integration methods offer 
+superior scalability compared to rank-based approaches when handling 
+large-scale data.
+
+4. Practical Impact: The case study involving the DALEX package illustrated 
+that replacing standard loss functions with high-efficiency AUC implementations 
+can reduce the computation time for procedures like permutational variable 
+importance by up to 75%.
+
+
+These results underscore that for modern, high-intensity analytical
+workflows (such as bootstrapping, permutation tests, or AUC maximization) 
+the selection of an efficient algorithm is a prerequisite for practical 
+feasibility. For researchers and practitioners working with large datasets in R, 
+we recommend prioritizing implementations based on optimized pairwise 
+comparisons or compiled C++ code, such as those found in bigstatsr.
