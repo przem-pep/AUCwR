@@ -3678,42 +3678,34 @@ the time needed to create the plot before and after the optimization.
 This resulted in a reduction of median calculation time by 11 seconds,
 or 75%.</p>
 <h2 data-number="8" id="conclusion"><span class="header-section-number">8</span> Conclusion</h2>
-<p>In this paper, we have provided a comprehensive review of the Area Under
-the Receiver Operating Characteristic Curve (AUC) and its computational
-efficiency within the R ecosystem. As demonstrated, the AUC serves as a
-fundamental metric for evaluating binary classification models,
-characterized by its invariance to class distribution and its direct
-relationship with several other statistical measures.</p>
-<p>The main findings of this research are as follows:</p>
-<ol type="1">
-<li><p>Conceptual Unification: We have highlighted the mathematical
-equivalence between AUC and the C-statistic, the Vargha-Delaney A
-statistic, the Mann-Whitney U statistic, as well as many other
-labels. Furthermore, we noted that the Gini coefficient, widely used
-in credit scoring, is a linear transformation defined as
-<span class="math inline">\(2 \times \text{AUC} - 1\)</span>.</p></li>
-<li><p>Algorithmic Efficiency: Our benchmarking results indicate that the
-choice of implementation significantly impacts performance,
-especially as dataset sizes increase. Among existing CRAN packages,
-the AUC function from the <a href="https://cran.r-project.org/package=bigstatsr">bigstatsr</a> package consistently
-outperformed other implementations, often by several orders of
-magnitude.</p></li>
-<li><p>Computational Foundations: Through custom implementations, we
-identified that optimized pairwise comparison and trapezoidal
-integration methods offer superior scalability compared to
-rank-based approaches when handling large-scale data.</p></li>
-<li><p>Practical Impact: The case study involving the <a href="https://cran.r-project.org/package=DALEX">DALEX</a> package
-illustrated that replacing standard loss functions with
-high-efficiency AUC implementations can reduce the computation time
-for procedures like permutational variable importance by up to 75%.</p></li>
-</ol>
-<p>These results underscore that for modern, high-intensity analytical
-workflows (such as bootstrapping, permutation tests, or AUC
-maximization) the selection of an efficient algorithm is a prerequisite
-for practical feasibility. For researchers and practitioners working
-with large datasets in R, we recommend prioritizing implementations
-based on optimized pairwise comparisons or compiled C++ code, such as
-those found in <a href="https://cran.r-project.org/package=bigstatsr">bigstatsr</a>.</p>
+<p>The Area Under the ROC Curve is a widely used performance measure whose
+interpretation extends far beyond a single definition. As shown in this
+paper, AUC appears under multiple names and formulations across
+statistics, machine learning, and applied fields, yet these formulations
+are mathematically equivalent. Making these connections explicit helps
+avoid misinterpretation and facilitates comparisons across disciplines.</p>
+<p>In this study, we highlight the importance of computational efficiency
+in AUC evaluation. Many modern workflows require repeated computation of
+AUC, for example in resampling-based inference, model optimization,
+feature selection, or simulation studies. In such settings, inefficient
+implementations can quickly become a computational bottleneck.</p>
+<p>Our benchmarks reveal large performance differences among commonly used
+R packages. The <a href="https://cran.r-project.org/package=bigstatsr">bigstatsr</a> implementation consistently provides
+the fastest AUC computation, especially for large datasets. Additional
+benchmarking of custom implementations confirms that algorithmic choice
+matters: optimized pairwise comparison and trapezoidal methods clearly
+outperform rank-based approaches as sample size increases.</p>
+<p>The case study demonstrates that replacing a standard AUC implementation
+with a more efficient one can lead to substantial reductions in
+execution time in real analytical tasks. Careful selection of AUC
+computation methods is therefore an important, yet often overlooked,
+aspect of scalable model evaluation.</p>
+<p>Future research could extend this analysis beyond the R ecosystem. In
+particular, a systematic comparison of AUC implementations in Python —
+across libraries such as scikit-learn, PyTorch, TensorFlow, and
+specialized packages — would be a natural continuation of this work and
+could provide valuable guidance for practitioners working in large-scale
+or performance-critical settings.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <h3 class="appendix" data-number="8.1" id="cran-packages-used"><span class="header-section-number">8.1</span> CRAN packages used</h3>
 <p><a href="https://cran.r-project.org/package=bigstatsr">bigstatsr</a>, <a href="https://cran.r-project.org/package=scorecard">scorecard</a>, <a href="https://cran.r-project.org/package=MLMetrics">MLMetrics</a>, <a href="https://cran.r-project.org/package=Hmisc">Hmisc</a>, <a href="https://cran.r-project.org/package=DALEX">DALEX</a></p>
