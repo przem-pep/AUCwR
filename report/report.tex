@@ -2,7 +2,7 @@
 \title{Area under ROC Curve -- Review and Efficient Computation in R}
 
 
-\author{by Błażej Kochański, Przemysław Peplinski, Miriam Nieslona, Wiktor Galewski, and Piotr Geremek}
+\author{by Przemysław Peplinski, Piotr Geremek, Błażej Kochański, Wiktor Galewski, and Miriam Nieslona}
 
 \maketitle
 
@@ -350,16 +350,15 @@ ROC curve, (2) (optimized) pairwise comparison, (3) and rank-based
 (Mann--Whitney U statistic formulation).
 
 Let \((s_i, y_i)\) for \(i = 1, \dots, n\) denote the score \(s\) assigned to
-an account and its corresponding true label. In line with standard
-practice in credit scoring, we assume that \(y_i=1\) indicates a ``bad''
-account (e.g., one that defaults or fails to repay the loan), while
-\(y_i=0\) represents a good account. A properly functioning scoring should
-assign lower scores to accounts with a higher predicted probability of
-being bad, and higher scores to those likely to be good.
+an observation and its corresponding true label. We assume that \(y_i=1\)
+indicates a positive case, while \(y_i=0\) represents a negative case. A
+properly functioning scoring algorithm should assign higher scores to
+cases with a higher predicted probability of being positive, and lower
+scores to those likely to be negative.
 
-Let \(n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)\) denote the number of bad
-accounts, and \(n_0 =\sum_{i=1}^{n}\mathbb{I}(y_i=0)\) -- number of good
-accounts.
+Let \(n_1 = \sum_{i=1}^{n}\mathbb{I}(y_i=1)\) denote the number of
+positive cases, and \(n_0 =\sum_{i=1}^{n}\mathbb{I}(y_i=0)\) -- number of
+negative cases.
 
 The three computational approaches described above can be expressed
 formally as follows:
@@ -564,17 +563,54 @@ the time needed to create the plot before and after the optimization.
 This resulted in a reduction of median calculation time by 11 seconds,
 or 75\%.
 
-\bibliography{RJreferences.bib}
+\section{Conclusion}\label{conclusion}
 
-\address{%
-Błażej Kochański\\
-\\%
-\\
-%
-%
-%
-%
-}
+In this paper, we have provided a comprehensive review of the Area Under
+the Receiver Operating Characteristic Curve (AUC) and its computational
+efficiency within the R ecosystem. As demonstrated, the AUC serves as a
+fundamental metric for evaluating binary classification models,
+characterized by its invariance to class distribution and its direct
+relationship with several other statistical measures.
+
+The main findings of this research are as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Conceptual Unification: We have highlighted the mathematical
+  equivalence between AUC and the C-statistic, the Vargha-Delaney A
+  statistic, the Mann-Whitney U statistic, as well as many other
+  labels. Furthermore, we noted that the Gini coefficient, widely used
+  in credit scoring, is a linear transformation defined as
+  \(2 \times \text{AUC} - 1\).
+\item
+  Algorithmic Efficiency: Our benchmarking results indicate that the
+  choice of implementation significantly impacts performance,
+  especially as dataset sizes increase. Among existing CRAN packages,
+  the AUC function from the \CRANpkg{bigstatsr} package consistently
+  outperformed other implementations, often by several orders of
+  magnitude.
+\item
+  Computational Foundations: Through custom implementations, we
+  identified that optimized pairwise comparison and trapezoidal
+  integration methods offer superior scalability compared to
+  rank-based approaches when handling large-scale data.
+\item
+  Practical Impact: The case study involving the \CRANpkg{DALEX} package
+  illustrated that replacing standard loss functions with
+  high-efficiency AUC implementations can reduce the computation time
+  for procedures like permutational variable importance by up to 75\%.
+\end{enumerate}
+
+These results underscore that for modern, high-intensity analytical
+workflows (such as bootstrapping, permutation tests, or AUC
+maximization) the selection of an efficient algorithm is a prerequisite
+for practical feasibility. For researchers and practitioners working
+with large datasets in R, we recommend prioritizing implementations
+based on optimized pairwise comparisons or compiled C++ code, such as
+those found in \CRANpkg{bigstatsr}.
+
+\bibliography{RJreferences.bib}
 
 \address{%
 Przemysław Peplinski\\
@@ -587,9 +623,19 @@ Faculty of Management and Economics\\ Gdańsk\\
 }
 
 \address{%
-Miriam Nieslona\\
-\\%
-\\
+Piotr Geremek\\
+Gdańsk University of Technology\\%
+Faculty of Management and Economics\\ Gdańsk\\
+%
+%
+%
+%
+}
+
+\address{%
+Błażej Kochański\\
+Gdańsk University of Technology\\%
+Faculty of Management and Economics\\ Gdańsk\\
 %
 %
 %
@@ -598,8 +644,8 @@ Miriam Nieslona\\
 
 \address{%
 Wiktor Galewski\\
-\\%
-\\
+Gdańsk University of Technology\\%
+Faculty of Management and Economics\\ Gdańsk\\
 %
 %
 %
@@ -607,9 +653,9 @@ Wiktor Galewski\\
 }
 
 \address{%
-Piotr Geremek\\
-\\%
-\\
+Miriam Nieslona\\
+Gdańsk University of Technology\\%
+Faculty of Management and Economics\\ Gdańsk\\
 %
 %
 %
