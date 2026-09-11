@@ -435,7 +435,7 @@ $$\text{AUC} = \frac{1}{n_1 n_0}\sum_{i:y_i=0}\sum_{j:y_j=1}\left[\mathbb{I}(s_i
 The rank-based formula for AUC is directly based on the method developed
 for the Mann–Whitney U statistic computation [see @Sheskin_2020]:
 
-$$\text{AUC} = \frac{\bar{R}_{1}-{n_1(n_1+1)}/2}{n_0}$$
+$$\text{AUC} = \frac{\bar{R}_{1}-{(n_1+1)}/2}{n_0}$$
 
 where $\bar{R}_{1}$ is the mean rank for $s_i$ where $y_i=1$:
 
